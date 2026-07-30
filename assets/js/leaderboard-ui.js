@@ -1,9 +1,19 @@
 (function (global) {
+  function t(key, vars) {
+    if (global.WhiteStudioI18n && typeof global.WhiteStudioI18n.t === "function") {
+      return global.WhiteStudioI18n.t(key, vars);
+    }
+    return key;
+  }
+
   function renderLeaderboard(root, entries, emptyMessage) {
     if (!root) return;
     var list = Array.isArray(entries) ? entries : [];
     if (!list.length) {
-      root.innerHTML = '<p class="ws-status">' + (emptyMessage || "No scores yet. Be the first.") + "</p>";
+      root.innerHTML =
+        '<p class="ws-status">' +
+        escapeHtml(emptyMessage || t("demo.board_empty")) +
+        "</p>";
       return;
     }
 
@@ -26,8 +36,16 @@
       .join("");
 
     root.innerHTML =
-      '<table class="ws-leaderboard" aria-label="Leaderboard">' +
-      "<thead><tr><th>#</th><th>Player</th><th>Score</th></tr></thead>" +
+      '<table class="ws-leaderboard" aria-label="' +
+      escapeHtml(t("demo.board_title")) +
+      '">' +
+      "<thead><tr><th>" +
+      escapeHtml(t("demo.col_rank")) +
+      "</th><th>" +
+      escapeHtml(t("demo.col_player")) +
+      "</th><th>" +
+      escapeHtml(t("demo.col_score")) +
+      "</th></tr></thead>" +
       "<tbody>" +
       rows +
       "</tbody></table>";
@@ -50,22 +68,26 @@
     var nameInput = options.nameInput;
     var scoreValueEl = options.scoreValueEl;
     var refreshButton = options.refreshButton;
+    var lastEntries = [];
 
     async function refresh() {
       if (statusEl) {
-        statusEl.textContent = "Loading leaderboard…";
+        statusEl.textContent = t("demo.board_loading");
         statusEl.className = "ws-status";
       }
       try {
         var result = await api.getLeaderboard(gameId, options.limit || 20);
-        renderLeaderboard(boardRoot, result.data && result.data.entries);
+        lastEntries = (result.data && result.data.entries) || [];
+        renderLeaderboard(boardRoot, lastEntries);
         if (statusEl) {
-          statusEl.textContent = "Updated " + new Date().toLocaleTimeString();
+          statusEl.textContent = t("demo.board_updated", {
+            time: new Date().toLocaleTimeString()
+          });
           statusEl.className = "ws-status ws-status--ok";
         }
       } catch (error) {
         if (statusEl) {
-          statusEl.textContent = error.message || "Failed to load leaderboard.";
+          statusEl.textContent = error.message || t("demo.board_fail");
           statusEl.className = "ws-status ws-status--error";
         }
       }
@@ -83,13 +105,13 @@
         var playerName = nameInput ? nameInput.value.trim() : "";
         var score = scoreValueEl ? Number(scoreValueEl.textContent || scoreValueEl.value || 0) : 0;
         if (statusEl) {
-          statusEl.textContent = "Submitting…";
+          statusEl.textContent = t("demo.loading");
           statusEl.className = "ws-status";
         }
         try {
           await api.submitScore(gameId, playerName, score);
           if (statusEl) {
-            statusEl.textContent = "Score saved.";
+            statusEl.textContent = t("demo.submit_ok");
             statusEl.className = "ws-status ws-status--ok";
           }
           try {
@@ -98,7 +120,7 @@
           await refresh();
         } catch (error) {
           if (statusEl) {
-            statusEl.textContent = error.message || "Submit failed.";
+            statusEl.textContent = error.message || t("demo.submit_fail");
             statusEl.className = "ws-status ws-status--error";
           }
         }
@@ -110,6 +132,12 @@
         var saved = localStorage.getItem("ws-games-player-name");
         if (saved && !nameInput.value) nameInput.value = saved;
       } catch (_) {}
+    }
+
+    if (global.WhiteStudioI18n && global.WhiteStudioI18n.onChange) {
+      global.WhiteStudioI18n.onChange(function () {
+        if (lastEntries.length) renderLeaderboard(boardRoot, lastEntries);
+      });
     }
 
     await refresh();

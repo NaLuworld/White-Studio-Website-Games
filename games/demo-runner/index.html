@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
     <meta name="ws-api-origin" content="https://api.white-studio.org" />
     <title>Neon Runner · White Studio Games</title>
     <script src="/assets/js/theme-boot.js"></script>
@@ -13,49 +14,90 @@
   <body class="games-page demo-runner-page">
     <header class="ws-site-header">
       <div class="ws-site-header__inner">
-        <a class="ws-brand" href="/">
+        <a class="ws-brand" href="/" data-i18n-attr="aria-label:brand.home_aria">
           <span class="ws-brand__mark" aria-hidden="true"></span>
-          <span>White Studio Games</span>
+          <span class="ws-brand__text">
+            <p class="ws-brand__title" data-i18n="brand.title">White Studio Games</p>
+            <p class="ws-brand__sub" data-i18n="brand.sub">Mini-games + leaderboards</p>
+          </span>
         </a>
-        <nav class="ws-nav" aria-label="Primary">
-          <a href="/">Games</a>
-          <a href="/games/demo-runner/" aria-current="page">Neon Runner</a>
-          <button type="button" class="ws-button ws-button--ghost" id="theme-toggle">Light</button>
+
+        <nav class="ws-nav ws-nav--desktop" data-i18n-attr="aria-label:nav.primary_aria">
+          <a href="/" data-i18n="nav.games">Games</a>
+          <a href="https://tools.white-studio.org/" data-i18n="nav.tools">Tools</a>
+          <a href="https://dc.white-studio.org/" data-i18n="nav.community">Community</a>
+          <a href="https://white-studio.org/" target="_blank" rel="noopener" data-i18n="nav.studio">White Studio</a>
         </nav>
+
+        <div class="ws-site-header__actions" data-ws-header-actions>
+          <button
+            type="button"
+            class="ws-menu-toggle"
+            data-ws-menu-toggle
+            data-i18n-attr="aria-label:nav.open_menu"
+            aria-expanded="false"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"></path>
+            </svg>
+          </button>
+        </div>
       </div>
     </header>
+
+    <div class="ws-mobile-drawer" data-ws-mobile-drawer hidden>
+      <div class="ws-mobile-drawer__panel">
+        <nav class="ws-mobile-drawer__nav" data-i18n-attr="aria-label:nav.primary_aria">
+          <a href="/" data-i18n="nav.games" data-ws-drawer-close>Games</a>
+          <a href="https://tools.white-studio.org/" data-i18n="nav.tools" data-ws-drawer-close>Tools</a>
+          <a href="https://dc.white-studio.org/" data-i18n="nav.community" data-ws-drawer-close>Community</a>
+          <a href="https://white-studio.org/" target="_blank" rel="noopener" data-i18n="nav.studio" data-ws-drawer-close>White Studio</a>
+        </nav>
+        <div data-ws-drawer-auth></div>
+      </div>
+    </div>
 
     <main class="ws-container ws-section ws-game-shell">
       <div class="ws-game-hud">
         <div>
-          <p class="ws-card__eyebrow">Demo</p>
-          <h1 class="ws-section__title" style="margin: 0">Neon Runner</h1>
+          <p class="ws-card__eyebrow" data-i18n="demo.eyebrow">Demo</p>
+          <h1 class="ws-section__title" style="margin: 0" data-i18n="demo.title">Neon Runner</h1>
         </div>
         <div class="ws-nav" aria-live="polite">
-          <span class="ws-status">Score <strong id="live-score">0</strong></span>
-          <span class="ws-status">Best <strong id="best-score">0</strong></span>
+          <span class="ws-status"><span data-i18n="demo.score">Score</span> <strong id="live-score">0</strong></span>
+          <span class="ws-status"><span data-i18n="demo.best">Best</span> <strong id="best-score">0</strong></span>
         </div>
       </div>
 
       <div class="ws-game-stage">
-        <canvas id="game-canvas" class="demo-runner-canvas" aria-label="Neon Runner playfield"></canvas>
+        <canvas
+          id="game-canvas"
+          class="demo-runner-canvas"
+          data-i18n-attr="aria-label:demo.canvas_aria"
+        ></canvas>
         <div class="demo-runner-overlay" id="game-overlay">
           <div class="demo-runner-overlay__card">
-            <h2 id="overlay-title">Neon Runner</h2>
-            <p id="overlay-body">Dodge blocks. Submit your score when the run ends.</p>
-            <button type="button" class="ws-button ws-button--primary" id="start-button">Start</button>
+            <h2 id="overlay-title" data-i18n="demo.overlay_title">Neon Runner</h2>
+            <p id="overlay-body" data-i18n="demo.overlay_body">
+              Dodge blocks. Submit your score when the run ends.
+            </p>
+            <button type="button" class="ws-button ws-button--primary" id="start-button" data-i18n="demo.start">
+              Start
+            </button>
           </div>
         </div>
       </div>
 
       <section class="leaderboard-panel" aria-labelledby="board-title">
         <div class="leaderboard-panel__head">
-          <h2 id="board-title">Leaderboard</h2>
-          <button type="button" class="ws-button ws-button--ghost" id="refresh-board">Refresh</button>
+          <h2 id="board-title" data-i18n="demo.board_title">Leaderboard</h2>
+          <button type="button" class="ws-button ws-button--ghost" id="refresh-board" data-i18n="demo.refresh">
+            Refresh
+          </button>
         </div>
         <form class="score-form" id="score-form">
           <div class="ws-field">
-            <label for="player-name">Nickname</label>
+            <label for="player-name" data-i18n="demo.nickname">Nickname</label>
             <input
               class="ws-input"
               id="player-name"
@@ -64,41 +106,50 @@
               minlength="2"
               required
               autocomplete="nickname"
+              data-i18n-attr="placeholder:demo.nickname_ph"
               placeholder="Neon Fox"
             />
           </div>
           <button type="submit" class="ws-button ws-button--primary">
-            Submit <span id="submit-score-value">0</span>
+            <span data-i18n="demo.submit">Submit</span>
+            <span id="submit-score-value">0</span>
           </button>
         </form>
-        <p class="ws-status" id="board-status">Loading…</p>
+        <p class="ws-status" id="board-status" data-i18n="demo.loading">Loading…</p>
         <div id="leaderboard-root"></div>
       </section>
     </main>
 
     <footer class="ws-site-footer">
       <div class="ws-container ws-site-footer__inner">
-        <a href="/">← All games</a>
-        <p>Scores persist via api.white-studio.org</p>
+        <a href="/" data-i18n="demo.footer_back">← All games</a>
+        <p data-i18n="demo.footer_scores">Scores persist via api.white-studio.org</p>
       </div>
     </footer>
 
+    <script src="/assets/js/i18n.js"></script>
+    <script src="/assets/js/games-auth.js"></script>
     <script src="/assets/js/games-api.js"></script>
+    <script src="/assets/js/site-chrome.js"></script>
     <script src="/assets/js/leaderboard-ui.js"></script>
     <script src="./game.js"></script>
     <script>
-      WhiteStudioGames.bindThemeToggle(document.getElementById("theme-toggle"));
-      WhiteStudioLeaderboard.mountLeaderboard({
-        api: WhiteStudioGames.createGamesApi(),
-        gameId: "demo-runner",
-        boardRoot: document.getElementById("leaderboard-root"),
-        statusEl: document.getElementById("board-status"),
-        form: document.getElementById("score-form"),
-        nameInput: document.getElementById("player-name"),
-        scoreValueEl: document.getElementById("submit-score-value"),
-        refreshButton: document.getElementById("refresh-board"),
-        limit: 20
-      });
+      (async function boot() {
+        await WhiteStudioGames.bootChrome({
+          nicknameInput: document.getElementById("player-name")
+        });
+        WhiteStudioLeaderboard.mountLeaderboard({
+          api: WhiteStudioGames.createGamesApi(),
+          gameId: "demo-runner",
+          boardRoot: document.getElementById("leaderboard-root"),
+          statusEl: document.getElementById("board-status"),
+          form: document.getElementById("score-form"),
+          nameInput: document.getElementById("player-name"),
+          scoreValueEl: document.getElementById("submit-score-value"),
+          refreshButton: document.getElementById("refresh-board"),
+          limit: 20
+        });
+      })();
     </script>
   </body>
 </html>

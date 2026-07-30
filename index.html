@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
     <meta name="ws-api-origin" content="https://api.white-studio.org" />
     <meta
       name="description"
@@ -16,26 +17,56 @@
   <body class="games-page">
     <header class="ws-site-header">
       <div class="ws-site-header__inner">
-        <a class="ws-brand" href="/" aria-label="White Studio Games home">
+        <a class="ws-brand" href="/" data-i18n-attr="aria-label:brand.home_aria">
           <span class="ws-brand__mark" aria-hidden="true"></span>
-          <span>White Studio Games</span>
+          <span class="ws-brand__text">
+            <p class="ws-brand__title" data-i18n="brand.title">White Studio Games</p>
+            <p class="ws-brand__sub" data-i18n="brand.sub">Mini-games + leaderboards</p>
+          </span>
         </a>
-        <nav class="ws-nav" aria-label="Primary">
-          <a href="/" aria-current="page">Games</a>
-          <a href="https://tools.white-studio.org/">Tools</a>
-          <a href="https://white-studio.org/">Studio</a>
-          <button type="button" class="ws-button ws-button--ghost" id="theme-toggle">Light</button>
+
+        <nav class="ws-nav ws-nav--desktop" data-i18n-attr="aria-label:nav.primary_aria">
+          <a href="/" aria-current="page" data-i18n="nav.games">Games</a>
+          <a href="https://tools.white-studio.org/" data-i18n="nav.tools">Tools</a>
+          <a href="https://dc.white-studio.org/" data-i18n="nav.community">Community</a>
+          <a href="https://white-studio.org/" target="_blank" rel="noopener" data-i18n="nav.studio">White Studio</a>
         </nav>
+
+        <div class="ws-site-header__actions" data-ws-header-actions>
+          <button
+            type="button"
+            class="ws-menu-toggle"
+            data-ws-menu-toggle
+            data-i18n-attr="aria-label:nav.open_menu"
+            aria-expanded="false"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"></path>
+            </svg>
+          </button>
+        </div>
       </div>
     </header>
 
+    <div class="ws-mobile-drawer" data-ws-mobile-drawer hidden>
+      <div class="ws-mobile-drawer__panel">
+        <nav class="ws-mobile-drawer__nav" data-i18n-attr="aria-label:nav.primary_aria">
+          <a href="/" aria-current="page" data-i18n="nav.games" data-ws-drawer-close>Games</a>
+          <a href="https://tools.white-studio.org/" data-i18n="nav.tools" data-ws-drawer-close>Tools</a>
+          <a href="https://dc.white-studio.org/" data-i18n="nav.community" data-ws-drawer-close>Community</a>
+          <a href="https://white-studio.org/" target="_blank" rel="noopener" data-i18n="nav.studio" data-ws-drawer-close>White Studio</a>
+        </nav>
+        <div data-ws-drawer-auth></div>
+      </div>
+    </div>
+
     <main>
       <section class="ws-hero ws-container">
-        <h1 class="ws-hero__title">White Studio Games</h1>
-        <p class="ws-hero__lede">
+        <h1 class="ws-hero__title" data-i18n="hub.hero_title">White Studio Games</h1>
+        <p class="ws-hero__lede" data-i18n="hub.hero_lede">
           Mini-games built by White Studio — quick sessions, shared chrome, and live leaderboards.
         </p>
-        <div class="games-ecosystem" aria-label="White Studio ecosystem">
+        <div class="games-ecosystem" data-i18n-attr="aria-label:hub.ecosystem_aria">
           <a href="https://white-studio.org/">white-studio.org</a>
           <a href="https://tools.white-studio.org/">tools.white-studio.org</a>
           <a href="https://games.white-studio.org/">games.white-studio.org</a>
@@ -43,18 +74,20 @@
       </section>
 
       <section class="ws-section ws-container">
-        <h2 class="ws-section__title">Play</h2>
-        <p class="ws-section__lede">One demo ships in v1. More games can follow the shared shell + API contract.</p>
+        <h2 class="ws-section__title" data-i18n="hub.play_title">Play</h2>
+        <p class="ws-section__lede" data-i18n="hub.play_lede">
+          One demo ships in v1. More games can follow the shared shell + API contract.
+        </p>
         <div class="ws-grid-cards" id="games-grid">
           <a class="ws-card" href="/games/demo-runner/">
-            <p class="ws-card__eyebrow">Demo</p>
-            <h3 class="ws-card__title">Neon Runner</h3>
-            <p class="ws-card__body">
+            <p class="ws-card__eyebrow" data-i18n="hub.card_eyebrow">Demo</p>
+            <h3 class="ws-card__title" data-i18n="hub.card_title">Neon Runner</h3>
+            <p class="ws-card__body" data-i18n="hub.card_body">
               Endless sidestep runner. Survive the lanes, stack score, and climb the board.
             </p>
             <div class="game-card__meta">
-              <span>Leaderboard on</span>
-              <span class="ws-button ws-button--primary">Play</span>
+              <span data-i18n="hub.card_meta">Leaderboard on</span>
+              <span class="ws-button ws-button--primary" data-i18n="hub.card_play">Play</span>
             </div>
           </a>
         </div>
@@ -64,18 +97,21 @@
 
     <footer class="ws-site-footer">
       <div class="ws-container ws-site-footer__inner">
-        <p>© White Studio. Games platform MVP.</p>
+        <p data-i18n="hub.footer_copy">© White Studio. Games platform MVP.</p>
         <p>
-          Design tokens:
-          <a href="/docs/design/WHITE-STUDIO-SHARED-UI.md">shared UI guide</a>
+          <span data-i18n="hub.footer_tokens">Design tokens:</span>
+          <a href="/docs/design/WHITE-STUDIO-SHARED-UI.md" data-i18n="hub.footer_tokens_link">shared UI guide</a>
         </p>
       </div>
     </footer>
 
+    <script src="/assets/js/i18n.js"></script>
+    <script src="/assets/js/games-auth.js"></script>
     <script src="/assets/js/games-api.js"></script>
+    <script src="/assets/js/site-chrome.js"></script>
     <script>
-      WhiteStudioGames.bindThemeToggle(document.getElementById("theme-toggle"));
-      (async function loadCatalog() {
+      (async function boot() {
+        await WhiteStudioGames.bootChrome();
         var status = document.getElementById("catalog-status");
         try {
           var api = WhiteStudioGames.createGamesApi();
@@ -86,8 +122,9 @@
         } catch (error) {
           status.hidden = false;
           status.className = "ws-status ws-status--error";
-          status.textContent =
-            "Catalog API offline — showing local demo card. (" + (error.message || "error") + ")";
+          status.textContent = WhiteStudioI18n.t("hub.catalog_offline", {
+            error: error.message || "error"
+          });
         }
       })();
     </script>

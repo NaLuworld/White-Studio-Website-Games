@@ -16,29 +16,33 @@ Add a new playable mini-game under `/games/<game-id>/` on `https://games.white-s
    - `GET /api/games`
    - `GET /api/games/:gameId/leaderboard?limit=20`
    - `POST /api/games/:gameId/scores` body `{ "playerName": "...", "score": 123 }`
-4. **Auth**: guest nickname only. Do **not** use Tools Discord admin cookies or account sessions.
-5. **Deploy model**: static HTML/JS at repo root → Cloudflare Pages (preset None, output `.`). No React unless the platform already migrated.
-6. **Do not** modify main site or Tools frontends.
+   - Games Discord identity (optional UI): `GET /auth/games/discord/start`, `GET /api/games/session`, `POST /api/games/logout`
+4. **Auth**: guest nickname for scores. Navbar may show Games Discord identity (`ws_games_session`) from `api.white-studio.org`. Do **not** use Tools Discord admin cookies (`ws_tools_session`) or account sessions for scores.
+5. **i18n**: handwritten dictionaries only (`zh-Hant` + `en`). Read `docs/i18n/GAMES-I18N.md`. Every new visible string needs keys in **both** JSON files + `data-i18n` / `t()`.
+6. **Deploy model**: static HTML/JS at repo root → Cloudflare Pages (preset None, output `.`). No React unless the platform already migrated.
+7. **Do not** modify main site or Tools frontends unless Worker catalog/auth changes are required.
 
 ## Implementation checklist
 
 1. Create `games/<game-id>/index.html`, game script/CSS.
-2. Reuse header/footer patterns from `games/demo-runner/index.html`.
-3. Include:
+2. Reuse header/footer + chrome boot from `games/demo-runner/index.html`:
    - `/assets/js/theme-boot.js` in `<head>`
-   - `/assets/js/games-api.js` + `/assets/js/leaderboard-ui.js`
+   - `/assets/js/i18n.js`, `/assets/js/games-auth.js`, `/assets/js/games-api.js`, `/assets/js/site-chrome.js`, `/assets/js/leaderboard-ui.js`
+   - `WhiteStudioGames.bootChrome({ nicknameInput })`
    - `WhiteStudioLeaderboard.mountLeaderboard({ gameId: "<game-id>", ... })`
-4. Add a card on `/index.html` linking to `/games/<game-id>/`.
+3. Add bilingual keys for all new copy in `/assets/i18n/zh-Hant.json` and `/assets/i18n/en.json`.
+4. Add a card on `/index.html` linking to `/games/<game-id>/` (with `data-i18n` keys).
 5. Update Worker `GAMES_CATALOG` in `website-worker/src/games/catalog.js` with matching `id`, `title`, `summary`, `path`, `maxScore`.
 6. Keep `game-id` lowercase kebab-case, stable forever.
-7. Validate locally: play → submit score → refresh board.
+7. Validate locally: theme + language switch, Discord login UI, play → submit score → refresh board.
 8. Push Games repo `main` (Pages auto-deploy). Deploy Worker if catalog changed.
 9. Live check: `https://games.white-studio.org/games/<game-id>/` and CORS-free score POST.
 
 ## Acceptance
 
-- [ ] Page matches shared chrome (tokens, nav, theme toggle)
+- [ ] Page matches shared chrome (tokens, nav, theme, language, Discord login)
+- [ ] New strings exist in both locale dictionaries
 - [ ] Game is playable on phone + desktop
-- [ ] Scores persist and appear on leaderboard
+- [ ] Scores persist and appear on leaderboard (guest nickname)
 - [ ] Hub lists the new game
 - [ ] Worker catalog includes the game id
