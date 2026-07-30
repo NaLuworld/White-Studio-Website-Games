@@ -1,0 +1,111 @@
+/* Games platform chrome — builds on ws-shared.css */
+
+.games-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.games-ecosystem {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ws-space-2);
+  margin-top: var(--ws-space-5);
+}
+
+.games-ecosystem a {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--ws-border-subtle);
+  border-radius: var(--ws-radius-pill);
+  color: var(--ws-text-muted);
+  font-size: var(--ws-text-sm);
+}
+
+.games-ecosystem a:hover {
+  color: var(--ws-text-primary);
+  border-color: var(--ws-border-strong);
+}
+
+.game-card__meta {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--ws-space-3);
+  padding-top: var(--ws-space-2);
+  color: var(--ws-text-muted);
+  font-size: var(--ws-text-xs);
+}
+
+.leaderboard-panel {
+  padding: var(--ws-space-5);
+  border: 1px solid var(--ws-border-subtle);
+  border-radius: var(--ws-radius-md);
+  background: var(--ws-bg-surface);
+}
+
+.leaderboard-panel__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ws-space-3);
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--ws-space-4);
+}
+
+.leaderboard-panel__head h2 {
+  margin: 0;
+  font-size: var(--ws-text-lg);
+}
+
+.score-form {
+  display: grid;
+  gap: var(--ws-space-3);
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  margin-bottom: var(--ws-space-4);
+}
+
+@media (max-width: 640px) {
+  .score-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+.demo-runner-canvas {
+  width: 100%;
+  height: min(70vh, 520px);
+  touch-action: none;
+}
+
+.demo-runner-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--ws-space-6);
+  background: rgba(5, 5, 8, 0.55);
+  text-align: center;
+}
+
+.demo-runner-overlay[hidden] {
+  display: none !important;
+}
+
+.demo-runner-overlay__card {
+  max-width: 22rem;
+  padding: var(--ws-space-6);
+  border: 1px solid var(--ws-border-subtle);
+  border-radius: var(--ws-radius-md);
+  background: var(--ws-bg-card);
+  box-shadow: var(--ws-shadow-lg);
+}
+
+.demo-runner-overlay__card h2 {
+  margin: 0 0 var(--ws-space-3);
+}
+
+.demo-runner-overlay__card p {
+  margin: 0 0 var(--ws-space-5);
+  color: var(--ws-text-muted);
+}

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="ws-api-origin" content="https://api.white-studio.org" />
+    <title>Neon Runner · White Studio Games</title>
+    <script src="/assets/js/theme-boot.js"></script>
+    <link rel="stylesheet" href="/assets/css/ws-shared.css" />
+    <link rel="stylesheet" href="/assets/css/games-chrome.css" />
+    <link rel="stylesheet" href="./game.css" />
+  </head>
+  <body class="games-page demo-runner-page">
+    <header class="ws-site-header">
+      <div class="ws-site-header__inner">
+        <a class="ws-brand" href="/">
+          <span class="ws-brand__mark" aria-hidden="true"></span>
+          <span>White Studio Games</span>
+        </a>
+        <nav class="ws-nav" aria-label="Primary">
+          <a href="/">Games</a>
+          <a href="/games/demo-runner/" aria-current="page">Neon Runner</a>
+          <button type="button" class="ws-button ws-button--ghost" id="theme-toggle">Light</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="ws-container ws-section ws-game-shell">
+      <div class="ws-game-hud">
+        <div>
+          <p class="ws-card__eyebrow">Demo</p>
+          <h1 class="ws-section__title" style="margin: 0">Neon Runner</h1>
+        </div>
+        <div class="ws-nav" aria-live="polite">
+          <span class="ws-status">Score <strong id="live-score">0</strong></span>
+          <span class="ws-status">Best <strong id="best-score">0</strong></span>
+        </div>
+      </div>
+
+      <div class="ws-game-stage">
+        <canvas id="game-canvas" class="demo-runner-canvas" aria-label="Neon Runner playfield"></canvas>
+        <div class="demo-runner-overlay" id="game-overlay">
+          <div class="demo-runner-overlay__card">
+            <h2 id="overlay-title">Neon Runner</h2>
+            <p id="overlay-body">Dodge blocks. Submit your score when the run ends.</p>
+            <button type="button" class="ws-button ws-button--primary" id="start-button">Start</button>
+          </div>
+        </div>
+      </div>
+
+      <section class="leaderboard-panel" aria-labelledby="board-title">
+        <div class="leaderboard-panel__head">
+          <h2 id="board-title">Leaderboard</h2>
+          <button type="button" class="ws-button ws-button--ghost" id="refresh-board">Refresh</button>
+        </div>
+        <form class="score-form" id="score-form">
+          <div class="ws-field">
+            <label for="player-name">Nickname</label>
+            <input
+              class="ws-input"
+              id="player-name"
+              name="playerName"
+              maxlength="24"
+              minlength="2"
+              required
+              autocomplete="nickname"
+              placeholder="Neon Fox"
+            />
+          </div>
+          <button type="submit" class="ws-button ws-button--primary">
+            Submit <span id="submit-score-value">0</span>
+          </button>
+        </form>
+        <p class="ws-status" id="board-status">Loading…</p>
+        <div id="leaderboard-root"></div>
+      </section>
+    </main>
+
+    <footer class="ws-site-footer">
+      <div class="ws-container ws-site-footer__inner">
+        <a href="/">← All games</a>
+        <p>Scores persist via api.white-studio.org</p>
+      </div>
+    </footer>
+
+    <script src="/assets/js/games-api.js"></script>
+    <script src="/assets/js/leaderboard-ui.js"></script>
+    <script src="./game.js"></script>
+    <script>
+      WhiteStudioGames.bindThemeToggle(document.getElementById("theme-toggle"));
+      WhiteStudioLeaderboard.mountLeaderboard({
+        api: WhiteStudioGames.createGamesApi(),
+        gameId: "demo-runner",
+        boardRoot: document.getElementById("leaderboard-root"),
+        statusEl: document.getElementById("board-status"),
+        form: document.getElementById("score-form"),
+        nameInput: document.getElementById("player-name"),
+        scoreValueEl: document.getElementById("submit-score-value"),
+        refreshButton: document.getElementById("refresh-board"),
+        limit: 20
+      });
+    </script>
+  </body>
+</html>
