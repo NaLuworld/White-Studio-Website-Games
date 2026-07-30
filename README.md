@@ -56,6 +56,4 @@ Dev origins `http://127.0.0.1:4173` / `http://localhost:4173` are allowlisted on
 - Guide: [`docs/design/WHITE-STUDIO-SHARED-UI.md`](docs/design/WHITE-STUDIO-SHARED-UI.md)
 - Add-game prompt: [`docs/prompts/ADD-GAME-TO-GAMES-PLATFORM.md`](docs/prompts/ADD-GAME-TO-GAMES-PLATFORM.md)
 
-## Architecture
-
-See [`docs/architecture/GAMES-PLATFORM.md`](docs/architecture/GAMES-PLATFORM.md).
+See [`docs/GO-LIVE.md`](docs/GO-LIVE.md) for GitHub + Pages + domain + Worker publish steps.
