@@ -89,24 +89,6 @@
     return button;
   }
 
-  function bindMenuToggle(toggle, drawer) {
-    if (!toggle || !drawer) return;
-    function setOpen(open) {
-      drawer.hidden = !open;
-      toggle.setAttribute("aria-expanded", open ? "true" : "false");
-      document.body.classList.toggle("ws-nav-open", open);
-    }
-    toggle.addEventListener("click", function () {
-      setOpen(drawer.hidden);
-    });
-    drawer.querySelectorAll("[data-ws-drawer-close]").forEach(function (el) {
-      el.addEventListener("click", function () {
-        setOpen(false);
-      });
-    });
-    setOpen(false);
-  }
-
   async function bootChrome(options) {
     options = options || {};
     applyTheme(readStoredTheme(), { persist: false });
@@ -117,7 +99,6 @@
 
     var actions = document.querySelector("[data-ws-header-actions]");
     if (actions) {
-      var beforeToggle = ".ws-menu-toggle, [data-ws-menu-toggle]";
       if (global.WhiteStudioGamesAuth) {
         global.WhiteStudioGamesAuth.mountAuth(actions);
       }
@@ -125,28 +106,15 @@
         var switcherHost = document.createElement("div");
         switcherHost.className = "ws-site-controls";
         switcherHost.setAttribute("data-i18n-skip", "true");
-        var toggleEl = actions.querySelector(beforeToggle);
-        if (toggleEl) actions.insertBefore(switcherHost, toggleEl);
-        else actions.appendChild(switcherHost);
+        actions.appendChild(switcherHost);
         global.WhiteStudioI18n.mountSwitcher(switcherHost);
         mountThemeButton(switcherHost);
       } else {
         var themeHost = document.createElement("div");
         themeHost.className = "ws-site-controls";
-        var toggleOnly = actions.querySelector(beforeToggle);
-        if (toggleOnly) actions.insertBefore(themeHost, toggleOnly);
-        else actions.appendChild(themeHost);
+        actions.appendChild(themeHost);
         mountThemeButton(themeHost);
       }
-    }
-
-    var toggle = document.querySelector("[data-ws-menu-toggle]");
-    var drawer = document.querySelector("[data-ws-mobile-drawer]");
-    bindMenuToggle(toggle, drawer);
-
-    if (drawer && global.WhiteStudioGamesAuth) {
-      var drawerAuthHost = drawer.querySelector("[data-ws-drawer-auth]");
-      if (drawerAuthHost) global.WhiteStudioGamesAuth.mountDrawerAuth(drawerAuthHost);
     }
 
     if (global.WhiteStudioGamesAuth) {

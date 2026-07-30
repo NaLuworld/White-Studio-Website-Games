@@ -226,13 +226,10 @@
     else el.setAttribute("inert", "");
   }
 
-  function buildAuthControls(variant) {
+  function buildAuthControls() {
     var wrap = document.createElement("div");
-    wrap.className =
-      variant === "drawer"
-        ? "ws-auth-controls is-drawer"
-        : "ws-auth-controls";
-    wrap.setAttribute("data-games-auth-controls", variant);
+    wrap.className = "ws-auth-controls";
+    wrap.setAttribute("data-games-auth-controls", "header");
     wrap.dataset.state = "idle";
 
     var loginBtn = document.createElement("button");
@@ -281,14 +278,8 @@
     logoutBtn.setAttribute("role", "menuitem");
     menu.appendChild(logoutBtn);
 
-    var drawerLogout = document.createElement("button");
-    drawerLogout.type = "button";
-    drawerLogout.className = "ws-auth-logout";
-    setVisible(drawerLogout, false);
-
     userShell.appendChild(menuBtn);
-    if (variant === "header") userShell.appendChild(menu);
-    else userShell.appendChild(drawerLogout);
+    userShell.appendChild(menu);
 
     wrap.appendChild(loginBtn);
     wrap.appendChild(userShell);
@@ -319,12 +310,7 @@
     logoutBtn.addEventListener("click", function () {
       doLogout(logoutBtn);
     });
-    drawerLogout.addEventListener("click", function () {
-      doLogout(drawerLogout);
-    });
-
     menuBtn.addEventListener("click", function () {
-      if (variant === "drawer") return;
       var willOpen = !userShell.classList.contains("is-open");
       closeOpenMenu();
       if (!willOpen) return;
@@ -338,10 +324,8 @@
       var loggedIn = Boolean(session && session.authenticated);
       setVisible(loginBtn, !loggedIn);
       setVisible(userShell, loggedIn);
-      if (variant === "drawer") setVisible(drawerLogout, loggedIn);
 
       logoutBtn.textContent = t("auth.logout");
-      drawerLogout.textContent = t("auth.logout");
 
       if (!loggedIn) {
         wrap.dataset.state =
@@ -379,28 +363,18 @@
     return wrap;
   }
 
-  function mountInto(parent, variant, beforeSelector) {
+  function mountAuth(parent) {
     if (!parent) return null;
     if (mountedRoots.indexOf(parent) !== -1) return parent.querySelector("[data-games-auth-controls]");
-    var existing = parent.querySelector('[data-games-auth-controls="' + variant + '"]');
+    var existing = parent.querySelector('[data-games-auth-controls="header"]');
     if (existing) {
       mountedRoots.push(parent);
       return existing;
     }
-    var controls = buildAuthControls(variant);
-    var before = beforeSelector ? parent.querySelector(beforeSelector) : null;
-    if (before) parent.insertBefore(controls, before);
-    else parent.appendChild(controls);
+    var controls = buildAuthControls();
+    parent.appendChild(controls);
     mountedRoots.push(parent);
     return controls;
-  }
-
-  function mountAuth(actionsEl) {
-    return mountInto(actionsEl, "header", ".ws-menu-toggle");
-  }
-
-  function mountDrawerAuth(host) {
-    return mountInto(host, "drawer");
   }
 
   function prefillNickname(input) {
@@ -424,7 +398,6 @@
     },
     onSessionChange: onSessionChange,
     mountAuth: mountAuth,
-    mountDrawerAuth: mountDrawerAuth,
     captureAuthResultFromUrl: captureAuthResultFromUrl,
     authResultMessage: authResultMessage,
     showAuthToast: showAuthToast,

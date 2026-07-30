@@ -6,6 +6,7 @@
     <meta name="color-scheme" content="dark light" />
     <meta name="ws-api-origin" content="https://api.white-studio.org" />
     <title>Neon Runner · White Studio Games</title>
+    <link rel="icon" type="image/png" href="/assets/images/white-studio-logo.png" />
     <script src="/assets/js/theme-boot.js"></script>
     <link rel="stylesheet" href="/assets/css/ws-shared.css" />
     <link rel="stylesheet" href="/assets/css/games-chrome.css" />
@@ -15,7 +16,12 @@
     <header class="ws-site-header">
       <div class="ws-site-header__inner">
         <a class="ws-brand" href="/" data-i18n-attr="aria-label:brand.home_aria">
-          <span class="ws-brand__mark" aria-hidden="true"></span>
+          <img
+            class="ws-brand__mark"
+            src="/assets/images/white-studio-logo.png"
+            alt=""
+            aria-hidden="true"
+          />
           <span class="ws-brand__text">
             <p class="ws-brand__title" data-i18n="brand.title">White Studio Games</p>
             <p class="ws-brand__sub" data-i18n="brand.sub">Mini-games + leaderboards</p>
@@ -29,33 +35,9 @@
           <a href="https://white-studio.org/" target="_blank" rel="noopener" data-i18n="nav.studio">White Studio</a>
         </nav>
 
-        <div class="ws-site-header__actions" data-ws-header-actions>
-          <button
-            type="button"
-            class="ws-menu-toggle"
-            data-ws-menu-toggle
-            data-i18n-attr="aria-label:nav.open_menu"
-            aria-expanded="false"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"></path>
-            </svg>
-          </button>
-        </div>
+        <div class="ws-site-header__actions" data-ws-header-actions></div>
       </div>
     </header>
-
-    <div class="ws-mobile-drawer" data-ws-mobile-drawer hidden>
-      <div class="ws-mobile-drawer__panel">
-        <nav class="ws-mobile-drawer__nav" data-i18n-attr="aria-label:nav.primary_aria">
-          <a href="/" data-i18n="nav.games" data-ws-drawer-close>Games</a>
-          <a href="https://tools.white-studio.org/" data-i18n="nav.tools" data-ws-drawer-close>Tools</a>
-          <a href="https://dc.white-studio.org/" data-i18n="nav.community" data-ws-drawer-close>Community</a>
-          <a href="https://white-studio.org/" target="_blank" rel="noopener" data-i18n="nav.studio" data-ws-drawer-close>White Studio</a>
-        </nav>
-        <div data-ws-drawer-auth></div>
-      </div>
-    </div>
 
     <main class="ws-container ws-section ws-game-shell">
       <div class="ws-game-hud">
