@@ -34,9 +34,14 @@ Add a new playable mini-game under `/games/<game-id>/` on `https://games.white-s
 4. Add a card on `/index.html` linking to `/games/<game-id>/` (with `data-i18n` keys).
 5. Update Worker `GAMES_CATALOG` in `website-worker/src/games/catalog.js` with matching `id`, `title`, `summary`, `path`, `maxScore`.
 6. Keep `game-id` lowercase kebab-case, stable forever.
-7. Validate locally: theme + language switch, Discord login UI, play → submit score → refresh board.
-8. Push Games repo `main` (Pages auto-deploy). Deploy Worker if catalog changed.
-9. Live check: `https://games.white-studio.org/games/<game-id>/` and CORS-free score POST.
+7. **Social card** (required for shareable pages) — see [`docs/design/SOCIAL-CARDS.md`](../design/SOCIAL-CARDS.md):
+   - Add `assets/images/games/<game-id>/icon.png` (1024²; cabinet placeholder OK)
+   - Append the game to `assets/images/og/manifest.json`
+   - Run `python scripts/compose_og_cards.py`
+   - Paste OG + Twitter `summary_large_image` meta (absolute `og/<game-id>.png` URLs) into the game `index.html`
+8. Validate locally: theme + language switch, Discord login UI, play → submit score → refresh board.
+9. Push Games repo `main` (Pages auto-deploy). Deploy Worker if catalog changed.
+10. Live check: `https://games.white-studio.org/games/<game-id>/` and CORS-free score POST.
 
 ## Acceptance
 
@@ -46,3 +51,4 @@ Add a new playable mini-game under `/games/<game-id>/` on `https://games.white-s
 - [ ] Scores persist and appear on leaderboard (guest nickname)
 - [ ] Hub lists the new game
 - [ ] Worker catalog includes the game id
+- [ ] OG / Twitter Card meta present with `/assets/images/og/<game-id>.png`

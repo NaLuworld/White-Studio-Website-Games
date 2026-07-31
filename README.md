@@ -54,6 +54,7 @@ Dev origins `http://127.0.0.1:4173` / `http://localhost:4173` are allowlisted on
 
 - CSS: [`assets/css/ws-shared.css`](assets/css/ws-shared.css)
 - Guide: [`docs/design/WHITE-STUDIO-SHARED-UI.md`](docs/design/WHITE-STUDIO-SHARED-UI.md)
+- Social cards: [`docs/design/SOCIAL-CARDS.md`](docs/design/SOCIAL-CARDS.md)
 - Add-game prompt: [`docs/prompts/ADD-GAME-TO-GAMES-PLATFORM.md`](docs/prompts/ADD-GAME-TO-GAMES-PLATFORM.md)
 
 See [`docs/GO-LIVE.md`](docs/GO-LIVE.md) for GitHub + Pages + domain + Worker publish steps.

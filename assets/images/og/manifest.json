@@ -1,0 +1,22 @@
+{
+  "site_name": "White Studio Games",
+  "site_origin": "https://games.white-studio.org",
+  "hub": {
+    "id": "hub",
+    "title": "White Studio Games",
+    "subtitle": "Arcade floor",
+    "description": "Black-purple neon floor. Pick a cabinet, play a round, climb the board.",
+    "path": "/",
+    "icon": "assets/images/white-studio-logo.png"
+  },
+  "games": [
+    {
+      "id": "snake",
+      "title": "貪食蛇",
+      "title_en": "Snake",
+      "description": "Classic grid snake. Eat neon bites (+10), grow longer, climb the board.",
+      "path": "/games/snake/",
+      "icon": "assets/images/games/snake/icon.png"
+    }
+  ]
+}

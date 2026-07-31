@@ -32,6 +32,7 @@ Do not reuse Tools allowlist checks on Games routes. Games callback (`intent=gam
 - Visual direction: black-purple neon arcade + pixel display font (see `docs/design/WHITE-STUDIO-SHARED-UI.md`)
 - Art production: `docs/design/ARCADE-ASSET-MANIFEST.md` + Image 2 prompts in `docs/prompts/GPT-IMAGE-2-ARCADE-ASSETS.md` (wire assets only after QA handoff)
 - Desk-pet guide **Naru**: `docs/design/NARU-SPRITE-SYSTEM.md` + `docs/prompts/GPT-IMAGE-2-NARU-SPRITES.md` + skill `.cursor/skills/naru-guide/`
+- Social / Twitter cards: `docs/design/SOCIAL-CARDS.md` (`assets/images/og/`, per-game `assets/images/games/<id>/icon.png`)
 - API client: `assets/js/games-api.js` → `https://api.white-studio.org`
 - Chrome: `assets/js/site-chrome.js` + `assets/js/i18n.js` + `assets/js/games-auth.js`
 - Bilingual docs: `docs/i18n/GAMES-I18N.md`

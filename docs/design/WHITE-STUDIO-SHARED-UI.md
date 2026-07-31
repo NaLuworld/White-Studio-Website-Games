@@ -9,6 +9,7 @@ Canonical visual contract for **White Studio Games** (`games.white-studio.org`).
 | [`/assets/css/ws-shared.css`](../../assets/css/ws-shared.css) | Tokens + primitives (buttons, cards, nav, forms, leaderboard, game shell) |
 | [`/assets/css/games-chrome.css`](../../assets/css/games-chrome.css) | Arcade lobby + cabinet shell layout |
 | [`ARCADE-ASSET-MANIFEST.md`](./ARCADE-ASSET-MANIFEST.md) | Generated art assets, sizes, safe zones, budgets |
+| [`SOCIAL-CARDS.md`](./SOCIAL-CARDS.md) | Open Graph / Twitter cards + per-game icon slot |
 | [`../prompts/GPT-IMAGE-2-ARCADE-ASSETS.md`](../prompts/GPT-IMAGE-2-ARCADE-ASSETS.md) | ChatGPT Image 2 prompts for asset production |
 | This document | Rules for humans and AI agents |
 
