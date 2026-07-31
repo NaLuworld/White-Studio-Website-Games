@@ -77,7 +77,6 @@
   "snake.col_player": "Player",
   "snake.col_score": "Score",
   "snake.footer_back": "← Back to floor",
-  "snake.footer_scores": "Scores persist via api.white-studio.org",
   "snake.canvas_aria": "Snake playfield",
   "snake.submit_ok": "Score submitted.",
   "snake.submit_fail": "Submit failed."

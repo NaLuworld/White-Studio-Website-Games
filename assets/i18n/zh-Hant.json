@@ -77,7 +77,6 @@
   "snake.col_player": "玩家",
   "snake.col_score": "分數",
   "snake.footer_back": "← 返回大廳",
-  "snake.footer_scores": "分數經由 api.white-studio.org 保存",
   "snake.canvas_aria": "貪食蛇遊戲畫面",
   "snake.submit_ok": "分數已送出。",
   "snake.submit_fail": "送出失敗。"
