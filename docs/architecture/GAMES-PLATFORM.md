@@ -30,6 +30,7 @@ Do not reuse Tools allowlist checks on Games routes. Games callback (`intent=gam
 - Static site, no framework build for MVP
 - Shared design: `assets/css/ws-shared.css` + arcade chrome `assets/css/games-chrome.css`
 - Visual direction: black-purple neon arcade + pixel display font (see `docs/design/WHITE-STUDIO-SHARED-UI.md`)
+- Art production: `docs/design/ARCADE-ASSET-MANIFEST.md` + Image 2 prompts in `docs/prompts/GPT-IMAGE-2-ARCADE-ASSETS.md` (wire assets only after QA handoff)
 - API client: `assets/js/games-api.js` → `https://api.white-studio.org`
 - Chrome: `assets/js/site-chrome.js` + `assets/js/i18n.js` + `assets/js/games-auth.js`
 - Bilingual docs: `docs/i18n/GAMES-I18N.md`

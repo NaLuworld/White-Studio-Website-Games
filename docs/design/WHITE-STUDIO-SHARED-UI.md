@@ -8,6 +8,8 @@ Canonical visual contract for **White Studio Games** (`games.white-studio.org`).
 |------|------|
 | [`/assets/css/ws-shared.css`](../../assets/css/ws-shared.css) | Tokens + primitives (buttons, cards, nav, forms, leaderboard, game shell) |
 | [`/assets/css/games-chrome.css`](../../assets/css/games-chrome.css) | Arcade lobby + cabinet shell layout |
+| [`ARCADE-ASSET-MANIFEST.md`](./ARCADE-ASSET-MANIFEST.md) | Generated art assets, sizes, safe zones, budgets |
+| [`../prompts/GPT-IMAGE-2-ARCADE-ASSETS.md`](../prompts/GPT-IMAGE-2-ARCADE-ASSETS.md) | ChatGPT Image 2 prompts for asset production |
 | This document | Rules for humans and AI agents |
 
 Main-site historical SoT remains in `White-Studio-Website/docs/architecture/THEME-TOKENS.md` (`--ws-*`). Tools uses shorter aliases (`--accent`, `--bg`, `--panel`). **Games ships both**: prefer `--ws-*`, Tools aliases are mapped for prompt compatibility.
@@ -16,13 +18,75 @@ Main-site historical SoT remains in `White-Studio-Website/docs/architecture/THEM
 
 Games is **not** a Tools SaaS clone. Direction:
 
-- **Black-purple neon arcade** floor (dark-first)
+- **90s Japanese arcade × White Studio black-purple futurism** (dark-first, clean, low light — not dense cyberpunk streets)
 - **Pixel display** for Latin titles / HUD labels (`--ws-font-display` = Press Start 2P)
 - Body + long Chinese copy stays **Noto Sans TC** / Space Grotesk (`--ws-font-body`)
 - Accent remains White Studio purple (`#8a2be2` family) with neon glow tokens (`--ws-neon-glow`)
 - Light theme = brighter purple “lightbox”, not flat dashboard white
 
 Brand name is hero-level on the hub. One composition per viewport. Game canvas may use its own palette; chrome (nav, HUD, forms, boards) must use tokens.
+
+## Quantified visual contract (art + UI)
+
+Use these numbers when generating or reviewing lobby art. CSS tokens remain the runtime source; hex below locks art prompts and QA.
+
+### Art positioning
+
+- Quiet indoor arcade floor; fog-black metal, smoked glass, deep-purple acrylic, thin chrome edges
+- No dirty streets, rain-night cities, or human protagonists as the main subject
+- High-quality 3D / concept art for the scene; pixel cues only on screen glow, floor marks, and tiny glyphs — **do not** pixelate the whole frame
+
+### Color mix (approximate area)
+
+| Share | Hex | Role |
+|------|-----|------|
+| ~70% | `#07060C`, `#100E18` | Black-purple space |
+| ~20% | `#2A2438`, `#5B21B6` | Structure / reflection |
+| ~8% | `#8A2BE2`, `#C084FF` | Brand neon |
+| ≤2% | `#62E7FF` | Cool cyan game-status accents only |
+
+**Forbidden as primary:** red / orange dominance, heavy pink, heavy teal-green washes.
+
+### Typography (site chrome only)
+
+| Use | Font |
+|-----|------|
+| English short labels / HUD | Press Start 2P (`--ws-font-display`) |
+| Chinese + long body | Noto Sans TC + Space Grotesk (`--ws-font-body`) |
+
+**Generated images must contain no text, logos, buttons, or UI.** White Studio logo and copy are HTML overlays.
+
+### Cabinet proportions (hero / key art)
+
+| Part | Ratio |
+|------|--------|
+| Cabinet body width : height | ~`0.48 : 1` |
+| Screen of cabinet height | ~`28%` |
+| Control deck of cabinet height | ~`16%` |
+| Pedestal / base of cabinet height | ~`42%` |
+
+Tight corner radius; silhouette must read at thumbnail size.
+
+### Responsive safe zones (hero backgrounds)
+
+**PC 16:9**
+
+- Copy / low-detail zone: left `0–44%`
+- Primary cabinet + perspective focus: right `58–86%`
+- Keep top `0–14%` free of critical detail (navbar)
+
+**Mobile 9:16** (dedicated recompose — not a desktop crop)
+
+- Copy zone: top `0–38%`
+- Cabinet: center-lower `45–82%`
+- Left/right `8%` crop margins
+- Bottom `12%`: no critical content
+
+### Theme compatibility for art
+
+- One art family serves both themes
+- **Dark:** full immersive background
+- **Light:** same assets as a stage / lightbox with a light CSS veil — do **not** generate a separate whitewashed set that breaks family consistency
 
 ## Navbar
 

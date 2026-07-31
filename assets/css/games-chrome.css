@@ -51,7 +51,79 @@
   }
 }
 
-/* —— Lobby hero —— */
+/* —— Lobby hero (full-bleed art + copy) —— */
+
+.arcade-hero-stage {
+  position: relative;
+  isolation: isolate;
+  min-height: min(88vh, 52rem);
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  border-bottom: 1px solid var(--ws-border-subtle);
+}
+
+.arcade-hero-stage__media,
+.arcade-hero-stage__media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.arcade-hero-stage__media img {
+  object-fit: cover;
+  object-position: 72% 48%;
+}
+
+.arcade-hero-stage__veil {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--ws-bg-page) 88%, transparent) 0%,
+      color-mix(in srgb, var(--ws-bg-page) 72%, transparent) 34%,
+      color-mix(in srgb, var(--ws-bg-page) 28%, transparent) 58%,
+      transparent 78%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--ws-bg-page) 55%, transparent) 0%,
+      transparent 22%,
+      color-mix(in srgb, var(--ws-bg-page) 70%, transparent) 100%
+    );
+}
+
+html[data-theme="light"] .arcade-hero-stage__veil {
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--ws-bg-page) 92%, transparent) 0%,
+      color-mix(in srgb, var(--ws-bg-page) 78%, transparent) 40%,
+      color-mix(in srgb, #efe8fb 35%, transparent) 70%,
+      transparent 88%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--ws-bg-page) 50%, transparent) 0%,
+      transparent 30%,
+      color-mix(in srgb, var(--ws-bg-page) 75%, transparent) 100%
+    );
+}
+
+.arcade-hero-stage .arcade-hero {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: min(100% - (var(--ws-page-inline) * 2), 34rem);
+  margin-inline: var(--ws-page-inline) auto;
+  margin-right: auto;
+  padding-block: clamp(4.5rem, 12vh, 7rem) clamp(2.5rem, 6vh, 4rem);
+  padding-inline: 0;
+}
 
 .arcade-hero {
   padding-block: clamp(3rem, 10vh, 5.5rem) var(--ws-space-8);
@@ -95,6 +167,35 @@
   }
 }
 
+@media (max-width: 768px) {
+  .arcade-hero-stage {
+    min-height: min(92vh, 46rem);
+    align-items: flex-start;
+  }
+
+  .arcade-hero-stage__media img {
+    object-position: 50% 62%;
+  }
+
+  .arcade-hero-stage__veil {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--ws-bg-page) 78%, transparent) 0%,
+        color-mix(in srgb, var(--ws-bg-page) 42%, transparent) 28%,
+        transparent 48%,
+        color-mix(in srgb, var(--ws-bg-page) 55%, transparent) 78%,
+        color-mix(in srgb, var(--ws-bg-page) 88%, transparent) 100%
+      );
+  }
+
+  .arcade-hero-stage .arcade-hero {
+    max-width: min(100% - (var(--ws-page-inline) * 2), 40rem);
+    margin-inline: auto;
+    padding-block: clamp(1.75rem, 6vh, 3rem) clamp(2rem, 8vh, 3.5rem);
+  }
+}
+
 /* —— Cabinet cards —— */
 
 .arcade-cabinets {
@@ -121,11 +222,23 @@
   opacity: 0.75;
 }
 
+.arcade-cabinet__art {
+  width: min(58%, 9.5rem);
+  height: auto;
+  margin: 0 auto var(--ws-space-2);
+  filter: drop-shadow(0 0 14px rgba(138, 43, 226, 0.45));
+  image-rendering: auto;
+}
+
 a.arcade-cabinet:hover,
 .arcade-cabinet:hover {
   border-color: var(--ws-accent-2);
   box-shadow: var(--ws-neon-glow-strong), var(--ws-shadow-card);
   transform: translateY(-3px);
+}
+
+a.arcade-cabinet:hover .arcade-cabinet__art {
+  filter: drop-shadow(0 0 22px rgba(180, 109, 255, 0.65));
 }
 
 .arcade-cabinet__play {

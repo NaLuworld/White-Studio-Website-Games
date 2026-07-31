@@ -40,15 +40,46 @@
     </header>
 
     <main>
-      <section class="ws-hero ws-container arcade-hero">
-        <p class="arcade-hero__eyebrow" data-i18n="hub.hero_eyebrow">Arcade open</p>
-        <h1 class="ws-hero__title" data-i18n="hub.hero_title">White Studio Games</h1>
-        <p class="ws-hero__lede" data-i18n="hub.hero_lede">
-          Black-purple neon floor. Pick a cabinet, play a round, climb the board — Discord login optional.
-        </p>
-        <a class="ws-button ws-button--primary arcade-hero__cta" href="#cabinets" data-i18n="hub.hero_cta">
-          Enter floor
-        </a>
+      <section class="arcade-hero-stage" aria-labelledby="hub-hero-title">
+        <picture class="arcade-hero-stage__media">
+          <source
+            media="(max-width: 768px)"
+            type="image/webp"
+            srcset="/assets/images/arcade/lobby-mobile.webp"
+          />
+          <source
+            media="(max-width: 768px)"
+            type="image/jpeg"
+            srcset="/assets/images/arcade/lobby-mobile.jpg"
+          />
+          <source type="image/webp" srcset="/assets/images/arcade/lobby-desktop.webp" />
+          <img
+            src="/assets/images/arcade/lobby-desktop.jpg"
+            alt=""
+            width="2560"
+            height="1440"
+            decoding="async"
+            fetchpriority="high"
+          />
+        </picture>
+        <div class="arcade-hero-stage__veil" aria-hidden="true"></div>
+        <div class="ws-container arcade-hero">
+          <p class="arcade-hero__eyebrow" data-i18n="hub.hero_eyebrow">Arcade open</p>
+          <h1 class="ws-hero__title" id="hub-hero-title" data-i18n="hub.hero_title">
+            White Studio Games
+          </h1>
+          <p class="ws-hero__lede" data-i18n="hub.hero_lede">
+            Black-purple neon floor. Pick a cabinet, play a round, climb the board — Discord login
+            optional.
+          </p>
+          <a
+            class="ws-button ws-button--primary arcade-hero__cta"
+            href="#cabinets"
+            data-i18n="hub.hero_cta"
+          >
+            Enter floor
+          </a>
+        </div>
       </section>
 
       <section class="ws-section ws-container arcade-floor" id="cabinets">
@@ -58,6 +89,15 @@
         </p>
         <div class="ws-grid-cards arcade-cabinets" id="games-grid">
           <a class="ws-card arcade-cabinet" href="/games/demo-runner/">
+            <img
+              class="arcade-cabinet__art"
+              src="/assets/images/arcade/cabinet-neon-runner.webp"
+              alt=""
+              width="428"
+              height="800"
+              decoding="async"
+              loading="lazy"
+            />
             <p class="ws-card__eyebrow" data-i18n="hub.card_eyebrow">Demo</p>
             <h3 class="ws-card__title" data-i18n="hub.card_title">Neon Runner</h3>
             <p class="ws-card__body" data-i18n="hub.card_body">
@@ -65,7 +105,9 @@
             </p>
             <div class="game-card__meta">
               <span data-i18n="hub.card_meta">Leaderboard on</span>
-              <span class="ws-button ws-button--primary arcade-cabinet__play" data-i18n="hub.card_play">Play</span>
+              <span class="ws-button ws-button--primary arcade-cabinet__play" data-i18n="hub.card_play"
+                >Play</span
+              >
             </div>
           </a>
         </div>
@@ -83,7 +125,9 @@
         </div>
         <p>
           <span data-i18n="hub.footer_tokens">Design tokens:</span>
-          <a href="/docs/design/WHITE-STUDIO-SHARED-UI.md" data-i18n="hub.footer_tokens_link">shared UI guide</a>
+          <a href="/docs/design/WHITE-STUDIO-SHARED-UI.md" data-i18n="hub.footer_tokens_link"
+            >shared UI guide</a
+          >
         </p>
       </div>
     </footer>
