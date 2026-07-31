@@ -47,7 +47,8 @@
       aria-describedby="arcade-intro-lede"
       data-i18n-attr="aria-label:intro.aria"
     >
-      <picture class="arcade-intro__media" aria-hidden="true">
+      <canvas class="arcade-intro__canvas" aria-hidden="true"></canvas>
+      <picture class="arcade-intro__media" aria-hidden="true" hidden>
         <source
           media="(max-width: 768px)"
           type="image/webp"
@@ -74,9 +75,9 @@
           White Studio Games
         </h1>
         <p class="arcade-intro__lede" id="arcade-intro-lede" data-i18n="intro.lede">
-          Neon floor waking up. Cabinets online.
+          Current linking the floor. Cabinets coming online.
         </p>
-        <p class="arcade-intro__hint" data-i18n="intro.hint">Entering floor…</p>
+        <p class="arcade-intro__hint" data-i18n="intro.hint">Connecting…</p>
         <div class="arcade-intro__pulse" aria-hidden="true"></div>
       </div>
     </div>
@@ -197,6 +198,7 @@
     <script src="/assets/js/games-auth.js"></script>
     <script src="/assets/js/games-api.js"></script>
     <script src="/assets/js/site-chrome.js"></script>
+    <script src="/assets/js/arcade-current-scene.js"></script>
     <script src="/assets/js/arcade-intro.js"></script>
     <script src="/assets/js/naru-pet.js"></script>
     <script>

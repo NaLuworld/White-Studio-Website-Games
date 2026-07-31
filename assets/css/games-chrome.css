@@ -87,12 +87,30 @@ html.is-arcade-intro {
   pointer-events: none;
 }
 
+.arcade-intro__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+
 .arcade-intro__media,
 .arcade-intro__media img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+}
+
+.arcade-intro.is-canvas .arcade-intro__media {
+  display: none !important;
+}
+
+.arcade-intro.is-fallback-media .arcade-intro__canvas {
+  display: none !important;
 }
 
 .arcade-intro__media img {
@@ -112,13 +130,24 @@ html.is-arcade-intro {
   z-index: 1;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 70% 55% at 50% 42%, transparent 0%, rgba(7, 6, 12, 0.55) 70%, rgba(7, 6, 12, 0.88) 100%),
+    radial-gradient(ellipse 70% 55% at 50% 42%, transparent 0%, rgba(7, 6, 12, 0.35) 70%, rgba(7, 6, 12, 0.72) 100%),
     linear-gradient(
       180deg,
-      color-mix(in srgb, var(--ws-bg-page) 72%, transparent) 0%,
-      transparent 28%,
-      color-mix(in srgb, var(--ws-bg-page) 55%, transparent) 72%,
-      color-mix(in srgb, var(--ws-bg-page) 90%, transparent) 100%
+      color-mix(in srgb, var(--ws-bg-page) 55%, transparent) 0%,
+      transparent 32%,
+      color-mix(in srgb, var(--ws-bg-page) 40%, transparent) 72%,
+      color-mix(in srgb, var(--ws-bg-page) 78%, transparent) 100%
+    );
+}
+
+.arcade-intro.is-canvas .arcade-intro__veil {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--ws-bg-page) 42%, transparent) 0%,
+      transparent 34%,
+      color-mix(in srgb, var(--ws-bg-page) 28%, transparent) 68%,
+      color-mix(in srgb, var(--ws-bg-page) 62%, transparent) 100%
     );
 }
 
@@ -131,6 +160,15 @@ html[data-theme="light"] .arcade-intro__veil {
       transparent 30%,
       color-mix(in srgb, var(--ws-bg-page) 70%, transparent) 100%
     );
+}
+
+html[data-theme="light"] .arcade-intro.is-canvas .arcade-intro__veil {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--ws-bg-page) 55%, transparent) 0%,
+    transparent 36%,
+    color-mix(in srgb, var(--ws-bg-page) 48%, transparent) 100%
+  );
 }
 
 .arcade-intro__panel {
