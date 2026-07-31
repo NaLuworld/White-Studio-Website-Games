@@ -24,41 +24,44 @@
           />
           <span class="ws-brand__text">
             <p class="ws-brand__title" data-i18n="brand.title">White Studio Games</p>
-            <p class="ws-brand__sub" data-i18n="brand.sub">Mini-games + leaderboards</p>
+            <p class="ws-brand__sub" data-i18n="brand.sub">Arcade floor · neon cabinets</p>
           </span>
         </a>
 
         <nav class="ws-nav ws-nav--desktop" data-i18n-attr="aria-label:nav.primary_aria">
           <a href="/" data-i18n="nav.games">Games</a>
-          <a href="https://tools.white-studio.org/" data-i18n="nav.tools">Tools</a>
-          <a href="https://dc.white-studio.org/" data-i18n="nav.community">Community</a>
-          <a href="https://white-studio.org/" target="_blank" rel="noopener" data-i18n="nav.studio">White Studio</a>
         </nav>
 
         <div class="ws-site-header__actions" data-ws-header-actions></div>
       </div>
     </header>
 
-    <main class="ws-container ws-section ws-game-shell">
-      <div class="ws-game-hud">
+    <main class="ws-container ws-section ws-game-shell arcade-cabinet-shell">
+      <div class="ws-game-hud arcade-hud">
         <div>
           <p class="ws-card__eyebrow" data-i18n="demo.eyebrow">Demo</p>
-          <h1 class="ws-section__title" style="margin: 0" data-i18n="demo.title">Neon Runner</h1>
+          <h1 class="ws-section__title arcade-hud__title" data-i18n="demo.title">Neon Runner</h1>
         </div>
-        <div class="ws-nav" aria-live="polite">
-          <span class="ws-status"><span data-i18n="demo.score">Score</span> <strong id="live-score">0</strong></span>
-          <span class="ws-status"><span data-i18n="demo.best">Best</span> <strong id="best-score">0</strong></span>
+        <div class="arcade-hud__stats" aria-live="polite">
+          <span class="arcade-hud__stat">
+            <span data-i18n="demo.score">Score</span>
+            <strong id="live-score">0</strong>
+          </span>
+          <span class="arcade-hud__stat">
+            <span data-i18n="demo.best">Best</span>
+            <strong id="best-score">0</strong>
+          </span>
         </div>
       </div>
 
-      <div class="ws-game-stage">
+      <div class="ws-game-stage arcade-stage">
         <canvas
           id="game-canvas"
           class="demo-runner-canvas"
           data-i18n-attr="aria-label:demo.canvas_aria"
         ></canvas>
         <div class="demo-runner-overlay" id="game-overlay">
-          <div class="demo-runner-overlay__card">
+          <div class="demo-runner-overlay__card arcade-overlay-card">
             <h2 id="overlay-title" data-i18n="demo.overlay_title">Neon Runner</h2>
             <p id="overlay-body" data-i18n="demo.overlay_body">
               Dodge blocks. Submit your score when the run ends.
@@ -70,9 +73,9 @@
         </div>
       </div>
 
-      <section class="leaderboard-panel" aria-labelledby="board-title">
+      <section class="leaderboard-panel arcade-board" aria-labelledby="board-title">
         <div class="leaderboard-panel__head">
-          <h2 id="board-title" data-i18n="demo.board_title">Leaderboard</h2>
+          <h2 id="board-title" data-i18n="demo.board_title">High scores</h2>
           <button type="button" class="ws-button ws-button--ghost" id="refresh-board" data-i18n="demo.refresh">
             Refresh
           </button>
@@ -104,7 +107,7 @@
 
     <footer class="ws-site-footer">
       <div class="ws-container ws-site-footer__inner">
-        <a href="/" data-i18n="demo.footer_back">← All games</a>
+        <a href="/" data-i18n="demo.footer_back">← Back to floor</a>
         <p data-i18n="demo.footer_scores">Scores persist via api.white-studio.org</p>
       </div>
     </footer>

@@ -7,25 +7,25 @@
  * are provided for prompt / legacy compatibility.
  */
 
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&display=swap");
 
 :root,
 html[data-theme="dark"] {
   color-scheme: dark;
 
-  --ws-bg-page: #0f0f10;
-  --ws-bg-shell: #141418;
-  --ws-bg-surface: #1a1a1b;
-  --ws-bg-surface-raised: #1f2024;
-  --ws-bg-surface-muted: rgba(255, 255, 255, 0.045);
-  --ws-bg-card: rgba(24, 24, 29, 0.9);
-  --ws-bg-card-hover: rgba(31, 32, 36, 0.96);
-  --ws-bg-input: rgba(20, 20, 24, 0.88);
-  --ws-bg-button: rgba(26, 26, 31, 0.9);
+  --ws-bg-page: #07060c;
+  --ws-bg-shell: #100e18;
+  --ws-bg-surface: #14121c;
+  --ws-bg-surface-raised: #1b1826;
+  --ws-bg-surface-muted: rgba(180, 109, 255, 0.06);
+  --ws-bg-card: rgba(18, 14, 28, 0.92);
+  --ws-bg-card-hover: rgba(28, 20, 42, 0.96);
+  --ws-bg-input: rgba(12, 10, 18, 0.9);
+  --ws-bg-button: rgba(22, 18, 34, 0.92);
   --ws-bg: var(--ws-bg-page);
-  --ws-bg-elev: #16161a;
+  --ws-bg-elev: #12101a;
   --ws-panel: var(--ws-bg-surface);
-  --ws-panel-soft: #1e1e24;
+  --ws-panel-soft: #1a1624;
 
   --ws-text-primary: #f4f3fb;
   --ws-text-secondary: #e5e7eb;
@@ -33,50 +33,54 @@ html[data-theme="dark"] {
   --ws-text-disabled: #7d8490;
   --ws-text-inverse: #ffffff;
 
-  --ws-border-subtle: #2b2a34;
-  --ws-border-strong: rgba(138, 43, 226, 0.34);
-  --ws-border-focus: rgba(207, 178, 255, 0.48);
+  --ws-border-subtle: #2a2438;
+  --ws-border-strong: rgba(180, 109, 255, 0.55);
+  --ws-border-focus: rgba(207, 178, 255, 0.55);
 
   --ws-accent: #8a2be2;
-  --ws-accent-hover: #7b1fa2;
-  --ws-accent-2: #b46dff;
-  --ws-accent-soft: rgba(138, 43, 226, 0.16);
+  --ws-accent-hover: #9b3ef0;
+  --ws-accent-2: #c084ff;
+  --ws-accent-soft: rgba(138, 43, 226, 0.2);
   --ws-accent-text: #f0e7ff;
+
+  --ws-neon-glow: 0 0 12px rgba(138, 43, 226, 0.45), 0 0 28px rgba(180, 109, 255, 0.22);
+  --ws-neon-glow-strong: 0 0 16px rgba(180, 109, 255, 0.55), 0 0 40px rgba(138, 43, 226, 0.35);
 
   --ws-success: #3bd28f;
   --ws-danger: #ff6b7a;
   --ws-warning: #f59e0b;
 
-  --ws-shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.18);
-  --ws-shadow-sm: 0 8px 18px rgba(0, 0, 0, 0.22);
-  --ws-shadow-md: 0 14px 34px rgba(0, 0, 0, 0.3);
-  --ws-shadow-card: 0 18px 45px rgba(0, 0, 0, 0.24);
-  --ws-shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.42);
-  --ws-shadow-button: 0 12px 28px rgba(138, 43, 226, 0.28);
+  --ws-shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.28);
+  --ws-shadow-sm: 0 8px 18px rgba(0, 0, 0, 0.3);
+  --ws-shadow-md: 0 14px 34px rgba(0, 0, 0, 0.38);
+  --ws-shadow-card: 0 18px 45px rgba(0, 0, 0, 0.34), var(--ws-neon-glow);
+  --ws-shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.5);
+  --ws-shadow-button: 0 0 18px rgba(138, 43, 226, 0.42);
 
-  --ws-glass-bg: rgba(20, 20, 28, 0.72);
-  --ws-glass-border: rgba(138, 43, 226, 0.22);
+  --ws-glass-bg: rgba(12, 10, 20, 0.78);
+  --ws-glass-border: rgba(138, 43, 226, 0.28);
   --ws-glass-highlight: rgba(255, 255, 255, 0.08);
 
-  --button-gradient: linear-gradient(to right, #8a2be2, #7b1fa2);
+  --button-gradient: linear-gradient(135deg, #9b3ef0, #8a2be2 45%, #6b1fb8);
 }
 
 html[data-theme="light"] {
   color-scheme: light;
 
-  --ws-bg-page: #f4f5f9;
-  --ws-bg-shell: #ffffff;
+  /* Brighter arcade lightbox — still purple-led, not flat SaaS white */
+  --ws-bg-page: #efe8fb;
+  --ws-bg-shell: #f7f2ff;
   --ws-bg-surface: #ffffff;
-  --ws-bg-surface-raised: #f9fafc;
-  --ws-bg-surface-muted: #eef0f6;
+  --ws-bg-surface-raised: #f9f5ff;
+  --ws-bg-surface-muted: rgba(124, 58, 237, 0.08);
   --ws-bg-card: rgba(255, 255, 255, 0.94);
   --ws-bg-card-hover: #ffffff;
   --ws-bg-input: #ffffff;
   --ws-bg-button: #ffffff;
   --ws-bg: var(--ws-bg-page);
-  --ws-bg-elev: #eef0f6;
+  --ws-bg-elev: #e8def8;
   --ws-panel: var(--ws-bg-surface);
-  --ws-panel-soft: #f3f4f8;
+  --ws-panel-soft: #f3ecff;
 
   --ws-text-primary: #161827;
   --ws-text-secondary: #3f4254;
@@ -84,8 +88,8 @@ html[data-theme="light"] {
   --ws-text-disabled: #9ca3af;
   --ws-text-inverse: #ffffff;
 
-  --ws-border-subtle: rgba(22, 24, 39, 0.1);
-  --ws-border-strong: rgba(22, 24, 39, 0.16);
+  --ws-border-subtle: rgba(91, 33, 182, 0.16);
+  --ws-border-strong: rgba(124, 58, 237, 0.42);
   --ws-border-focus: rgba(124, 58, 237, 0.55);
 
   --ws-accent: #7c3aed;
@@ -94,6 +98,9 @@ html[data-theme="light"] {
   --ws-accent-soft: rgba(124, 58, 237, 0.12);
   --ws-accent-text: #5b21b6;
 
+  --ws-neon-glow: 0 0 10px rgba(124, 58, 237, 0.22), 0 0 22px rgba(139, 92, 246, 0.12);
+  --ws-neon-glow-strong: 0 0 14px rgba(124, 58, 237, 0.35), 0 0 32px rgba(139, 92, 246, 0.2);
+
   --ws-success: #0f8a53;
   --ws-danger: #c2414f;
   --ws-warning: #c47a00;
@@ -101,15 +108,15 @@ html[data-theme="light"] {
   --ws-shadow-soft: 0 12px 30px rgba(17, 24, 39, 0.08);
   --ws-shadow-sm: 0 8px 18px rgba(17, 24, 39, 0.08);
   --ws-shadow-md: 0 14px 34px rgba(17, 24, 39, 0.1);
-  --ws-shadow-card: 0 18px 45px rgba(17, 24, 39, 0.1);
+  --ws-shadow-card: 0 18px 45px rgba(91, 33, 182, 0.12), var(--ws-neon-glow);
   --ws-shadow-lg: 0 24px 60px rgba(17, 24, 39, 0.14);
-  --ws-shadow-button: 0 12px 28px rgba(124, 58, 237, 0.22);
+  --ws-shadow-button: 0 0 16px rgba(124, 58, 237, 0.28);
 
-  --ws-glass-bg: rgba(255, 255, 255, 0.78);
-  --ws-glass-border: rgba(124, 58, 237, 0.16);
+  --ws-glass-bg: rgba(255, 255, 255, 0.82);
+  --ws-glass-border: rgba(124, 58, 237, 0.2);
   --ws-glass-highlight: rgba(255, 255, 255, 0.92);
 
-  --button-gradient: linear-gradient(to right, #5b21b6, #6d28d9);
+  --button-gradient: linear-gradient(135deg, #8b5cf6, #7c3aed 50%, #5b21b6);
 }
 
 :root {
@@ -136,6 +143,8 @@ html[data-theme="light"] {
   --ease-out: var(--ws-ease-out);
 
   --ws-font-body: "Space Grotesk", "Noto Sans TC", "Noto Sans", ui-sans-serif, system-ui, sans-serif;
+  /* Pixel display for Latin titles / HUD; CJK falls through to Noto Sans TC */
+  --ws-font-display: "Press Start 2P", "Noto Sans TC", "Noto Sans", ui-sans-serif, system-ui, sans-serif;
   --ws-content-max: 76rem;
   --ws-nav-height: 4.25rem;
 
@@ -196,8 +205,9 @@ body {
   line-height: 1.55;
   color: var(--ws-text-primary);
   background:
-    radial-gradient(1200px 480px at 12% -10%, rgba(138, 43, 226, 0.18), transparent 55%),
-    radial-gradient(900px 420px at 88% 0%, rgba(180, 109, 255, 0.1), transparent 50%),
+    radial-gradient(1100px 520px at 10% -8%, rgba(138, 43, 226, 0.28), transparent 55%),
+    radial-gradient(900px 480px at 92% 4%, rgba(180, 109, 255, 0.16), transparent 48%),
+    radial-gradient(700px 360px at 50% 100%, rgba(91, 33, 182, 0.12), transparent 55%),
     var(--ws-bg-page);
 }
 
@@ -292,8 +302,10 @@ textarea {
 
 .ws-brand__title {
   margin: 0;
-  font-size: 1.125rem;
-  line-height: 1.15;
+  font-family: var(--ws-font-display);
+  font-size: 0.72rem;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -611,10 +623,28 @@ textarea {
   background: var(--button-gradient);
   color: var(--ws-text-inverse);
   box-shadow: var(--ws-shadow-button);
+  animation: ws-neon-pulse 2.8s ease-in-out infinite;
 }
 
 .ws-button--primary:hover {
-  filter: brightness(1.05);
+  filter: brightness(1.08);
+  box-shadow: var(--ws-neon-glow-strong);
+}
+
+@keyframes ws-neon-pulse {
+  0%,
+  100% {
+    box-shadow: var(--ws-shadow-button);
+  }
+  50% {
+    box-shadow: var(--ws-neon-glow-strong);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ws-button--primary {
+    animation: none;
+  }
 }
 
 .ws-button--ghost {
@@ -650,16 +680,20 @@ a.ws-card:hover,
 .ws-card__eyebrow {
   margin: 0;
   color: var(--ws-accent-2);
-  font-size: var(--ws-text-xs);
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-family: var(--ws-font-display);
+  font-size: 0.58rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(180, 109, 255, 0.35);
 }
 
 .ws-card__title {
   margin: 0;
-  font-size: var(--ws-text-lg);
-  font-weight: 700;
+  font-family: var(--ws-font-display);
+  font-size: 0.85rem;
+  font-weight: 400;
+  line-height: 1.45;
 }
 
 .ws-card__body {
@@ -674,9 +708,11 @@ a.ws-card:hover,
 
 .ws-hero__title {
   margin: 0 0 var(--ws-space-4);
-  font-size: var(--ws-text-hero);
-  line-height: 1.08;
-  letter-spacing: -0.03em;
+  font-family: var(--ws-font-display);
+  font-size: clamp(1.15rem, 3.2vw, 1.85rem);
+  line-height: 1.45;
+  letter-spacing: 0.02em;
+  text-shadow: var(--ws-neon-glow);
 }
 
 .ws-hero__lede {
@@ -692,7 +728,10 @@ a.ws-card:hover,
 
 .ws-section__title {
   margin: 0 0 var(--ws-space-2);
-  font-size: var(--ws-text-xl);
+  font-family: var(--ws-font-display);
+  font-size: clamp(0.85rem, 2vw, 1.05rem);
+  line-height: 1.45;
+  font-weight: 400;
 }
 
 .ws-section__lede {
@@ -745,12 +784,17 @@ a.ws-card:hover,
 
 .ws-leaderboard th {
   color: var(--ws-text-muted);
-  font-weight: 600;
+  font-family: var(--ws-font-display);
+  font-size: 0.55rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .ws-leaderboard tr:first-child td:first-child {
   color: var(--ws-accent-2);
   font-weight: 700;
+  text-shadow: 0 0 8px rgba(180, 109, 255, 0.4);
 }
 
 .ws-status {
@@ -791,10 +835,10 @@ a.ws-card:hover,
 .ws-game-stage {
   position: relative;
   overflow: hidden;
-  border: 1px solid var(--ws-border-subtle);
-  border-radius: var(--ws-radius-lg);
-  background: #0a0a0d;
-  box-shadow: var(--ws-shadow-md);
+  border: 1px solid var(--ws-border-strong);
+  border-radius: var(--ws-radius-sm);
+  background: #05040a;
+  box-shadow: var(--ws-shadow-md), var(--ws-neon-glow);
   min-height: min(70vh, 520px);
 }
 
@@ -855,7 +899,7 @@ a.ws-card:hover,
   }
 
   .ws-hero__title {
-    font-size: clamp(1.7rem, 9vw, 2.2rem);
+    font-size: clamp(0.95rem, 4.5vw, 1.35rem);
   }
 }
 

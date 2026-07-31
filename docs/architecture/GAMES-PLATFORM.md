@@ -28,10 +28,23 @@ Do not reuse Tools allowlist checks on Games routes. Games callback (`intent=gam
 ## Frontend
 
 - Static site, no framework build for MVP
-- Shared design: `assets/css/ws-shared.css`
+- Shared design: `assets/css/ws-shared.css` + arcade chrome `assets/css/games-chrome.css`
+- Visual direction: black-purple neon arcade + pixel display font (see `docs/design/WHITE-STUDIO-SHARED-UI.md`)
 - API client: `assets/js/games-api.js` → `https://api.white-studio.org`
 - Chrome: `assets/js/site-chrome.js` + `assets/js/i18n.js` + `assets/js/games-auth.js`
 - Bilingual docs: `docs/i18n/GAMES-I18N.md`
+- Navbar: brand + in-site Games only (no Tools / Community / White Studio links)
+
+## Player journey (open floor)
+
+1. Land on hub arcade lobby — no Discord required
+2. Pick a cabinet (e.g. Neon Runner)
+3. Play as guest; submit score with nickname
+4. Optional Discord login for identity / nickname prefill (`ws_games_session`)
+
+## Future: About
+
+Cross-product discovery (Tools, Community Discord, main `white-studio.org`) will move to an **About** / “other White Studio services” surface — not the top navbar. Do not re-add those links to primary nav without an explicit product decision.
 
 ## Backend
 

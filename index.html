@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="/assets/css/ws-shared.css" />
     <link rel="stylesheet" href="/assets/css/games-chrome.css" />
   </head>
-  <body class="games-page">
+  <body class="games-page games-lobby">
     <header class="ws-site-header">
       <div class="ws-site-header__inner">
         <a class="ws-brand" href="/" data-i18n-attr="aria-label:brand.home_aria">
@@ -27,15 +27,12 @@
           />
           <span class="ws-brand__text">
             <p class="ws-brand__title" data-i18n="brand.title">White Studio Games</p>
-            <p class="ws-brand__sub" data-i18n="brand.sub">Mini-games + leaderboards</p>
+            <p class="ws-brand__sub" data-i18n="brand.sub">Arcade floor · neon cabinets</p>
           </span>
         </a>
 
         <nav class="ws-nav ws-nav--desktop" data-i18n-attr="aria-label:nav.primary_aria">
           <a href="/" aria-current="page" data-i18n="nav.games">Games</a>
-          <a href="https://tools.white-studio.org/" data-i18n="nav.tools">Tools</a>
-          <a href="https://dc.white-studio.org/" data-i18n="nav.community">Community</a>
-          <a href="https://white-studio.org/" target="_blank" rel="noopener" data-i18n="nav.studio">White Studio</a>
         </nav>
 
         <div class="ws-site-header__actions" data-ws-header-actions></div>
@@ -43,25 +40,24 @@
     </header>
 
     <main>
-      <section class="ws-hero ws-container">
+      <section class="ws-hero ws-container arcade-hero">
+        <p class="arcade-hero__eyebrow" data-i18n="hub.hero_eyebrow">Arcade open</p>
         <h1 class="ws-hero__title" data-i18n="hub.hero_title">White Studio Games</h1>
         <p class="ws-hero__lede" data-i18n="hub.hero_lede">
-          Mini-games built by White Studio — quick sessions, shared chrome, and live leaderboards.
+          Black-purple neon floor. Pick a cabinet, play a round, climb the board — Discord login optional.
         </p>
-        <div class="games-ecosystem" data-i18n-attr="aria-label:hub.ecosystem_aria">
-          <a href="https://white-studio.org/">white-studio.org</a>
-          <a href="https://tools.white-studio.org/">tools.white-studio.org</a>
-          <a href="https://games.white-studio.org/">games.white-studio.org</a>
-        </div>
+        <a class="ws-button ws-button--primary arcade-hero__cta" href="#cabinets" data-i18n="hub.hero_cta">
+          Enter floor
+        </a>
       </section>
 
-      <section class="ws-section ws-container">
-        <h2 class="ws-section__title" data-i18n="hub.play_title">Play</h2>
+      <section class="ws-section ws-container arcade-floor" id="cabinets">
+        <h2 class="ws-section__title" data-i18n="hub.play_title">Cabinets</h2>
         <p class="ws-section__lede" data-i18n="hub.play_lede">
-          One demo ships in v1. More games can follow the shared shell + API contract.
+          One demo cabinet in v1. More machines can share the same shell and API contract.
         </p>
-        <div class="ws-grid-cards" id="games-grid">
-          <a class="ws-card" href="/games/demo-runner/">
+        <div class="ws-grid-cards arcade-cabinets" id="games-grid">
+          <a class="ws-card arcade-cabinet" href="/games/demo-runner/">
             <p class="ws-card__eyebrow" data-i18n="hub.card_eyebrow">Demo</p>
             <h3 class="ws-card__title" data-i18n="hub.card_title">Neon Runner</h3>
             <p class="ws-card__body" data-i18n="hub.card_body">
@@ -69,7 +65,7 @@
             </p>
             <div class="game-card__meta">
               <span data-i18n="hub.card_meta">Leaderboard on</span>
-              <span class="ws-button ws-button--primary" data-i18n="hub.card_play">Play</span>
+              <span class="ws-button ws-button--primary arcade-cabinet__play" data-i18n="hub.card_play">Play</span>
             </div>
           </a>
         </div>
@@ -79,7 +75,12 @@
 
     <footer class="ws-site-footer">
       <div class="ws-container ws-site-footer__inner">
-        <p data-i18n="hub.footer_copy">© White Studio. Games platform MVP.</p>
+        <div class="arcade-footer__copy">
+          <p data-i18n="hub.footer_copy">© White Studio. Games arcade MVP.</p>
+          <p class="arcade-footer__about" data-i18n="hub.footer_about">
+            Other White Studio services — coming soon as About.
+          </p>
+        </div>
         <p>
           <span data-i18n="hub.footer_tokens">Design tokens:</span>
           <a href="/docs/design/WHITE-STUDIO-SHARED-UI.md" data-i18n="hub.footer_tokens_link">shared UI guide</a>
