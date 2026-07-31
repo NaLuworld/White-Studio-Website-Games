@@ -19,7 +19,7 @@ Main-site historical SoT remains in `White-Studio-Website/docs/architecture/THEM
 Games is **not** a Tools SaaS clone. Direction:
 
 - **90s Japanese arcade × White Studio black-purple futurism** (dark-first, clean, low light — not dense cyberpunk streets)
-- **Pixel display** for Latin titles / HUD labels (`--ws-font-display` = Press Start 2P)
+- **Pixel display** for titles / HUD (`--ws-font-display`): Latin → Press Start 2P; CJK → [Zpix](https://github.com/SolidZORO/zpix-pixel-font) (`/assets/fonts/zpix.ttf`)
 - Body + long Chinese copy stays **Noto Sans TC** / Space Grotesk (`--ws-font-body`)
 - Accent remains White Studio purple (`#8a2be2` family) with neon glow tokens (`--ws-neon-glow`)
 - Light theme = brighter purple “lightbox”, not flat dashboard white
@@ -51,8 +51,11 @@ Use these numbers when generating or reviewing lobby art. CSS tokens remain the 
 
 | Use | Font |
 |-----|------|
-| English short labels / HUD | Press Start 2P (`--ws-font-display`) |
+| English short labels / HUD | Press Start 2P → Zpix (`--ws-font-display`) |
+| Chinese short titles / HUD | Zpix (`--ws-font-display`; ~12px pixel grid) |
 | Chinese + long body | Noto Sans TC + Space Grotesk (`--ws-font-body`) |
+
+Zpix is self-hosted at `/assets/fonts/zpix.ttf` (v3.1.11). Personal/education use is free; **commercial product use requires a paid license** from the author. Do not convert, subset, or redistribute derivatives.
 
 **Generated images must contain no text, logos, buttons, or UI.** White Studio logo and copy are HTML overlays.
 

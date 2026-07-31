@@ -9,6 +9,17 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&display=swap");
 
+/* Zpix (最像素) v3.1.11 — CJK pixel fallback for --ws-font-display.
+   Source: https://github.com/SolidZORO/zpix-pixel-font
+   Personal/education free; commercial product requires paid license. Do not convert/subset. */
+@font-face {
+  font-family: "Zpix";
+  src: url("/assets/fonts/zpix.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root,
 html[data-theme="dark"] {
   color-scheme: dark;
@@ -143,8 +154,8 @@ html[data-theme="light"] {
   --ease-out: var(--ws-ease-out);
 
   --ws-font-body: "Space Grotesk", "Noto Sans TC", "Noto Sans", ui-sans-serif, system-ui, sans-serif;
-  /* Pixel display for Latin titles / HUD; CJK falls through to Noto Sans TC */
-  --ws-font-display: "Press Start 2P", "Noto Sans TC", "Noto Sans", ui-sans-serif, system-ui, sans-serif;
+  /* Pixel display: Latin → Press Start 2P; CJK titles/HUD → Zpix; body CJK stays Noto via --ws-font-body */
+  --ws-font-display: "Press Start 2P", "Zpix", "Noto Sans TC", "Noto Sans", ui-sans-serif, system-ui, sans-serif;
   --ws-content-max: 76rem;
   --ws-nav-height: 4.25rem;
 
