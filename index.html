@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-Hant" class="is-arcade-intro">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -9,13 +9,57 @@
       name="description"
       content="White Studio Games — mini-games and leaderboards from White Studio."
     />
-    <title>White Studio Games</title>
+    <title data-i18n="meta.title_hub">White Studio Games</title>
     <link rel="icon" type="image/png" href="/assets/images/white-studio-logo.png" />
     <script src="/assets/js/theme-boot.js"></script>
     <link rel="stylesheet" href="/assets/css/ws-shared.css" />
     <link rel="stylesheet" href="/assets/css/games-chrome.css" />
   </head>
   <body class="games-page games-lobby">
+    <div
+      id="arcade-intro"
+      class="arcade-intro"
+      role="dialog"
+      aria-modal="true"
+      aria-busy="true"
+      aria-labelledby="arcade-intro-title"
+      aria-describedby="arcade-intro-lede"
+      data-i18n-attr="aria-label:intro.aria"
+    >
+      <picture class="arcade-intro__media" aria-hidden="true">
+        <source
+          media="(max-width: 768px)"
+          type="image/webp"
+          srcset="/assets/images/arcade/lobby-mobile.webp"
+        />
+        <source
+          media="(max-width: 768px)"
+          type="image/jpeg"
+          srcset="/assets/images/arcade/lobby-mobile.jpg"
+        />
+        <source type="image/webp" srcset="/assets/images/arcade/lobby-desktop.webp" />
+        <img
+          src="/assets/images/arcade/lobby-desktop.jpg"
+          alt=""
+          width="2560"
+          height="1440"
+          decoding="async"
+          fetchpriority="high"
+        />
+      </picture>
+      <div class="arcade-intro__veil" aria-hidden="true"></div>
+      <div class="arcade-intro__panel">
+        <h1 class="arcade-intro__title" id="arcade-intro-title" data-i18n="intro.title">
+          White Studio Games
+        </h1>
+        <p class="arcade-intro__lede" id="arcade-intro-lede" data-i18n="intro.lede">
+          Neon floor waking up. Cabinets online.
+        </p>
+        <p class="arcade-intro__hint" data-i18n="intro.hint">Entering floor…</p>
+        <div class="arcade-intro__pulse" aria-hidden="true"></div>
+      </div>
+    </div>
+
     <header class="ws-site-header">
       <div class="ws-site-header__inner">
         <a class="ws-brand" href="/" data-i18n-attr="aria-label:brand.home_aria">
@@ -30,10 +74,6 @@
             <p class="ws-brand__sub" data-i18n="brand.sub">Arcade floor · neon cabinets</p>
           </span>
         </a>
-
-        <nav class="ws-nav ws-nav--desktop" data-i18n-attr="aria-label:nav.primary_aria">
-          <a href="/" aria-current="page" data-i18n="nav.games">Games</a>
-        </nav>
 
         <div class="ws-site-header__actions" data-ws-header-actions></div>
       </div>
@@ -136,9 +176,20 @@
     <script src="/assets/js/games-auth.js"></script>
     <script src="/assets/js/games-api.js"></script>
     <script src="/assets/js/site-chrome.js"></script>
+    <script src="/assets/js/arcade-intro.js"></script>
+    <script src="/assets/js/naru-pet.js"></script>
     <script>
       (async function boot() {
+        if (window.WhiteStudioI18n) {
+          await WhiteStudioI18n.init();
+          WhiteStudioI18n.applyAll(document);
+        }
+        var introPromise = WhiteStudioArcadeIntro.mount();
         await WhiteStudioGames.bootChrome();
+        await introPromise;
+        if (window.WhiteStudioNaru) {
+          WhiteStudioNaru.mount();
+        }
         var status = document.getElementById("catalog-status");
         try {
           var api = WhiteStudioGames.createGamesApi();

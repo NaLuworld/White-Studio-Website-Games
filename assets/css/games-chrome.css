@@ -40,14 +40,194 @@
   opacity: 0.35;
 }
 
-.games-page > * {
+.games-page > main,
+.games-page > footer {
   position: relative;
   z-index: 1;
+}
+
+/* Keep the sticky navbar and its popover menus above every arcade layer. */
+.games-page > .ws-site-header {
+  position: sticky;
+  z-index: var(--ws-z-overlay);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .games-page::after {
     opacity: 0.15;
+  }
+}
+
+/* —— Hub arcade intro (full-viewport, auto-dismiss) —— */
+
+html.is-arcade-intro {
+  overflow: hidden;
+}
+
+.arcade-intro {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ws-z-intro);
+  display: grid;
+  place-items: center;
+  padding: var(--ws-page-inline);
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--ws-bg-page);
+  opacity: 1;
+  transition: opacity 0.35s var(--ws-ease-out);
+}
+
+.arcade-intro[hidden] {
+  display: none !important;
+}
+
+.arcade-intro.is-leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.arcade-intro__media,
+.arcade-intro__media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.arcade-intro__media img {
+  object-fit: cover;
+  object-position: 72% 48%;
+  transform: scale(1.04);
+  transition: transform 2.8s var(--ws-ease-out);
+}
+
+.arcade-intro.is-ready .arcade-intro__media img {
+  transform: scale(1);
+}
+
+.arcade-intro__veil {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 42%, transparent 0%, rgba(7, 6, 12, 0.55) 70%, rgba(7, 6, 12, 0.88) 100%),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--ws-bg-page) 72%, transparent) 0%,
+      transparent 28%,
+      color-mix(in srgb, var(--ws-bg-page) 55%, transparent) 72%,
+      color-mix(in srgb, var(--ws-bg-page) 90%, transparent) 100%
+    );
+}
+
+html[data-theme="light"] .arcade-intro__veil {
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 42%, transparent 0%, rgba(239, 232, 251, 0.45) 70%, rgba(239, 232, 251, 0.82) 100%),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--ws-bg-page) 75%, transparent) 0%,
+      transparent 30%,
+      color-mix(in srgb, var(--ws-bg-page) 70%, transparent) 100%
+    );
+}
+
+.arcade-intro__panel {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: var(--ws-space-4);
+  justify-items: center;
+  max-width: min(36rem, 100%);
+  text-align: center;
+  opacity: 0;
+  transform: translateY(0.85rem);
+  transition:
+    opacity 0.55s var(--ws-ease-out),
+    transform 0.55s var(--ws-ease-out);
+}
+
+.arcade-intro.is-ready .arcade-intro__panel {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.arcade-intro__title {
+  margin: 0;
+  font-family: var(--ws-font-display);
+  font-size: clamp(0.95rem, 3.4vw, 1.55rem);
+  line-height: 1.45;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-shadow: var(--ws-neon-glow);
+}
+
+.arcade-intro__lede {
+  margin: 0;
+  max-width: 28rem;
+  color: var(--ws-text-muted);
+  font-size: var(--ws-text-md);
+  line-height: 1.6;
+}
+
+.arcade-intro__hint {
+  margin: var(--ws-space-2) 0 0;
+  font-family: var(--ws-font-display);
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ws-accent-2);
+  opacity: 0.85;
+  animation: arcade-intro-pulse 1.6s ease-in-out infinite;
+}
+
+.arcade-intro__pulse {
+  width: 4.5rem;
+  height: 2px;
+  margin-top: var(--ws-space-3);
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, var(--ws-accent-2), transparent);
+  box-shadow: var(--ws-neon-glow);
+  animation: arcade-intro-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes arcade-intro-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .arcade-intro__media img {
+    object-position: 50% 62%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arcade-intro,
+  .arcade-intro__panel,
+  .arcade-intro__media img {
+    transition: none;
+  }
+
+  .arcade-intro__hint,
+  .arcade-intro__pulse {
+    animation: none;
+    opacity: 0.75;
+  }
+
+  .arcade-intro.is-ready .arcade-intro__panel {
+    opacity: 1;
+    transform: none;
+  }
+
+  .arcade-intro.is-ready .arcade-intro__media img {
+    transform: none;
   }
 }
 
@@ -433,4 +613,119 @@ a.arcade-cabinet:hover .arcade-cabinet__art {
   font-size: 0.58rem;
   letter-spacing: 0.08em;
   border-radius: var(--ws-radius-sm);
+}
+
+/* —— Naru desk pet —— */
+
+.naru-pet {
+  position: fixed;
+  right: max(0.75rem, env(safe-area-inset-right));
+  bottom: max(0.75rem, env(safe-area-inset-bottom));
+  z-index: 80;
+  display: grid;
+  justify-items: end;
+  gap: 0.55rem;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.35s var(--ws-ease-out),
+    transform 0.35s var(--ws-ease-out);
+}
+
+.naru-pet.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.naru-pet__sprite,
+.naru-pet__dismiss,
+.naru-pet__bubble {
+  pointer-events: auto;
+}
+
+.naru-pet__sprite {
+  width: 96px;
+  height: 96px;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  cursor: pointer;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.45));
+}
+
+.naru-pet__sprite:focus-visible {
+  outline: none;
+  box-shadow: var(--ws-focus-ring-shadow);
+}
+
+.naru-pet__bubble {
+  max-width: min(16.5rem, calc(100vw - 2rem));
+  padding: 0.7rem 0.8rem 0.65rem;
+  border: 1px solid var(--ws-border-strong);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--ws-bg-shell) 94%, #000 6%);
+  box-shadow: var(--ws-neon-glow), var(--ws-shadow-md);
+  color: var(--ws-text-primary);
+}
+
+.naru-pet__bubble[hidden] {
+  display: none !important;
+}
+
+.naru-pet__text {
+  margin: 0 0 0.55rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.naru-pet__dismiss {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.85rem;
+  padding: 0.25rem 0.7rem;
+  border: 1px solid var(--ws-border-subtle);
+  border-radius: var(--ws-radius-sm);
+  background: var(--ws-accent-soft);
+  color: var(--ws-accent-2);
+  font-family: var(--ws-font-display);
+  font-size: 0.5rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.naru-pet__dismiss:hover {
+  border-color: var(--ws-border-strong);
+}
+
+.naru-target-glow {
+  outline: 2px solid color-mix(in srgb, var(--ws-accent-2) 75%, transparent);
+  outline-offset: 4px;
+  box-shadow: var(--ws-neon-glow-strong);
+  border-radius: var(--ws-radius-sm);
+  transition: box-shadow 0.25s var(--ws-ease-out), outline-color 0.25s var(--ws-ease-out);
+}
+
+@media (max-width: 640px) {
+  .naru-pet {
+    right: 0.5rem;
+    bottom: 0.5rem;
+  }
+
+  .naru-pet__sprite {
+    transform: scale(0.84);
+    transform-origin: bottom right;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .naru-pet {
+    transition: none;
+  }
 }

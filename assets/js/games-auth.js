@@ -321,9 +321,10 @@
     });
 
     function render(session) {
-      var loggedIn = Boolean(session && session.authenticated);
+      var loggedIn = Boolean(session && session.authenticated && session.user);
       setVisible(loginBtn, !loggedIn);
       setVisible(userShell, loggedIn);
+      wrap.dataset.authenticated = loggedIn ? "true" : "false";
 
       logoutBtn.textContent = t("auth.logout");
 

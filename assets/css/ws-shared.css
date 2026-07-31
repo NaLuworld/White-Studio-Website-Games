@@ -185,6 +185,7 @@ html[data-theme="light"] {
   --ws-focus-ring-shadow: 0 0 0 3px var(--ws-border-focus);
   --ws-z-sticky: 60;
   --ws-z-overlay: 110;
+  --ws-z-intro: 200;
 }
 
 *,
@@ -404,7 +405,7 @@ textarea {
   position: absolute;
   right: 0;
   top: calc(100% + 0.4rem);
-  z-index: 60;
+  z-index: var(--ws-z-overlay);
   min-width: 12rem;
   padding: 0.35rem;
   border: 1px solid var(--ws-border-subtle);
@@ -488,6 +489,14 @@ textarea {
   cursor: pointer;
 }
 
+/* Author `display` rules must not defeat the HTML hidden attribute. */
+.ws-auth-login[hidden],
+.ws-auth-user[hidden],
+.ws-auth-menu[hidden],
+.ws-i18n-menu[hidden] {
+  display: none !important;
+}
+
 .ws-auth-login:disabled {
   opacity: 0.62;
   cursor: not-allowed;
@@ -546,7 +555,7 @@ textarea {
   position: absolute;
   right: 0;
   top: calc(100% + 0.4rem);
-  z-index: 60;
+  z-index: var(--ws-z-overlay);
   min-width: 8.5rem;
   padding: 0.35rem;
   border: 1px solid var(--ws-border-subtle);

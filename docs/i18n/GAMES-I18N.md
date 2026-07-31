@@ -37,6 +37,16 @@ When adding a game page, HUD label, footer line, toast, or form label:
 4. Update this doc only if key naming conventions change.
 5. Update [`docs/prompts/ADD-GAME-TO-GAMES-PLATFORM.md`](../prompts/ADD-GAME-TO-GAMES-PLATFORM.md) checklist if the add-game flow changes.
 
+## Hub intro keys
+
+Hub-only entrance overlay (`#arcade-intro` on `/` only): `intro.aria`, `intro.title`, `intro.lede`, `intro.hint`.  
+Not used on game pages. Plays on every hub load; no Play gate.
+
+## Naru desk-pet keys
+
+Hub guide pet (`WhiteStudioNaru`): `naru.aria`, `naru.dismiss`, `naru.tip_welcome`, `naru.tip_cabinets`, `naru.tip_discord`.  
+Tips run once per browser (`localStorage.ws_naru_tips_v1`); pet still idles after every intro.
+
 ## Forbidden
 
 - Introducing Tools `auto-i18n.js` / translation cache APIs

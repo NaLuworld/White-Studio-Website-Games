@@ -90,9 +90,9 @@ Tight corner radius; silhouette must read at thumbnail size.
 
 ## Navbar
 
-- Brand + in-site **Games** only
-- Right actions: Discord login, language, theme
-- Do **not** put Tools / Community / White Studio in the top nav
+- Brand only (logo + title links home)
+- Right actions: Discord login **or** signed-in user menu (never both), language, theme
+- Do **not** put Games / Tools / Community / White Studio in the top nav
 - Cross-product links belong in a future **About** surface (see architecture doc)
 
 ## Theme
@@ -146,9 +146,10 @@ Aliases: `--bg`, `--panel`, `--text`, `--muted`, `--border`, `--accent`, `--acce
 
 Ship intentional arcade motion (respect `prefers-reduced-motion`):
 
-1. Ambient floor scanline / grid (`.games-page` pseudo-elements)
-2. Hero eyebrow glow pulse
-3. Primary CTA / neon pulse; cabinet hover neon lift
+1. Hub entrance overlay (`#arcade-intro`) — auto-dismiss ~2.8s, skip on click/Enter/Space/Escape; every hub load
+2. Ambient floor scanline / grid (`.games-page` pseudo-elements)
+3. Hero eyebrow glow pulse
+4. Primary CTA / neon pulse; cabinet hover neon lift
 
 ## Do
 

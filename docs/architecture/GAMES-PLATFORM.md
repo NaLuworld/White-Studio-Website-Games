@@ -31,10 +31,11 @@ Do not reuse Tools allowlist checks on Games routes. Games callback (`intent=gam
 - Shared design: `assets/css/ws-shared.css` + arcade chrome `assets/css/games-chrome.css`
 - Visual direction: black-purple neon arcade + pixel display font (see `docs/design/WHITE-STUDIO-SHARED-UI.md`)
 - Art production: `docs/design/ARCADE-ASSET-MANIFEST.md` + Image 2 prompts in `docs/prompts/GPT-IMAGE-2-ARCADE-ASSETS.md` (wire assets only after QA handoff)
+- Desk-pet guide **Naru**: `docs/design/NARU-SPRITE-SYSTEM.md` + `docs/prompts/GPT-IMAGE-2-NARU-SPRITES.md` + skill `.cursor/skills/naru-guide/`
 - API client: `assets/js/games-api.js` → `https://api.white-studio.org`
 - Chrome: `assets/js/site-chrome.js` + `assets/js/i18n.js` + `assets/js/games-auth.js`
 - Bilingual docs: `docs/i18n/GAMES-I18N.md`
-- Navbar: brand + in-site Games only (no Tools / Community / White Studio links)
+- Navbar: brand only in primary chrome (no Games / Tools / Community / White Studio links)
 
 ## Player journey (open floor)
 

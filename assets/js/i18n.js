@@ -98,16 +98,6 @@
     );
   }
 
-  function setLang(nextLang, options) {
-    var lang = canonicalizeLang(nextLang);
-    currentLang = lang;
-    document.documentElement.lang = lang;
-    if (!options || options.persist !== false) persistLang(lang);
-    applyAll(document);
-    notify();
-    return lang;
-  }
-
   async function loadCatalog(lang) {
     var code = canonicalizeLang(lang);
     if (catalogs[code]) return catalogs[code];
@@ -121,10 +111,26 @@
     return catalogs[code];
   }
 
+  async function setLang(nextLang, options) {
+    var lang = canonicalizeLang(nextLang);
+    await loadCatalog(lang);
+    currentLang = lang;
+    document.documentElement.lang = lang;
+    if (!options || options.persist !== false) persistLang(lang);
+    applyAll(document);
+    notify();
+    return lang;
+  }
+
   async function init(options) {
     if (ready) return currentLang;
     var preferred = (options && options.lang) || getStoredLang();
-    await Promise.all([loadCatalog(DEFAULT_LANG), loadCatalog(preferred)]);
+    // Preload every supported locale so the switcher never falls back silently.
+    await Promise.all(
+      SUPPORTED.map(function (item) {
+        return loadCatalog(item.code);
+      }).concat([loadCatalog(preferred)])
+    );
     ready = true;
     return setLang(preferred, { persist: true });
   }
@@ -171,9 +177,10 @@
       option.setAttribute("role", "menuitemradio");
       option.dataset.lang = item.code;
       option.addEventListener("click", function () {
-        setLang(item.code);
-        menu.hidden = true;
-        button.setAttribute("aria-expanded", "false");
+        Promise.resolve(setLang(item.code)).finally(function () {
+          menu.hidden = true;
+          button.setAttribute("aria-expanded", "false");
+        });
       });
       menu.appendChild(option);
     });
