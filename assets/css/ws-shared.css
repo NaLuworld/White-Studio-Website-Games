@@ -422,16 +422,33 @@ textarea {
 }
 
 .ws-theme-icon {
-  width: 0.95rem;
-  height: 0.95rem;
+  display: inline-block;
+  width: 0.875rem;
+  height: 0.875rem;
+  flex: 0 0 auto;
   border-radius: 999px;
-  border: 1.5px solid currentColor;
-  box-shadow: inset -3px -2px 0 0 currentColor;
+  background: currentColor;
+  box-shadow: 0 0 0 2px color-mix(in oklab, currentColor 18%, transparent);
+}
+
+.ws-theme-btn[data-theme="dark"] .ws-theme-icon {
+  background:
+    radial-gradient(
+      circle at 68% 32%,
+      color-mix(in oklab, var(--ws-bg-surface-raised) 92%, #000 8%) 0 34%,
+      transparent 36%
+    ),
+    currentColor;
 }
 
 .ws-theme-btn[data-theme="light"] .ws-theme-icon {
-  box-shadow: none;
-  background: currentColor;
+  background: var(--ws-accent);
+  box-shadow:
+    0 -7px 0 -5px var(--ws-accent),
+    0 7px 0 -5px var(--ws-accent),
+    7px 0 0 -5px var(--ws-accent),
+    -7px 0 0 -5px var(--ws-accent),
+    0 0 0 2px color-mix(in oklab, var(--ws-accent) 18%, transparent);
 }
 
 .ws-auth-controls {
