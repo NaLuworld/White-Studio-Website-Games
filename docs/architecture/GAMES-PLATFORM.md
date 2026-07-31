@@ -15,13 +15,15 @@ Games mirrors the **Tools** boundary: independent Pages repo, shared Worker API,
 
 All Discord OAuth flows share `api.white-studio.org` + the same Discord application (`identify` scope).
 
-| Product cookie | Purpose | Join key |
-|----------------|---------|----------|
-| `ws_tools_session` | Tools admin (allowlisted) | `discordUserId` |
-| `ws_games_session` | Games open identity | `discordUserId` |
-| Account Discord binding (`AUTH_DB`) | Account login/link | Discord provider subject = `discordUserId` |
+| Product cookie | Start path | Purpose | Who can log in |
+|----------------|------------|---------|----------------|
+| `ws_tools_session` | `/auth/tools/discord/start` | Tools admin | Only IDs in `TOOLS_DISCORD_ALLOWED_IDS` |
+| `ws_games_session` | `/auth/games/discord/start` | Games open identity | **Any Discord user** |
+| Account Discord binding (`AUTH_DB`) | `/auth/discord/start` | Account login/link | Pre-seeded / linked accounts |
 
-Cookies are separate today so product permissions stay isolated, but the **same Discord user is always identifiable** via `discordUserId` for a future White Studio family-bucket session merge.
+Cookies are separate so product permissions stay isolated. The **same Discord user is always identifiable** via `discordUserId` for a future White Studio family-bucket session merge.
+
+Do not reuse Tools allowlist checks on Games routes. Games callback (`intent=games`) must issue `ws_games_session` without calling `isToolsDiscordUserAllowed`.
 
 ## Frontend
 
