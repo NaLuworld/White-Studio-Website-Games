@@ -1,5 +1,5 @@
 /**
- * Hub intro: Canvas2D pseudo-3D current / connection path with camera follow.
+ * Hub intro: Canvas2D pseudo-3D current path with a stable camera rail (current moves; lens does not chase).
  * Exposed as WhiteStudioArcadeCurrent.create(canvas, options) → { start, stop, resize }.
  */
 (function (global) {
@@ -37,20 +37,54 @@
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
   }
 
-  /** Fixed world path on the arcade floor (x, z); y is height. */
+  /** Gentle far→near S-curve on the arcade floor (x, z); y is height. */
   function buildPath() {
     return [
-      { x: -7.5, y: 0.15, z: 14 },
-      { x: -4.2, y: 0.2, z: 11.5 },
-      { x: -5.5, y: 0.35, z: 8.2 },
-      { x: -1.8, y: 0.25, z: 7.4 },
-      { x: 0.4, y: 0.45, z: 5.6 },
-      { x: 2.8, y: 0.3, z: 6.8 },
-      { x: 4.6, y: 0.55, z: 4.2 },
-      { x: 1.2, y: 0.4, z: 3.1 },
-      { x: -0.2, y: 0.7, z: 1.4 },
-      { x: 0.0, y: 0.9, z: 0.2 }
+      { x: -1.6, y: 0.2, z: 14.5 },
+      { x: -0.9, y: 0.25, z: 12.0 },
+      { x: 0.4, y: 0.3, z: 9.6 },
+      { x: 1.2, y: 0.35, z: 7.4 },
+      { x: 0.5, y: 0.4, z: 5.4 },
+      { x: -0.3, y: 0.5, z: 3.5 },
+      { x: 0.0, y: 0.65, z: 1.8 },
+      { x: 0.0, y: 0.85, z: 0.4 }
     ];
+  }
+
+  /** Camera rail keyframes — independent of path corners. t in [0,1]. */
+  function cameraKeyframes() {
+    return [
+      // Wide overhead establishing shot
+      { t: 0, x: 0.15, y: 5.8, z: 11.5, lookX: 0, lookY: 0.2, lookZ: 6.5, fov: 1.28 },
+      // Mid push — still looking down the floor axis
+      { t: 0.55, x: 0.1, y: 4.4, z: 9.2, lookX: 0, lookY: 0.35, lookZ: 4.0, fov: 1.18 },
+      // Soft settle toward hub
+      { t: 1, x: 0.05, y: 3.6, z: 7.4, lookX: 0, lookY: 0.55, lookZ: 1.2, fov: 1.1 }
+    ];
+  }
+
+  function sampleCameraRail(keys, t) {
+    var u = clamp(t, 0, 1);
+    var a = keys[0];
+    var b = keys[keys.length - 1];
+    for (var i = 0; i < keys.length - 1; i++) {
+      if (u >= keys[i].t && u <= keys[i + 1].t) {
+        a = keys[i];
+        b = keys[i + 1];
+        break;
+      }
+    }
+    var span = Math.max(1e-6, b.t - a.t);
+    var local = easeInOutCubic((u - a.t) / span);
+    return {
+      x: lerp(a.x, b.x, local),
+      y: lerp(a.y, b.y, local),
+      z: lerp(a.z, b.z, local),
+      lookX: lerp(a.lookX, b.lookX, local),
+      lookY: lerp(a.lookY, b.lookY, local),
+      lookZ: lerp(a.lookZ, b.lookZ, local),
+      fov: lerp(a.fov, b.fov, local)
+    };
   }
 
   function buildNodes(path) {
@@ -141,14 +175,16 @@
     }
     var totalLen = pathLength(path);
 
+    var camRail = cameraKeyframes();
+    var camStart = sampleCameraRail(camRail, 0);
     var cam = {
-      x: path[0].x,
-      y: 2.4,
-      z: path[0].z + 4.2,
-      lookX: path[0].x,
-      lookY: path[0].y,
-      lookZ: path[0].z,
-      fov: 1.15
+      x: camStart.x,
+      y: camStart.y,
+      z: camStart.z,
+      lookX: camStart.lookX,
+      lookY: camStart.lookY,
+      lookZ: camStart.lookZ,
+      fov: camStart.fov
     };
 
     var sparks = [];
@@ -181,69 +217,39 @@
       var rz = relX * sin + relZ * cos;
       var ry = relY;
 
-      // Slight pitch down
-      var pitch = 0.38;
+      // Slight pitch down — horizon sits mid-lower so brand copy stays clear above
+      var pitch = 0.42;
       var cp = Math.cos(pitch);
       var sp = Math.sin(pitch);
       var py = ry * cp - rz * sp;
       var pz = ry * sp + rz * cp;
 
-      var depth = Math.max(0.35, pz);
+      var depth = Math.max(0.45, pz);
       var width = canvas.clientWidth;
       var height = canvas.clientHeight;
-      var scale = (height * 0.55) / (cam.fov * depth);
+      var scale = (height * 0.62) / (cam.fov * depth);
       return {
         x: width * 0.5 + rx * scale,
-        y: height * 0.58 - py * scale,
+        y: height * 0.72 - py * scale,
         depth: depth,
         scale: scale
       };
     }
 
     function fogAlpha(depth) {
-      return clamp(1 - (depth - 1.2) / 16, 0.08, 1);
+      return clamp(1 - (depth - 1.4) / 18, 0.12, 1);
     }
 
-    function updateCamera(tip, t) {
-      var lookAhead = pointOnPath(path, segLens, totalLen, tip.dist + 1.4);
-      var targetLookX = lookAhead.x;
-      var targetLookY = lookAhead.y + 0.2;
-      var targetLookZ = lookAhead.z;
-
-      var behind = 3.6 - t * 0.8;
-      var height = 2.1 + t * 0.55;
-      // Pull camera behind tip along last segment direction
-      var seg = Math.min(tip.seg, path.length - 2);
-      var a = path[seg];
-      var b = path[seg + 1];
-      var dirX = b.x - a.x;
-      var dirZ = b.z - a.z;
-      var dirLen = Math.sqrt(dirX * dirX + dirZ * dirZ) || 1;
-      dirX /= dirLen;
-      dirZ /= dirLen;
-
-      var targetCamX = tip.x - dirX * behind + dirZ * 0.35;
-      var targetCamZ = tip.z - dirZ * behind - dirX * 0.35;
-      var targetCamY = tip.y + height;
-
-      // End settle: pull back toward hub overview
-      if (t > 0.88) {
-        var u = (t - 0.88) / 0.12;
-        targetCamX = lerp(targetCamX, 0.2, u);
-        targetCamY = lerp(targetCamY, 3.4, u);
-        targetCamZ = lerp(targetCamZ, 6.5, u);
-        targetLookX = lerp(targetLookX, 0, u);
-        targetLookY = lerp(targetLookY, 0.6, u);
-        targetLookZ = lerp(targetLookZ, 0.4, u);
-      }
-
-      var smooth = reducedMotion ? 1 : 0.12;
-      cam.x = lerp(cam.x, targetCamX, smooth);
-      cam.y = lerp(cam.y, targetCamY, smooth);
-      cam.z = lerp(cam.z, targetCamZ, smooth);
-      cam.lookX = lerp(cam.lookX, targetLookX, smooth);
-      cam.lookY = lerp(cam.lookY, targetLookY, smooth);
-      cam.lookZ = lerp(cam.lookZ, targetLookZ, smooth);
+    function updateCamera(t) {
+      // Smooth rail only — never chase the current tip or segment yaw.
+      var sample = sampleCameraRail(camRail, t);
+      cam.x = sample.x;
+      cam.y = sample.y;
+      cam.z = sample.z;
+      cam.lookX = sample.lookX;
+      cam.lookY = sample.lookY;
+      cam.lookZ = sample.lookZ;
+      cam.fov = sample.fov;
     }
 
     function drawBackground(width, height) {
@@ -271,12 +277,13 @@
 
     function drawGrid() {
       var lines = [];
-      for (var x = -12; x <= 12; x += 1) {
-        for (var z = 0; z <= 16; z += 1) {
+      // Wider, coarser floor so perspective reads clearly under the brand panel
+      for (var x = -10; x <= 10; x += 1) {
+        for (var z = -1; z <= 18; z += 1) {
           var p0 = project(x, 0, z);
           var p1 = project(x + 1, 0, z);
           var p2 = project(x, 0, z + 1);
-          if (p0.depth < 18) {
+          if (p0.depth < 22 && p0.y < canvas.clientHeight * 1.05) {
             lines.push({ a: p0, b: p1, d: (p0.depth + p1.depth) * 0.5 });
             lines.push({ a: p0, b: p2, d: (p0.depth + p2.depth) * 0.5 });
           }
@@ -287,7 +294,7 @@
       });
       for (var i = 0; i < lines.length; i++) {
         var L = lines[i];
-        var alpha = fogAlpha(L.d) * 0.22;
+        var alpha = fogAlpha(L.d) * 0.38;
         ctx.strokeStyle = "rgba(180,109,255," + alpha.toFixed(3) + ")";
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -508,7 +515,7 @@
       var tip = pointOnPath(path, segLens, totalLen, uptoDist);
       tip.dist = uptoDist;
 
-      updateCamera(tip, progress);
+      updateCamera(progress);
       lightNodes(uptoDist);
 
       if (!reducedMotion && progress < 1 && Math.random() < 0.55) {
@@ -565,7 +572,7 @@
         var tip = pointOnPath(path, segLens, totalLen, totalLen);
         tip.dist = totalLen;
         tip.seg = path.length - 2;
-        updateCamera(tip, 1);
+        updateCamera(1);
         lightNodes(totalLen);
         drawBackground(canvas.clientWidth, canvas.clientHeight);
         drawGrid();
