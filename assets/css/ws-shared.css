@@ -466,12 +466,17 @@ textarea {
 }
 
 .ws-theme-btn[data-theme="light"] .ws-theme-icon {
-  background: var(--ws-accent);
+  /* Sun: compact disc + 8 rays (cardinal + diagonal) */
+  background: radial-gradient(circle, var(--ws-accent) 0 36%, transparent 38%);
   box-shadow:
-    0 -7px 0 -5px var(--ws-accent),
-    0 7px 0 -5px var(--ws-accent),
-    7px 0 0 -5px var(--ws-accent),
-    -7px 0 0 -5px var(--ws-accent),
+    0 -0.42rem 0 -0.3rem var(--ws-accent),
+    0 0.42rem 0 -0.3rem var(--ws-accent),
+    0.42rem 0 0 -0.3rem var(--ws-accent),
+    -0.42rem 0 0 -0.3rem var(--ws-accent),
+    0.3rem -0.3rem 0 -0.3rem var(--ws-accent),
+    -0.3rem 0.3rem 0 -0.3rem var(--ws-accent),
+    0.3rem 0.3rem 0 -0.3rem var(--ws-accent),
+    -0.3rem -0.3rem 0 -0.3rem var(--ws-accent),
     0 0 0 2px color-mix(in oklab, var(--ws-accent) 18%, transparent);
 }
 
