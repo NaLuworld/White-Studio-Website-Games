@@ -40,7 +40,7 @@ Do not reuse Tools allowlist checks on Games routes. Games callback (`intent=gam
 ## Player journey (open floor)
 
 1. Land on hub arcade lobby — no Discord required
-2. Pick a cabinet (e.g. Neon Runner)
+2. Pick a cabinet (e.g. Snake)
 3. Play as guest; submit score with nickname
 4. Optional Discord login for identity / nickname prefill (`ws_games_session`)
 

@@ -48,7 +48,7 @@ Dev origins `http://127.0.0.1:4173` / `http://localhost:4173` are allowlisted on
 ## First game
 
 - Hub: `/`
-- Demo: `/games/demo-runner/` (Neon Runner)
+- Snake: `/games/snake/` (貪食蛇)
 
 ## Design system
 

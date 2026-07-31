@@ -24,7 +24,7 @@ HTML: `document.documentElement.lang` synced to the active locale.
 3. Prefer HTML `data-i18n="key"` for static copy.
 4. Attributes: `data-i18n-attr="placeholder:demo.nickname_ph"` or `data-i18n-attr="aria-label:brand.home_aria"`.
 5. JS dynamic strings: `WhiteStudioI18n.t("key")` or `t("key", { name: "…" })` with `{name}` placeholders.
-6. Proper nouns may stay identical in both locales (`Discord`, `White Studio`, `Neon Runner`).
+6. Proper nouns may stay identical in both locales (`Discord`, `White Studio`, `Snake`).
 7. Never hard-code user-facing chrome copy in new pages without a dictionary entry.
 
 ## Agent checklist (add / change copy)

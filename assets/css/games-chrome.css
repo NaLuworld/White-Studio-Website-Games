@@ -561,14 +561,14 @@ a.arcade-cabinet:hover .arcade-cabinet__art {
   }
 }
 
-.demo-runner-canvas {
+.snake-canvas {
   width: 100%;
   height: min(70vh, 520px);
   touch-action: none;
   image-rendering: pixelated;
 }
 
-.demo-runner-overlay {
+.snake-overlay {
   position: absolute;
   inset: 0;
   z-index: 3;
@@ -579,11 +579,11 @@ a.arcade-cabinet:hover .arcade-cabinet__art {
   text-align: center;
 }
 
-.demo-runner-overlay[hidden] {
+.snake-overlay[hidden] {
   display: none !important;
 }
 
-.demo-runner-overlay__card,
+.snake-overlay__card,
 .arcade-overlay-card {
   max-width: 22rem;
   padding: var(--ws-space-6);

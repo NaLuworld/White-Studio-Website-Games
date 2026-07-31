@@ -12,7 +12,7 @@
     if (!list.length) {
       root.innerHTML =
         '<p class="ws-status">' +
-        escapeHtml(emptyMessage || t("demo.board_empty")) +
+        escapeHtml(emptyMessage || t("snake.board_empty")) +
         "</p>";
       return;
     }
@@ -37,14 +37,14 @@
 
     root.innerHTML =
       '<table class="ws-leaderboard" aria-label="' +
-      escapeHtml(t("demo.board_title")) +
+      escapeHtml(t("snake.board_title")) +
       '">' +
       "<thead><tr><th>" +
-      escapeHtml(t("demo.col_rank")) +
+      escapeHtml(t("snake.col_rank")) +
       "</th><th>" +
-      escapeHtml(t("demo.col_player")) +
+      escapeHtml(t("snake.col_player")) +
       "</th><th>" +
-      escapeHtml(t("demo.col_score")) +
+      escapeHtml(t("snake.col_score")) +
       "</th></tr></thead>" +
       "<tbody>" +
       rows +
@@ -72,7 +72,7 @@
 
     async function refresh() {
       if (statusEl) {
-        statusEl.textContent = t("demo.board_loading");
+        statusEl.textContent = t("snake.board_loading");
         statusEl.className = "ws-status";
       }
       try {
@@ -80,14 +80,14 @@
         lastEntries = (result.data && result.data.entries) || [];
         renderLeaderboard(boardRoot, lastEntries);
         if (statusEl) {
-          statusEl.textContent = t("demo.board_updated", {
+          statusEl.textContent = t("snake.board_updated", {
             time: new Date().toLocaleTimeString()
           });
           statusEl.className = "ws-status ws-status--ok";
         }
       } catch (error) {
         if (statusEl) {
-          statusEl.textContent = error.message || t("demo.board_fail");
+          statusEl.textContent = error.message || t("snake.board_fail");
           statusEl.className = "ws-status ws-status--error";
         }
       }
@@ -105,13 +105,13 @@
         var playerName = nameInput ? nameInput.value.trim() : "";
         var score = scoreValueEl ? Number(scoreValueEl.textContent || scoreValueEl.value || 0) : 0;
         if (statusEl) {
-          statusEl.textContent = t("demo.loading");
+          statusEl.textContent = t("snake.loading");
           statusEl.className = "ws-status";
         }
         try {
           await api.submitScore(gameId, playerName, score);
           if (statusEl) {
-            statusEl.textContent = t("demo.submit_ok");
+            statusEl.textContent = t("snake.submit_ok");
             statusEl.className = "ws-status ws-status--ok";
           }
           try {
@@ -120,7 +120,7 @@
           await refresh();
         } catch (error) {
           if (statusEl) {
-            statusEl.textContent = error.message || t("demo.submit_fail");
+            statusEl.textContent = error.message || t("snake.submit_fail");
             statusEl.className = "ws-status ws-status--error";
           }
         }

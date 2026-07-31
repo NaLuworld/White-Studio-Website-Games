@@ -29,8 +29,8 @@ if bbox:
     x1 = min(cab.width, x1 + pad)
     y1 = min(cab.height, y1 + pad)
     cab = cab.crop((x0, y0, x1, y1))
-cab.save(out / "cabinet-neon-runner.png", optimize=True)
-cab.save(out / "cabinet-neon-runner.webp", "WEBP", quality=82, method=6)
+cab.save(out / "cabinet-snake.png", optimize=True)
+cab.save(out / "cabinet-snake.webp", "WEBP", quality=82, method=6)
 
 desk = Image.open(raw / "arcade-lobby-desktop-3840x2160.png").convert("RGB")
 desk_hi = desk.resize((2560, 1440), Image.Resampling.LANCZOS)

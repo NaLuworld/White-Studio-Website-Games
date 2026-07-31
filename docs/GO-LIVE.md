@@ -47,16 +47,16 @@ Confirm `ALLOWED_ORIGINS` includes `https://games.white-studio.org` (already in 
 
 ```bash
 curl -s https://api.white-studio.org/api/games
-curl -s -X POST https://api.white-studio.org/api/games/demo-runner/scores \
+curl -s -X POST https://api.white-studio.org/api/games/snake/scores \
   -H "content-type: application/json" \
   -H "origin: https://games.white-studio.org" \
   -d "{\"playerName\":\"LiveCheck\",\"score\":42}"
-curl -s "https://api.white-studio.org/api/games/demo-runner/leaderboard?limit=5"
+curl -s "https://api.white-studio.org/api/games/snake/leaderboard?limit=5"
 ```
 
 Open:
 
 - https://games.white-studio.org/
-- https://games.white-studio.org/games/demo-runner/
+- https://games.white-studio.org/games/snake/
 
-Expect: playable demo, submit score, board updates, no CORS errors.
+Expect: playable Snake, submit score, board updates, no CORS errors.

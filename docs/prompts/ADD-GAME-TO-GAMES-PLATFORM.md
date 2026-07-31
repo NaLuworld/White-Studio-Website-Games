@@ -25,7 +25,7 @@ Add a new playable mini-game under `/games/<game-id>/` on `https://games.white-s
 ## Implementation checklist
 
 1. Create `games/<game-id>/index.html`, game script/CSS.
-2. Reuse header/footer + chrome boot from `games/demo-runner/index.html`:
+2. Reuse header/footer + chrome boot from `games/snake/index.html`:
    - `/assets/js/theme-boot.js` in `<head>`
    - `/assets/js/i18n.js`, `/assets/js/games-auth.js`, `/assets/js/games-api.js`, `/assets/js/site-chrome.js`, `/assets/js/leaderboard-ui.js`
    - `WhiteStudioGames.bootChrome({ nicknameInput })`

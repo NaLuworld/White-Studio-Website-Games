@@ -23,7 +23,7 @@ Site derivatives encoded via `scripts/process_arcade_assets.py`.
 |------------|--------------|--------|
 | `lobby-desktop.webp` | ~52 KB (2560×1440 upscale) | ≤450 KB |
 | `lobby-mobile.webp` | ~50 KB (1440×2560 upscale) | ≤320 KB |
-| `cabinet-neon-runner.webp` | ~22 KB (+ PNG alpha fallback ~286 KB) | ≤220 KB webp |
+| `cabinet-snake.webp` | ~22 KB (+ PNG alpha fallback ~286 KB) | ≤220 KB webp |
 
 **CSS focus:** desktop `object-position: 72% 48%`; mobile `50% 62%`.
 
@@ -34,7 +34,7 @@ Site derivatives encoded via `scripts/process_arcade_assets.py`.
 | A1 | `arcade-style-anchor-2048.png` | _(none — style lock only)_ | 2048×2048 | Style anchor: materials, light, cabinet silhouette, color mix | Not on site | n/a |
 | A2 | `arcade-lobby-desktop-3840x2160.png` | `assets/images/arcade/lobby-desktop.webp` (+ optional `.jpg` fallback) | 3840×2160 (16:9) | PC / wide hero background | `.arcade-hero` / lobby stage | Yes (`alt=""`) |
 | A3 | `arcade-lobby-mobile-2160x3840.png` | `assets/images/arcade/lobby-mobile.webp` (+ optional `.jpg` fallback) | 2160×3840 (9:16) | Mobile-only recompose (not a crop of A2) | same via `<picture>` | Yes (`alt=""`) |
-| A4 | `arcade-cabinet-key-1536x2048.png` | `assets/images/arcade/cabinet-neon-runner.webp` (+ `.png` if alpha needed) | 1536×2048 (~3:4) | Single cabinet on chroma-key; post-process to alpha | `.arcade-cabinet` art / optional foreground | Prefer meaningful `alt` if contentful |
+| A4 | `arcade-cabinet-key-1536x2048.png` | `assets/images/arcade/cabinet-snake.webp` (+ `.png` if alpha needed) | 1536×2048 (~3:4) | Single cabinet on chroma-key; post-process to alpha | `.arcade-cabinet` art / optional foreground | Prefer meaningful `alt` if contentful |
 
 Suggested on-disk layout after handoff:
 
@@ -43,7 +43,7 @@ assets/images/arcade/
   _raw/                         # originals from Image 2 (git-ignored if huge)
   lobby-desktop.webp
   lobby-mobile.webp
-  cabinet-neon-runner.webp
+  cabinet-snake.webp
 ```
 
 ## Focal points & safe zones
@@ -89,7 +89,7 @@ assets/images/arcade/
 |-------|------------|-------|
 | `lobby-desktop.webp` | ≤ **450 KB** | quality ~75–82; long edge may downscale to 2560 if needed |
 | `lobby-mobile.webp` | ≤ **320 KB** | long edge may downscale to 1440–1920 |
-| `cabinet-neon-runner.webp` | ≤ **220 KB** | after chroma remove; keep alpha if PNG fallback |
+| `cabinet-snake.webp` | ≤ **220 KB** | after chroma remove; keep alpha if PNG fallback |
 
 Raw Image 2 PNG may be multi‑MB; do not ship raw 4K PNG to Pages without compression.
 
