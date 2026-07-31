@@ -1,5 +1,6 @@
 /**
- * Hub intro: Canvas2D pseudo-3D current path with a stable camera rail (current moves; lens does not chase).
+ * Hub intro: Canvas2D pseudo-3D current path.
+ * Camera position rides a stable rail; lookAt smoothly tracks the current tip (Deakins-style focus).
  * Exposed as WhiteStudioArcadeCurrent.create(canvas, options) → { start, stop, resize }.
  */
 (function (global) {
@@ -37,6 +38,11 @@
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
   }
 
+  /** Exponential damp toward target (frame-rate independent). Higher lambda = snappier. */
+  function damp(current, target, lambda, dt) {
+    return lerp(current, target, 1 - Math.exp(-lambda * dt));
+  }
+
   /** Gentle far→near S-curve on the arcade floor (x, z); y is height. */
   function buildPath() {
     return [
@@ -51,15 +57,15 @@
     ];
   }
 
-  /** Camera rail keyframes — independent of path corners. t in [0,1]. */
+  /** Camera position rail — lookAt is driven separately by the current tip. */
   function cameraKeyframes() {
     return [
-      // Wide overhead establishing shot
-      { t: 0, x: 0.15, y: 5.8, z: 11.5, lookX: 0, lookY: 0.2, lookZ: 6.5, fov: 1.28 },
-      // Mid push — still looking down the floor axis
-      { t: 0.55, x: 0.1, y: 4.4, z: 9.2, lookX: 0, lookY: 0.35, lookZ: 4.0, fov: 1.18 },
+      // Wide establishing shot (tip will pull look toward the far current)
+      { t: 0, x: 0.2, y: 5.2, z: 12.2, lookX: 0, lookY: 0.25, lookZ: 8.0, fov: 1.32 },
+      // Mid push — still framed on the floor axis
+      { t: 0.55, x: 0.12, y: 4.2, z: 9.6, lookX: 0, lookY: 0.4, lookZ: 4.5, fov: 1.16 },
       // Soft settle toward hub
-      { t: 1, x: 0.05, y: 3.6, z: 7.4, lookX: 0, lookY: 0.55, lookZ: 1.2, fov: 1.1 }
+      { t: 1, x: 0.05, y: 3.5, z: 7.6, lookX: 0, lookY: 0.55, lookZ: 1.4, fov: 1.05 }
     ];
   }
 
@@ -181,11 +187,19 @@
       x: camStart.x,
       y: camStart.y,
       z: camStart.z,
-      lookX: camStart.lookX,
-      lookY: camStart.lookY,
-      lookZ: camStart.lookZ,
+      lookX: path[0].x,
+      lookY: path[0].y + 0.15,
+      lookZ: path[0].z,
       fov: camStart.fov
     };
+    var lookState = {
+      x: path[0].x,
+      y: path[0].y + 0.15,
+      z: path[0].z
+    };
+    var lastFrameTs = 0;
+    var LOOK_AHEAD_FRAC = 0.08;
+    var LOOK_DAMP = 7.5;
 
     var sparks = [];
     var trail = [];
@@ -217,8 +231,8 @@
       var rz = relX * sin + relZ * cos;
       var ry = relY;
 
-      // Slight pitch down — horizon sits mid-lower so brand copy stays clear above
-      var pitch = 0.42;
+      // Horizon mid-lower so brand copy stays clear; tip sits in focus band
+      var pitch = 0.4;
       var cp = Math.cos(pitch);
       var sp = Math.sin(pitch);
       var py = ry * cp - rz * sp;
@@ -227,10 +241,10 @@
       var depth = Math.max(0.45, pz);
       var width = canvas.clientWidth;
       var height = canvas.clientHeight;
-      var scale = (height * 0.62) / (cam.fov * depth);
+      var scale = (height * 0.64) / (cam.fov * depth);
       return {
         x: width * 0.5 + rx * scale,
-        y: height * 0.72 - py * scale,
+        y: height * 0.7 - py * scale,
         depth: depth,
         scale: scale
       };
@@ -240,16 +254,29 @@
       return clamp(1 - (depth - 1.4) / 18, 0.12, 1);
     }
 
-    function updateCamera(t) {
-      // Smooth rail only — never chase the current tip or segment yaw.
+    function updateCamera(t, tip, dt) {
+      // Position + FOV: stable rail (no tip chase → no shake).
       var sample = sampleCameraRail(camRail, t);
       cam.x = sample.x;
       cam.y = sample.y;
       cam.z = sample.z;
-      cam.lookX = sample.lookX;
-      cam.lookY = sample.lookY;
-      cam.lookZ = sample.lookZ;
-      cam.fov = sample.fov;
+      // Slight extra zoom-in as the current completes (MotorCortex-style).
+      cam.fov = sample.fov * (1 - t * 0.06);
+
+      // LookAt: Deakins-style focus on tip (+ short look-ahead), heavily damped.
+      var aheadDist = tip.dist + totalLen * LOOK_AHEAD_FRAC;
+      var focus = pointOnPath(path, segLens, totalLen, aheadDist);
+      var desiredX = focus.x;
+      var desiredY = focus.y + 0.2;
+      var desiredZ = focus.z;
+      var step = reducedMotion ? 1 : dt;
+      var lambda = reducedMotion ? 40 : LOOK_DAMP;
+      lookState.x = damp(lookState.x, desiredX, lambda, step);
+      lookState.y = damp(lookState.y, desiredY, lambda, step);
+      lookState.z = damp(lookState.z, desiredZ, lambda, step);
+      cam.lookX = lookState.x;
+      cam.lookY = lookState.y;
+      cam.lookZ = lookState.z;
     }
 
     function drawBackground(width, height) {
@@ -312,11 +339,11 @@
       var alpha = fogAlpha(base.depth);
       var lit = node.lit;
       ctx.save();
-      ctx.globalAlpha = alpha;
-      ctx.fillStyle = lit > 0.05 ? colors.accent : "rgba(40,32,58,0.95)";
-      ctx.fillRect(base.x - w * 0.35, top.y, w * 0.7, h);
-      ctx.fillStyle = lit > 0.2 ? colors.tip : "rgba(20,18,30,0.9)";
       ctx.globalAlpha = alpha * (0.35 + lit * 0.65);
+      ctx.fillStyle = lit > 0.05 ? colors.accent : "rgba(28,22,40,0.9)";
+      ctx.fillRect(base.x - w * 0.35, top.y, w * 0.7, h);
+      ctx.fillStyle = lit > 0.2 ? colors.tip : "rgba(16,14,24,0.9)";
+      ctx.globalAlpha = alpha * (0.2 + lit * 0.8);
       ctx.fillRect(base.x - w * 0.22, top.y + h * 0.12, w * 0.44, h * 0.28);
       if (lit > 0.15) {
         ctx.shadowColor = colors.accent2;
@@ -474,10 +501,15 @@
 
     function drawTip(tip) {
       var p = project(tip.x, tip.y, tip.z);
-      var r = Math.max(3, 7 * (p.scale / 90));
+      var grow = 1 + progress * 0.55;
+      var r = Math.max(3.5, 8 * grow * (p.scale / 90));
       ctx.save();
       ctx.shadowColor = colors.tip;
-      ctx.shadowBlur = 22;
+      ctx.shadowBlur = 28 + progress * 18;
+      ctx.beginPath();
+      ctx.fillStyle = "rgba(98,231,255,0.28)";
+      ctx.arc(p.x, p.y, r * 2.1, 0, Math.PI * 2);
+      ctx.fill();
       ctx.beginPath();
       ctx.fillStyle = colors.tip;
       ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
@@ -505,6 +537,10 @@
     function frame(ts) {
       if (!running) return;
       if (!startTs) startTs = ts;
+      if (!lastFrameTs) lastFrameTs = ts;
+      var dt = clamp((ts - lastFrameTs) / 1000, 0.001, 0.05);
+      lastFrameTs = ts;
+
       var elapsed = ts - startTs;
       var rawT = reducedMotion ? 1 : clamp(elapsed / durationMs, 0, 1);
       progress = easeInOutCubic(rawT);
@@ -515,7 +551,7 @@
       var tip = pointOnPath(path, segLens, totalLen, uptoDist);
       tip.dist = uptoDist;
 
-      updateCamera(progress);
+      updateCamera(progress, tip, dt);
       lightNodes(uptoDist);
 
       if (!reducedMotion && progress < 1 && Math.random() < 0.55) {
@@ -562,17 +598,24 @@
       resize();
       running = true;
       startTs = 0;
+      lastFrameTs = 0;
       progress = reducedMotion ? 1 : 0;
       settled = false;
       sparks.length = 0;
       trail.length = 0;
+      lookState.x = path[0].x;
+      lookState.y = path[0].y + 0.15;
+      lookState.z = path[0].z;
       for (var i = 0; i < nodes.length; i++) nodes[i].lit = reducedMotion ? 1 : 0;
 
       if (reducedMotion) {
         var tip = pointOnPath(path, segLens, totalLen, totalLen);
         tip.dist = totalLen;
         tip.seg = path.length - 2;
-        updateCamera(1);
+        lookState.x = tip.x;
+        lookState.y = tip.y + 0.2;
+        lookState.z = tip.z;
+        updateCamera(1, tip, 1);
         lightNodes(totalLen);
         drawBackground(canvas.clientWidth, canvas.clientHeight);
         drawGrid();
