@@ -1,10 +1,10 @@
 /**
  * Hub entrance overlay controller.
  * Canvas path opens on black with the title, then dips into
- * WhiteStudioArcadeCurrent (first-person cable / data-stream loading);
- * mobile uses a dedicated portrait signal-link sequence;
+ * WhiteStudioArcadeCurrent (first-person cable / data-stream loading)
+ * on both desktop and phone (phone retunes quality / portrait framing).
  * reduced-motion falls back to lobby still + short hold.
- * Skip: click / Enter / Space / Escape.
+ * Skip: pointer / click / Enter / Space / Escape.
  * Wireframe corridor prototype lives in arcade-tunnel-scene.js (not loaded here).
  */
 (function (global) {
@@ -14,7 +14,6 @@
   var FADE_MS = 350;
   var REDUCED_HOLD_MS = 120;
   var CABLE_LEAD_MS = 700;
-  var MOBILE_HOLD_MS = 1800;
   var INTRO_SKIP_KEY = "ws_arcade_intro_skip_v1";
 
   function prefersReducedMotion() {
@@ -27,7 +26,7 @@
     }
   }
 
-  function prefersMobileIntro() {
+  function prefersPhoneLayout() {
     try {
       return Boolean(window.matchMedia && window.matchMedia("(max-width: 768px)").matches);
     } catch (_) {
@@ -66,10 +65,9 @@
     var resolveDone = null;
     var scene = null;
     var reduced = prefersReducedMotion();
-    var mobile = !reduced && prefersMobileIntro();
+    var phone = prefersPhoneLayout();
     var canvas = el.querySelector(".arcade-intro__canvas");
     var media = el.querySelector(".arcade-intro__media");
-    var mobileSignal = el.querySelector(".arcade-intro__mobile-signal");
 
     var done = new Promise(function (resolve) {
       resolveDone = resolve;
@@ -96,6 +94,7 @@
         "is-ready",
         "is-streaming",
         "is-canvas",
+        "is-phone",
         "is-mobile",
         "is-fallback-media"
       );
@@ -155,23 +154,19 @@
 
     var useCanvas =
       canvas &&
-      !mobile &&
       !reduced &&
       global.WhiteStudioArcadeCurrent &&
       typeof global.WhiteStudioArcadeCurrent.create === "function";
 
-    if (mobile) {
-      el.classList.add("is-mobile");
-      if (canvas) canvas.hidden = true;
-      if (media) media.hidden = true;
-      if (mobileSignal) mobileSignal.hidden = false;
-      holdTimer = window.setTimeout(finish, MOBILE_HOLD_MS);
-    } else if (useCanvas) {
+    if (useCanvas) {
       el.classList.add("is-canvas");
+      if (phone) el.classList.add("is-phone");
       if (media) media.hidden = true;
-      if (mobileSignal) mobileSignal.hidden = true;
+      if (canvas) canvas.hidden = false;
       scene = global.WhiteStudioArcadeCurrent.create(canvas, {
         reducedMotion: false,
+        quality: phone ? "phone" : "desktop",
+        portrait: phone,
         durationMs:
           (global.WhiteStudioArcadeCurrent &&
             global.WhiteStudioArcadeCurrent.DEFAULT_DURATION_MS) ||
@@ -189,7 +184,6 @@
       el.classList.add("is-fallback-media");
       if (canvas) canvas.hidden = true;
       if (media) media.hidden = false;
-      if (mobileSignal) mobileSignal.hidden = true;
       var hold = reduced ? REDUCED_HOLD_MS : HOLD_MS;
       holdTimer = window.setTimeout(finish, hold);
     }

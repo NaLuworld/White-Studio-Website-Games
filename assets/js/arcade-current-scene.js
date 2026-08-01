@@ -51,7 +51,12 @@
     options = options || {};
     var reducedMotion = Boolean(options.reducedMotion);
     var durationMs = Number(options.durationMs) || DEFAULT_DURATION_MS;
-    var ctx = canvas.getContext("2d");
+    var quality =
+      options.quality === "phone" || options.quality === "desktop"
+        ? options.quality
+        : null;
+    var forcePortrait = Boolean(options.portrait);
+    var ctx = canvas.getContext("2d", { alpha: false });
     if (!ctx) {
       return {
         start: function () {
@@ -73,6 +78,8 @@
     var resolveDone = null;
     var colors = readThemeColors();
     var mobile = false;
+    var phone = false;
+    var portrait = false;
     var frameIndex = 0;
 
     var camZ = 0;
@@ -81,6 +88,7 @@
     var centerY = 0.58;
     var tubeRadius = 1.35;
     var tubeInner = 1.18;
+    var tubeYScale = 0.72;
     var scrollZ = 0;
 
     var streakCount = 90;
@@ -93,24 +101,49 @@
     var bloomStreaks = [];
 
     function resize() {
-      dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
       var rect = canvas.getBoundingClientRect();
-      var w = Math.max(1, Math.floor(rect.width * dpr));
-      var h = Math.max(1, Math.floor(rect.height * dpr));
+      var cw = Math.max(1, rect.width);
+      var ch = Math.max(1, rect.height);
+      phone = quality === "phone" || (quality == null && cw < 720);
+      portrait = forcePortrait || ch > cw * 1.05;
+      mobile = phone || cw < 720;
+
+      var dprCap = phone ? 1.5 : 2;
+      dpr = Math.max(1, Math.min(dprCap, window.devicePixelRatio || 1));
+      var w = Math.max(1, Math.floor(cw * dpr));
+      var h = Math.max(1, Math.floor(ch * dpr));
       if (canvas.width !== w || canvas.height !== h) {
         canvas.width = w;
         canvas.height = h;
       }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      var cw = Math.max(1, canvas.clientWidth);
-      mobile = cw < 720;
-      streakCount = mobile ? 48 : 90;
-      packetCount = mobile ? 18 : 32;
-      dustCount = mobile ? 40 : 80;
-      baseFocal = mobile ? 380 : 480;
+
+      if (phone) {
+        streakCount = 36;
+        packetCount = 14;
+        dustCount = 28;
+        baseFocal = portrait ? 320 : 360;
+        centerY = portrait ? 0.62 : 0.56;
+        ribCount = 9;
+        tubeYScale = portrait ? 0.88 : 0.72;
+      } else if (mobile) {
+        streakCount = 48;
+        packetCount = 18;
+        dustCount = 40;
+        baseFocal = 380;
+        centerY = 0.56;
+        ribCount = 10;
+        tubeYScale = 0.72;
+      } else {
+        streakCount = 90;
+        packetCount = 32;
+        dustCount = 80;
+        baseFocal = 480;
+        centerY = 0.58;
+        ribCount = 12;
+        tubeYScale = 0.72;
+      }
       focal = baseFocal;
-      centerY = mobile ? 0.56 : 0.58;
-      ribCount = mobile ? 10 : 12;
       ensureActors();
     }
 
@@ -196,11 +229,11 @@
     }
 
     function tubePoint(ang, radial, z) {
-      return project(Math.cos(ang) * radial, Math.sin(ang) * radial * 0.72, z);
+      return project(Math.cos(ang) * radial, Math.sin(ang) * radial * tubeYScale, z);
     }
 
     function strokeRing(z, radius, stroke, lineW, glow) {
-      var segs = mobile ? 22 : 32;
+      var segs = phone ? 18 : mobile ? 22 : 32;
       ctx.beginPath();
       var started = false;
       for (var s = 0; s <= segs; s++) {
@@ -584,13 +617,15 @@
 
     function drawBloomPass() {
       if (!bloomStreaks.length) return;
+      if (phone && frameIndex % 2 === 1) return;
       ctx.save();
       ctx.globalCompositeOperation = "lighter";
-      ctx.globalAlpha = 0.28;
-      for (var i = 0; i < bloomStreaks.length; i++) {
+      ctx.globalAlpha = phone ? 0.2 : 0.28;
+      var limit = phone ? Math.min(bloomStreaks.length, 18) : bloomStreaks.length;
+      for (var i = 0; i < limit; i++) {
         var b = bloomStreaks[i];
         ctx.strokeStyle = b.tip ? "rgba(98,231,255,0.9)" : "rgba(192,132,255,0.85)";
-        ctx.lineWidth = b.lw * 2.4;
+        ctx.lineWidth = b.lw * (phone ? 1.8 : 2.4);
         ctx.lineCap = "round";
         ctx.beginPath();
         ctx.moveTo(b.far.x, b.far.y);
@@ -601,6 +636,7 @@
     }
 
     function drawGrain(width, height) {
+      if (phone) return;
       if (mobile && frameIndex % 2 === 1) return;
       var count = mobile ? 90 : 160;
       ctx.save();
