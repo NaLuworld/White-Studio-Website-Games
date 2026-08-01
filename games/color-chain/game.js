@@ -141,7 +141,8 @@
       if (render.state && (render.state.pendingWild || render.state.pendingReveal)) return;
       sfxPlay();
       net.send({ type: "action:playCard", cardId: cardId });
-    }
+    },
+    onSfxPlay: sfxPlay
   });
 
   var lobby = new ColorChainLobby(

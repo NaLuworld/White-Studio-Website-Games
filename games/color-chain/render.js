@@ -119,7 +119,7 @@
     el.classList.add("cc-card--land");
   };
 
-  ColorChainRender.prototype.spawnFlyToDiscard = function (card) {
+  ColorChainRender.prototype.spawnFlyToDiscard = function (card, fromEl) {
     if (reduceMotion || !card) {
       this.pulseDiscard(card);
       return;
@@ -134,8 +134,15 @@
     layer.appendChild(fly);
     var rect = discard.getBoundingClientRect();
     var rootRect = this.root.getBoundingClientRect();
-    fly.style.left = Math.max(12, rootRect.width / 2 - 32) + "px";
-    fly.style.top = Math.max(40, rootRect.height * 0.55) + "px";
+    var startLeft = Math.max(12, rootRect.width / 2 - 32);
+    var startTop = Math.max(40, rootRect.height * 0.55);
+    if (fromEl && fromEl.getBoundingClientRect) {
+      var fromRect = fromEl.getBoundingClientRect();
+      startLeft = fromRect.left - rootRect.left + Math.max(0, (fromRect.width - 64) / 2);
+      startTop = fromRect.top - rootRect.top + Math.max(0, (fromRect.height - 92) / 2);
+    }
+    fly.style.left = startLeft + "px";
+    fly.style.top = startTop + "px";
     requestAnimationFrame(function () {
       fly.style.left = rect.left - rootRect.left + "px";
       fly.style.top = rect.top - rootRect.top + "px";
@@ -143,7 +150,7 @@
     });
     setTimeout(function () {
       if (fly.parentNode) fly.parentNode.removeChild(fly);
-    }, 420);
+    }, 480);
   };
 
   ColorChainRender.prototype.diffAndAnimate = function (state) {
@@ -169,6 +176,16 @@
     var nextTop = state.topDiscard && state.topDiscard.id;
     var topChanged = prevTop !== nextTop && !!state.topDiscard;
 
+    var prevOpp = {};
+    (prev.seats || []).forEach(function (s) {
+      prevOpp[s.index] = s.handCount;
+    });
+
+    this._pendingFly = null;
+    this._pendingFlyFromSeat = null;
+    this._pendingLand = false;
+    this._pendingPlayedSeat = null;
+
     if (lost.length === 1 && topChanged && state.topDiscard.id === lost[0].id) {
       this._pendingFly = state.topDiscard;
       this._pendingLand = true;
@@ -176,13 +193,32 @@
         t("color_chain.fx_you_played", "You played {card}").replace("{card}", cardShort(state.topDiscard))
       );
     } else if (topChanged && lost.length === 0) {
+      var fromSeat = null;
+      var playerName = "";
+      (state.seats || []).forEach(function (seat) {
+        if (seat.index === state.viewerSeat) return;
+        var prevCount = prevOpp[seat.index];
+        if (prevCount != null && seat.handCount === prevCount - 1) {
+          fromSeat = seat.index;
+          playerName = seat.name || "";
+        }
+      });
+      this._pendingFly = state.topDiscard;
+      this._pendingFlyFromSeat = fromSeat;
+      this._pendingPlayedSeat = fromSeat;
       this._pendingLand = true;
-      this.showToast(
-        t("color_chain.fx_played", "Played {card}").replace("{card}", cardShort(state.topDiscard))
-      );
-    } else {
-      this._pendingFly = null;
-      this._pendingLand = false;
+      if (this.hooks.onSfxPlay) this.hooks.onSfxPlay();
+      if (playerName) {
+        this.showToast(
+          t("color_chain.fx_played_by", "{name} played {card}")
+            .replace("{name}", playerName)
+            .replace("{card}", cardShort(state.topDiscard))
+        );
+      } else {
+        this.showToast(
+          t("color_chain.fx_played", "Played {card}").replace("{card}", cardShort(state.topDiscard))
+        );
+      }
     }
 
     if (gained.length > 0) {
@@ -259,15 +295,19 @@
           prevOpp[s.index] = s.handCount;
         });
       }
+      var playedSeat = this._pendingPlayedSeat;
       (state.seats || []).forEach(function (seat) {
         if (seat.index === state.viewerSeat) return;
         var zone = document.createElement("div");
         var grew = prevOpp[seat.index] != null && seat.handCount > prevOpp[seat.index];
+        var played = playedSeat === seat.index;
         zone.className =
           "cc-opp" +
           (seat.isTurn ? " cc-opp--turn" : "") +
           (!seat.connected ? " cc-opp--away" : "") +
-          (grew ? " cc-opp--drew" : "");
+          (grew ? " cc-opp--drew" : "") +
+          (played ? " cc-opp--played" : "");
+        zone.dataset.seatIndex = String(seat.index);
         var label = document.createElement("div");
         label.className = "cc-opp__label";
         label.textContent = seat.name + (seat.isBot ? " · AI" : "") + " · " + seat.handCount;
@@ -345,8 +385,15 @@
     if (colorModal) colorModal.classList.toggle("is-open", !!state.pendingWild);
 
     if (this._pendingFly) {
-      this.spawnFlyToDiscard(this._pendingFly);
+      var fromEl = null;
+      if (this._pendingFlyFromSeat != null) {
+        fromEl = this.root.querySelector(
+          '.cc-opp[data-seat-index="' + String(this._pendingFlyFromSeat) + '"] .cc-hand--opp'
+        );
+      }
+      this.spawnFlyToDiscard(this._pendingFly, fromEl);
       this._pendingFly = null;
+      this._pendingFlyFromSeat = null;
     }
     if (this._pendingLand) {
       var selfLand = this;
@@ -355,6 +402,7 @@
       });
       this._pendingLand = false;
     }
+    this._pendingPlayedSeat = null;
 
     this.prev = {
       phase: state.phase,

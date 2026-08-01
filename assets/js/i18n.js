@@ -102,7 +102,7 @@
     var code = canonicalizeLang(lang);
     if (catalogs[code]) return catalogs[code];
     var response = await fetch(
-      "/assets/i18n/" + encodeURIComponent(code) + ".json?v=20260802g",
+      "/assets/i18n/" + encodeURIComponent(code) + ".json?v=20260802h",
       {
         credentials: "same-origin",
         headers: { Accept: "application/json" }

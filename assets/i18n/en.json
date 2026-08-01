@@ -136,6 +136,7 @@
   "color_chain.show_join": "Join room",
   "color_chain.fx_you_played": "You played {card}",
   "color_chain.fx_played": "Played {card}",
+  "color_chain.fx_played_by": "{name} played {card}",
   "color_chain.fx_you_drew_one": "You drew {card}",
   "color_chain.fx_you_drew_n": "You drew {n} cards",
   "color_chain.fx_wild": "Wild",

@@ -136,6 +136,7 @@
   "color_chain.show_join": "加入房間",
   "color_chain.fx_you_played": "你出了 {card}",
   "color_chain.fx_played": "打出 {card}",
+  "color_chain.fx_played_by": "{name} 打出 {card}",
   "color_chain.fx_you_drew_one": "你摸到 {card}",
   "color_chain.fx_you_drew_n": "你摸了 {n} 張",
   "color_chain.fx_wild": "變色",
