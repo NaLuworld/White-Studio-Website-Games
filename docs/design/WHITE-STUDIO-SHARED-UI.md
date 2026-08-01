@@ -150,7 +150,7 @@ Aliases: `--bg`, `--panel`, `--text`, `--muted`, `--border`, `--accent`, `--acce
 
 Ship intentional arcade motion (respect `prefers-reduced-motion`):
 
-1. Hub entrance overlay (`#arcade-intro`) — Canvas2D current-path: stable camera rail + damped lookAt on the tip (~3.2s), skip on click/Enter/Space/Escape; every hub load; `prefers-reduced-motion` falls back to lobby still + short hold
+1. Hub entrance overlay (`#arcade-intro`) — Canvas2D spline current-path with subject-follow camera (~3.2s; trailing rig + full lookAt basis; full dim conduit then energized trail), skip on click/Enter/Space/Escape; every hub load; `prefers-reduced-motion` falls back to lobby still + short hold
 2. Ambient floor scanline / grid (`.games-page` pseudo-elements)
 3. Hero eyebrow glow pulse
 4. Primary CTA / neon pulse; cabinet hover neon lift
