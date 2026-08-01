@@ -740,6 +740,11 @@ a.arcade-cabinet:hover .arcade-cabinet__art {
   font-weight: 400;
 }
 
+#leaderboard-root {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .score-form {
   display: grid;
   gap: var(--ws-space-3);

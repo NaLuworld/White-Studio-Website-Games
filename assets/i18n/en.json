@@ -76,6 +76,7 @@
   "snake.col_rank": "#",
   "snake.col_player": "Player",
   "snake.col_score": "Score",
+  "snake.col_time": "Pushed",
   "snake.footer_back": "← Back to floor",
   "snake.canvas_aria": "Snake playfield",
   "snake.submit_ok": "Score submitted.",

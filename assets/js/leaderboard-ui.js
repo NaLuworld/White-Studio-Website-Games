@@ -6,6 +6,32 @@
     return key;
   }
 
+  function currentLocale() {
+    if (global.WhiteStudioI18n && typeof global.WhiteStudioI18n.getLang === "function") {
+      var lang = global.WhiteStudioI18n.getLang();
+      if (lang === "zh-Hant") return "zh-TW";
+      if (lang === "en") return "en";
+    }
+    return undefined;
+  }
+
+  function formatPushTime(value) {
+    if (!value) return "—";
+    var date = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(date.getTime())) return "—";
+    try {
+      return date.toLocaleString(currentLocale(), {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    } catch (_) {
+      return date.toISOString().slice(0, 16).replace("T", " ");
+    }
+  }
+
   function renderLeaderboard(root, entries, emptyMessage) {
     if (!root) return;
     var list = Array.isArray(entries) ? entries : [];
@@ -19,6 +45,11 @@
 
     var rows = list
       .map(function (entry) {
+        var pushLabel = formatPushTime(entry.createdAt);
+        var pushTitle =
+          entry.createdAt && pushLabel !== "—"
+            ? ' title="' + escapeHtml(String(entry.createdAt)) + '"'
+            : "";
         return (
           "<tr>" +
           "<td>" +
@@ -29,6 +60,11 @@
           "</td>" +
           "<td>" +
           escapeHtml(String(entry.score)) +
+          "</td>" +
+          '<td class="ws-leaderboard__time"' +
+          pushTitle +
+          ">" +
+          escapeHtml(pushLabel) +
           "</td>" +
           "</tr>"
         );
@@ -45,6 +81,8 @@
       escapeHtml(t("snake.col_player")) +
       "</th><th>" +
       escapeHtml(t("snake.col_score")) +
+      "</th><th>" +
+      escapeHtml(t("snake.col_time")) +
       "</th></tr></thead>" +
       "<tbody>" +
       rows +

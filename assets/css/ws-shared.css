@@ -822,6 +822,12 @@ a.ws-card:hover,
   text-shadow: 0 0 8px rgba(180, 109, 255, 0.4);
 }
 
+.ws-leaderboard__time {
+  color: var(--ws-text-muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
 .ws-status {
   margin: 0;
   color: var(--ws-text-muted);
