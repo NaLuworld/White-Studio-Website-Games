@@ -144,11 +144,12 @@ html.is-arcade-intro {
   background:
     linear-gradient(
       180deg,
-      color-mix(in srgb, var(--ws-bg-page) 58%, transparent) 0%,
-      color-mix(in srgb, var(--ws-bg-page) 22%, transparent) 22%,
-      transparent 38%,
-      color-mix(in srgb, var(--ws-bg-page) 30%, transparent) 70%,
-      color-mix(in srgb, var(--ws-bg-page) 68%, transparent) 100%
+      color-mix(in srgb, var(--ws-bg-page) 62%, transparent) 0%,
+      color-mix(in srgb, var(--ws-bg-page) 18%, transparent) 18%,
+      transparent 32%,
+      transparent 62%,
+      color-mix(in srgb, var(--ws-bg-page) 35%, transparent) 78%,
+      color-mix(in srgb, var(--ws-bg-page) 72%, transparent) 100%
     );
 }
 
@@ -166,10 +167,11 @@ html[data-theme="light"] .arcade-intro__veil {
 html[data-theme="light"] .arcade-intro.is-canvas .arcade-intro__veil {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--ws-bg-page) 68%, transparent) 0%,
-    color-mix(in srgb, var(--ws-bg-page) 28%, transparent) 24%,
-    transparent 40%,
-    color-mix(in srgb, var(--ws-bg-page) 55%, transparent) 100%
+    color-mix(in srgb, var(--ws-bg-page) 70%, transparent) 0%,
+    color-mix(in srgb, var(--ws-bg-page) 22%, transparent) 20%,
+    transparent 36%,
+    transparent 64%,
+    color-mix(in srgb, var(--ws-bg-page) 58%, transparent) 100%
   );
 }
 
@@ -191,6 +193,63 @@ html[data-theme="light"] .arcade-intro.is-canvas .arcade-intro__veil {
 .arcade-intro.is-ready .arcade-intro__panel {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* Cable scene: brand sits in the upper band so the tube vanishing point stays open. */
+.arcade-intro.is-canvas .arcade-intro__panel {
+  align-self: start;
+  margin-top: clamp(4.5rem, 16vh, 9rem);
+  gap: var(--ws-space-3);
+  opacity: 1;
+  transform: none;
+  transition: none;
+  pointer-events: none;
+}
+
+.arcade-intro.is-canvas .arcade-intro__title {
+  font-size: clamp(0.88rem, 3.1vw, 1.4rem);
+  letter-spacing: 0.08em;
+  color: color-mix(in srgb, var(--ws-text-primary) 88%, var(--ws-accent-2));
+  text-shadow:
+    0 0 18px color-mix(in srgb, var(--ws-accent-2) 55%, transparent),
+    0 0 42px color-mix(in srgb, var(--ws-accent) 40%, transparent);
+  opacity: 0;
+  transform: scale(0.42) translateY(2.4rem);
+  filter: blur(6px);
+  transform-origin: 50% 60%;
+}
+
+.arcade-intro.is-canvas.is-ready .arcade-intro__title {
+  animation: arcade-intro-title-emerge 1.55s var(--ws-ease-out) 0.18s both;
+}
+
+.arcade-intro.is-canvas .arcade-intro__lede {
+  max-width: 22rem;
+  font-size: var(--ws-text-sm);
+  color: color-mix(in srgb, var(--ws-text-muted) 82%, var(--ws-accent-2));
+  opacity: 0;
+  transform: translateY(0.6rem);
+}
+
+.arcade-intro.is-canvas.is-ready .arcade-intro__lede {
+  animation: arcade-intro-copy-fade 0.9s var(--ws-ease-out) 0.85s both;
+}
+
+.arcade-intro.is-canvas .arcade-intro__hint,
+.arcade-intro.is-canvas .arcade-intro__pulse {
+  opacity: 0;
+}
+
+.arcade-intro.is-canvas.is-ready .arcade-intro__hint {
+  animation:
+    arcade-intro-copy-fade 0.7s var(--ws-ease-out) 1.15s both,
+    arcade-intro-datastream 0.85s ease-in-out 1.85s infinite;
+}
+
+.arcade-intro.is-canvas.is-ready .arcade-intro__pulse {
+  animation:
+    arcade-intro-copy-fade 0.7s var(--ws-ease-out) 1.15s both,
+    arcade-intro-datastream 0.85s ease-in-out 1.85s infinite;
 }
 
 .arcade-intro__title {
@@ -232,6 +291,39 @@ html[data-theme="light"] .arcade-intro.is-canvas .arcade-intro__veil {
   animation: arcade-intro-datastream 0.85s ease-in-out infinite;
 }
 
+/* Title emerges from cable depth like a hologram packet. */
+@keyframes arcade-intro-title-emerge {
+  0% {
+    opacity: 0;
+    transform: scale(0.38) translateY(2.8rem);
+    filter: blur(8px);
+    letter-spacing: 0.28em;
+  }
+  55% {
+    opacity: 0.72;
+    transform: scale(1.04) translateY(-0.15rem);
+    filter: blur(1px);
+    letter-spacing: 0.12em;
+  }
+  100% {
+    opacity: 0.92;
+    transform: scale(1) translateY(0);
+    filter: blur(0);
+    letter-spacing: 0.08em;
+  }
+}
+
+@keyframes arcade-intro-copy-fade {
+  from {
+    opacity: 0;
+    transform: translateY(0.55rem);
+  }
+  to {
+    opacity: 0.88;
+    transform: translateY(0);
+  }
+}
+
 /* Fast data-pulse rhythm aligned with cable current loading. */
 @keyframes arcade-intro-datastream {
   0%,
@@ -250,6 +342,10 @@ html[data-theme="light"] .arcade-intro.is-canvas .arcade-intro__veil {
   .arcade-intro__media img {
     object-position: 50% 62%;
   }
+
+  .arcade-intro.is-canvas .arcade-intro__panel {
+    margin-top: clamp(3.5rem, 12vh, 6.5rem);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -263,6 +359,20 @@ html[data-theme="light"] .arcade-intro.is-canvas .arcade-intro__veil {
   .arcade-intro__pulse {
     animation: none;
     opacity: 0.72;
+  }
+
+  .arcade-intro.is-canvas .arcade-intro__title,
+  .arcade-intro.is-canvas .arcade-intro__lede,
+  .arcade-intro.is-canvas .arcade-intro__hint,
+  .arcade-intro.is-canvas .arcade-intro__pulse,
+  .arcade-intro.is-canvas.is-ready .arcade-intro__title,
+  .arcade-intro.is-canvas.is-ready .arcade-intro__lede,
+  .arcade-intro.is-canvas.is-ready .arcade-intro__hint,
+  .arcade-intro.is-canvas.is-ready .arcade-intro__pulse {
+    animation: none;
+    opacity: 0.9;
+    transform: none;
+    filter: none;
   }
 
   .arcade-intro.is-ready .arcade-intro__panel {
