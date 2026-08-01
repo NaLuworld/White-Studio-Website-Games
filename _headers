@@ -5,7 +5,8 @@
   Cache-Control: public, max-age=0, must-revalidate
 
 /assets/*
-  Cache-Control: public, max-age=300, must-revalidate
+  Cache-Control: public, max-age=60, must-revalidate
+  CDN-Cache-Control: public, max-age=60, must-revalidate
 
 /games/*
   Cache-Control: public, max-age=0, must-revalidate

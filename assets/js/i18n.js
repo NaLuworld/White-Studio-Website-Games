@@ -101,10 +101,13 @@
   async function loadCatalog(lang) {
     var code = canonicalizeLang(lang);
     if (catalogs[code]) return catalogs[code];
-    var response = await fetch("/assets/i18n/" + encodeURIComponent(code) + ".json", {
-      credentials: "same-origin",
-      headers: { Accept: "application/json" }
-    });
+    var response = await fetch(
+      "/assets/i18n/" + encodeURIComponent(code) + ".json?v=20260801a",
+      {
+        credentials: "same-origin",
+        headers: { Accept: "application/json" }
+      }
+    );
     if (!response.ok) throw new Error("Failed to load i18n catalog: " + code);
     var json = await response.json();
     catalogs[code] = json && typeof json === "object" ? json : {};
