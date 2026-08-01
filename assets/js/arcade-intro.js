@@ -1,6 +1,7 @@
 /**
  * Hub entrance overlay controller.
- * Canvas path uses WhiteStudioArcadeCurrent (first-person cable / data-stream loading);
+ * Canvas path opens on black with the title, then dips into
+ * WhiteStudioArcadeCurrent (first-person cable / data-stream loading);
  * reduced-motion falls back to lobby still + short hold.
  * Skip: click / Enter / Space / Escape.
  * Wireframe corridor prototype lives in arcade-tunnel-scene.js (not loaded here).
@@ -11,6 +12,7 @@
   var HOLD_MS = 3200;
   var FADE_MS = 350;
   var REDUCED_HOLD_MS = 120;
+  var CABLE_LEAD_MS = 700;
 
   function prefersReducedMotion() {
     try {
@@ -57,7 +59,13 @@
       el.hidden = true;
       el.setAttribute("aria-hidden", "true");
       el.setAttribute("aria-busy", "false");
-      el.classList.remove("is-leaving", "is-ready", "is-canvas", "is-fallback-media");
+      el.classList.remove(
+        "is-leaving",
+        "is-ready",
+        "is-streaming",
+        "is-canvas",
+        "is-fallback-media"
+      );
       if (el.parentNode) el.parentNode.removeChild(el);
       if (resolveDone) {
         resolveDone(true);
@@ -115,9 +123,13 @@
           HOLD_MS
       });
       window.addEventListener("resize", onResize);
-      scene.start().then(function () {
-        if (!finished) finish();
-      });
+      holdTimer = window.setTimeout(function () {
+        if (finished) return;
+        el.classList.add("is-streaming");
+        scene.start().then(function () {
+          if (!finished) finish();
+        });
+      }, CABLE_LEAD_MS);
     } else {
       el.classList.add("is-fallback-media");
       if (canvas) canvas.hidden = true;

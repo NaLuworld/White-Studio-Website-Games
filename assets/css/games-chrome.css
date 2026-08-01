@@ -97,6 +97,26 @@ html.is-arcade-intro {
   touch-action: none;
 }
 
+.arcade-intro.is-canvas {
+  background: #030208;
+}
+
+.arcade-intro.is-canvas .arcade-intro__canvas {
+  opacity: 0;
+  transform: scale(0.985);
+  filter: brightness(0.35);
+  transition:
+    opacity 0.8s var(--ws-ease-out),
+    transform 1.1s var(--ws-ease-out),
+    filter 0.9s var(--ws-ease-out);
+}
+
+.arcade-intro.is-canvas.is-streaming .arcade-intro__canvas {
+  opacity: 1;
+  transform: scale(1);
+  filter: brightness(1);
+}
+
 .arcade-intro__media,
 .arcade-intro__media img {
   position: absolute;
@@ -392,6 +412,13 @@ html[data-theme="light"] .arcade-intro.is-canvas .arcade-intro__veil {
     transform: none;
     filter: none;
     mix-blend-mode: normal;
+  }
+
+  .arcade-intro.is-canvas .arcade-intro__canvas {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
   }
 
   .arcade-intro.is-ready .arcade-intro__panel {

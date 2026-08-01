@@ -150,7 +150,7 @@ Aliases: `--bg`, `--panel`, `--text`, `--muted`, `--border`, `--accent`, `--acce
 
 Ship intentional arcade motion (respect `prefers-reduced-motion`):
 
-1. Hub entrance overlay (`#arcade-intro`) — Canvas2D first-person cable / data-stream loading (~3.2s; layered tube walls, tiered streaks + dust, current-self core, tunnel-vision color wash, exit flare with bloom/chroma/grain quality pass); skip on click/Enter/Space/Escape; every hub load; `prefers-reduced-motion` falls back to lobby still + short hold. Inspired by SAO-style tunnel-vision link-in (brand neon only; no SAO trademarks). Wireframe corridor prototype retained as reusable module [`assets/js/arcade-tunnel-scene.js`](../../assets/js/arcade-tunnel-scene.js) (`WhiteStudioArcadeTunnel`) for future music / dodge games — not loaded by hub intro.
+1. Hub entrance overlay (`#arcade-intro`) — black title lead (~0.7s), then dip into Canvas2D first-person cable / data-stream loading (~3.2s; layered tube walls, tiered streaks + dust, current-self core, tunnel-vision color wash, exit flare with bloom/chroma/grain quality pass); skip on click/Enter/Space/Escape; every hub load; `prefers-reduced-motion` falls back to lobby still + short hold. Inspired by SAO-style tunnel-vision link-in (brand neon only; no SAO trademarks). Wireframe corridor prototype retained as reusable module [`assets/js/arcade-tunnel-scene.js`](../../assets/js/arcade-tunnel-scene.js) (`WhiteStudioArcadeTunnel`) for future music / dodge games — not loaded by hub intro.
 2. Ambient floor scanline / grid (`.games-page` pseudo-elements)
 3. Hero eyebrow glow pulse
 4. Primary CTA / neon pulse; cabinet hover neon lift
