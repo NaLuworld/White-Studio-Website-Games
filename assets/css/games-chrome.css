@@ -197,13 +197,24 @@ html[data-theme="light"] .arcade-intro.is-canvas .arcade-intro__veil {
 
 /* Cable scene: brand sits in the upper band so the tube vanishing point stays open. */
 .arcade-intro.is-canvas .arcade-intro__panel {
-  align-self: start;
-  margin-top: clamp(4.5rem, 16vh, 9rem);
+  align-self: stretch;
+  justify-self: center;
+  width: min(36rem, 100%);
+  height: 100%;
+  box-sizing: border-box;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: clamp(4.5rem, 16vh, 9rem);
+  padding-bottom: clamp(2.5rem, 8vh, 4.5rem);
   gap: var(--ws-space-3);
   opacity: 1;
   transform: none;
   transition: none;
   pointer-events: none;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto auto;
+  align-content: stretch;
+  justify-items: center;
 }
 
 .arcade-intro.is-canvas .arcade-intro__title {
@@ -217,6 +228,7 @@ html[data-theme="light"] .arcade-intro.is-canvas .arcade-intro__veil {
   transform: scale(0.42) translateY(2.4rem);
   filter: blur(6px);
   transform-origin: 50% 60%;
+  mix-blend-mode: screen;
 }
 
 .arcade-intro.is-canvas.is-ready .arcade-intro__title {
@@ -238,6 +250,11 @@ html[data-theme="light"] .arcade-intro.is-canvas .arcade-intro__veil {
 .arcade-intro.is-canvas .arcade-intro__hint,
 .arcade-intro.is-canvas .arcade-intro__pulse {
   opacity: 0;
+  align-self: end;
+}
+
+.arcade-intro.is-canvas .arcade-intro__hint {
+  margin-top: 0;
 }
 
 .arcade-intro.is-canvas.is-ready .arcade-intro__hint {
@@ -306,7 +323,7 @@ html[data-theme="light"] .arcade-intro.is-canvas .arcade-intro__veil {
     letter-spacing: 0.12em;
   }
   100% {
-    opacity: 0.92;
+    opacity: 0.85;
     transform: scale(1) translateY(0);
     filter: blur(0);
     letter-spacing: 0.08em;
@@ -344,7 +361,8 @@ html[data-theme="light"] .arcade-intro.is-canvas .arcade-intro__veil {
   }
 
   .arcade-intro.is-canvas .arcade-intro__panel {
-    margin-top: clamp(3.5rem, 12vh, 6.5rem);
+    padding-top: clamp(3.5rem, 12vh, 6.5rem);
+    padding-bottom: clamp(2rem, 7vh, 3.5rem);
   }
 }
 
@@ -373,6 +391,7 @@ html[data-theme="light"] .arcade-intro.is-canvas .arcade-intro__veil {
     opacity: 0.9;
     transform: none;
     filter: none;
+    mix-blend-mode: normal;
   }
 
   .arcade-intro.is-ready .arcade-intro__panel {
