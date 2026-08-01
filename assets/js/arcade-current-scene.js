@@ -775,10 +775,22 @@
       }
     }
 
+    // Soft reconnect / tab restore: keep the loop alive if the browser
+    // dropped rAF while the page was hidden, and refresh canvas metrics.
+    function nudge() {
+      if (!running) return;
+      resize();
+      if (!raf) {
+        lastFrameTs = 0;
+        raf = requestAnimationFrame(frame);
+      }
+    }
+
     return {
       start: start,
       stop: stop,
-      resize: resize
+      resize: resize,
+      nudge: nudge
     };
   }
 
