@@ -97,6 +97,10 @@ html.is-arcade-intro {
   touch-action: none;
 }
 
+.arcade-intro__mobile-signal {
+  display: none;
+}
+
 .arcade-intro.is-canvas {
   background: #030208;
 }
@@ -376,14 +380,300 @@ html[data-theme="light"] .arcade-intro.is-canvas .arcade-intro__veil {
 }
 
 @media (max-width: 768px) {
-  .arcade-intro__media img {
-    object-position: 50% 62%;
+  .arcade-intro.is-mobile {
+    place-items: stretch;
+    padding:
+      max(1.25rem, env(safe-area-inset-top))
+      max(1rem, env(safe-area-inset-right))
+      max(1.25rem, env(safe-area-inset-bottom))
+      max(1rem, env(safe-area-inset-left));
+    background:
+      radial-gradient(circle at 50% 43%, rgba(137, 54, 255, 0.2), transparent 35%),
+      linear-gradient(180deg, #020106 0%, #090315 52%, #020106 100%);
   }
 
-  .arcade-intro.is-canvas .arcade-intro__panel {
-    padding-top: clamp(3.5rem, 12vh, 6.5rem);
-    padding-bottom: clamp(2rem, 7vh, 3.5rem);
+  .arcade-intro.is-mobile::before,
+  .arcade-intro.is-mobile::after {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    pointer-events: none;
   }
+
+  .arcade-intro.is-mobile::before {
+    inset: 0;
+    background: repeating-linear-gradient(
+      180deg,
+      transparent 0,
+      transparent 3px,
+      rgba(202, 169, 255, 0.035) 4px
+    );
+    animation: arcade-mobile-scan 1.8s linear infinite;
+  }
+
+  .arcade-intro.is-mobile::after {
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    background: linear-gradient(
+      transparent 7%,
+      rgba(180, 109, 255, 0.65) 32%,
+      rgba(92, 229, 255, 0.9) 52%,
+      rgba(180, 109, 255, 0.55) 72%,
+      transparent 93%
+    );
+    box-shadow: 0 0 18px rgba(145, 80, 255, 0.7);
+    transform: scaleY(0);
+    transform-origin: 50% 50%;
+    animation: arcade-mobile-link-beam 1.1s var(--ws-ease-out) 0.12s forwards;
+  }
+
+  .arcade-intro.is-mobile .arcade-intro__canvas,
+  .arcade-intro.is-mobile .arcade-intro__media {
+    display: none !important;
+  }
+
+  .arcade-intro.is-mobile .arcade-intro__veil {
+    z-index: 2;
+    background:
+      linear-gradient(180deg, rgba(2, 1, 6, 0.72) 0%, transparent 24%, transparent 72%, rgba(2, 1, 6, 0.78) 100%),
+      radial-gradient(circle at 50% 50%, transparent 0%, rgba(2, 1, 6, 0.58) 76%);
+  }
+
+  .arcade-intro.is-mobile .arcade-intro__mobile-signal {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: block;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .arcade-intro__mobile-grid {
+    position: absolute;
+    inset: 42% -30% -20%;
+    background-image:
+      linear-gradient(rgba(161, 92, 255, 0.18) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(161, 92, 255, 0.18) 1px, transparent 1px);
+    background-size: 2.3rem 2.3rem;
+    mask-image: linear-gradient(180deg, transparent, #000 28%, #000 72%, transparent);
+    transform: perspective(16rem) rotateX(62deg) translateY(10%);
+    transform-origin: 50% 0;
+    animation: arcade-mobile-grid-flow 1s linear infinite;
+  }
+
+  .arcade-intro__mobile-orbit {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(42vw, 10.5rem);
+    aspect-ratio: 1;
+    border: 1px solid rgba(180, 109, 255, 0.5);
+    border-radius: 50%;
+    box-shadow:
+      0 0 2rem rgba(133, 54, 255, 0.34),
+      inset 0 0 1.5rem rgba(92, 229, 255, 0.08);
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.45);
+    animation: arcade-mobile-core-arrive 0.9s var(--ws-ease-out) 0.32s forwards;
+  }
+
+  .arcade-intro__mobile-orbit::before,
+  .arcade-intro__mobile-orbit::after,
+  .arcade-intro__mobile-orbit > span {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+  }
+
+  .arcade-intro__mobile-orbit::before {
+    inset: 12%;
+    border: 1px dashed rgba(92, 229, 255, 0.52);
+    animation: arcade-mobile-orbit 3.5s linear infinite;
+  }
+
+  .arcade-intro__mobile-orbit::after {
+    inset: 27%;
+    background: radial-gradient(circle, rgba(188, 132, 255, 0.26), rgba(72, 19, 140, 0.08) 58%, transparent 60%);
+    border: 1px solid rgba(210, 180, 255, 0.28);
+    animation: arcade-mobile-core-pulse 0.95s ease-in-out infinite;
+  }
+
+  .arcade-intro__mobile-orbit > span:nth-child(1) {
+    inset: -12%;
+    border: 1px solid rgba(180, 109, 255, 0.18);
+    border-right-color: rgba(92, 229, 255, 0.85);
+    animation: arcade-mobile-orbit 2.6s linear infinite reverse;
+  }
+
+  .arcade-intro__mobile-orbit > span:nth-child(2) {
+    inset: 21%;
+    border: 1px dotted rgba(213, 187, 255, 0.48);
+    animation: arcade-mobile-orbit 2s linear infinite;
+  }
+
+  .arcade-intro__mobile-orbit > span:nth-child(3) {
+    top: 50%;
+    left: -18%;
+    width: 136%;
+    height: 1px;
+    border-radius: 0;
+    background: linear-gradient(90deg, transparent, rgba(92, 229, 255, 0.75), transparent);
+    animation: arcade-mobile-cross-pulse 1.15s ease-in-out infinite;
+  }
+
+  .arcade-intro__mobile-orbit img {
+    position: absolute;
+    z-index: 2;
+    inset: 35%;
+    width: 30%;
+    height: 30%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 0.7rem rgba(196, 145, 255, 0.9));
+    opacity: 0.88;
+  }
+
+  .arcade-intro__mobile-packets i {
+    position: absolute;
+    left: calc(50% + var(--packet-x));
+    bottom: -8%;
+    width: 2px;
+    height: var(--packet-size);
+    border-radius: 999px;
+    background: linear-gradient(transparent, var(--ws-accent-2));
+    box-shadow: 0 0 0.6rem rgba(180, 109, 255, 0.9);
+    animation: arcade-mobile-packet var(--packet-speed) linear var(--packet-delay) infinite;
+  }
+
+  .arcade-intro__mobile-packets i:nth-child(1) { --packet-x: -38vw; --packet-size: 2.7rem; --packet-speed: 1.55s; --packet-delay: -0.4s; }
+  .arcade-intro__mobile-packets i:nth-child(2) { --packet-x: -23vw; --packet-size: 1.4rem; --packet-speed: 1.9s; --packet-delay: -1.2s; }
+  .arcade-intro__mobile-packets i:nth-child(3) { --packet-x: -9vw; --packet-size: 3.4rem; --packet-speed: 1.7s; --packet-delay: -0.8s; }
+  .arcade-intro__mobile-packets i:nth-child(4) { --packet-x: 12vw; --packet-size: 2.2rem; --packet-speed: 1.45s; --packet-delay: -1.1s; }
+  .arcade-intro__mobile-packets i:nth-child(5) { --packet-x: 26vw; --packet-size: 3rem; --packet-speed: 2s; --packet-delay: -0.2s; }
+  .arcade-intro__mobile-packets i:nth-child(6) { --packet-x: 39vw; --packet-size: 1.8rem; --packet-speed: 1.65s; --packet-delay: -1.45s; }
+
+  .arcade-intro__mobile-progress {
+    position: absolute;
+    right: max(1.1rem, env(safe-area-inset-right));
+    bottom: max(1.25rem, env(safe-area-inset-bottom));
+    left: max(1.1rem, env(safe-area-inset-left));
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.35rem;
+  }
+
+  .arcade-intro__mobile-progress span {
+    height: 2px;
+    background: rgba(180, 109, 255, 0.18);
+    transform: scaleX(0);
+    transform-origin: left;
+    animation: arcade-mobile-progress 0.32s var(--ws-ease-out) forwards;
+  }
+
+  .arcade-intro__mobile-progress span:nth-child(1) { animation-delay: 0.25s; }
+  .arcade-intro__mobile-progress span:nth-child(2) { animation-delay: 0.62s; }
+  .arcade-intro__mobile-progress span:nth-child(3) { animation-delay: 1s; }
+  .arcade-intro__mobile-progress span:nth-child(4) { animation-delay: 1.38s; }
+  .arcade-intro__mobile-progress span:nth-child(5) { animation-delay: 1.78s; }
+
+  .arcade-intro.is-mobile .arcade-intro__panel {
+    z-index: 3;
+    align-self: stretch;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto auto;
+    padding-top: clamp(3.5rem, 12svh, 6rem);
+    padding-bottom: clamp(2.75rem, 8svh, 4rem);
+    gap: 0.65rem;
+    opacity: 1;
+    transform: none;
+    pointer-events: none;
+  }
+
+  .arcade-intro.is-mobile .arcade-intro__title {
+    font-size: clamp(0.78rem, 4.4vw, 1.05rem);
+    line-height: 1.55;
+    letter-spacing: 0.09em;
+    opacity: 0;
+    transform: translateY(-0.7rem);
+    animation: arcade-mobile-title 0.7s var(--ws-ease-out) 0.12s forwards;
+  }
+
+  .arcade-intro.is-mobile .arcade-intro__lede {
+    max-width: 18rem;
+    font-size: 0.76rem;
+    opacity: 0;
+    animation: arcade-intro-copy-fade 0.55s var(--ws-ease-out) 0.72s forwards;
+  }
+
+  .arcade-intro.is-mobile .arcade-intro__hint {
+    grid-row: 4;
+    margin: 0;
+    font-size: 0.48rem;
+    animation: arcade-intro-datastream 0.72s ease-in-out infinite;
+  }
+
+  .arcade-intro.is-mobile .arcade-intro__pulse {
+    grid-row: 5;
+    width: min(12rem, 54vw);
+    margin-top: 0.25rem;
+    animation: arcade-mobile-pulse-width 1.1s ease-in-out infinite;
+  }
+}
+
+@keyframes arcade-mobile-link-beam {
+  0% { opacity: 0; transform: scaleY(0); }
+  45% { opacity: 1; }
+  100% { opacity: 0.52; transform: scaleY(1); }
+}
+
+@keyframes arcade-mobile-core-arrive {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.45) rotate(-18deg); filter: blur(7px); }
+  72% { opacity: 1; transform: translate(-50%, -50%) scale(1.06) rotate(2deg); filter: blur(0); }
+  100% { opacity: 0.92; transform: translate(-50%, -50%) scale(1) rotate(0); filter: blur(0); }
+}
+
+@keyframes arcade-mobile-orbit {
+  to { transform: rotate(1turn); }
+}
+
+@keyframes arcade-mobile-core-pulse {
+  50% { transform: scale(1.16); opacity: 0.58; }
+}
+
+@keyframes arcade-mobile-cross-pulse {
+  50% { opacity: 0.35; transform: scaleX(0.72); }
+}
+
+@keyframes arcade-mobile-grid-flow {
+  to { background-position: 0 2.3rem, 0 0; }
+}
+
+@keyframes arcade-mobile-packet {
+  0% { opacity: 0; transform: translateY(0) scaleY(0.5); }
+  18% { opacity: 0.9; }
+  82% { opacity: 0.72; }
+  100% { opacity: 0; transform: translateY(-112svh) scaleY(1.25); }
+}
+
+@keyframes arcade-mobile-progress {
+  to {
+    background: linear-gradient(90deg, var(--ws-accent), var(--ws-accent-2));
+    box-shadow: 0 0 0.5rem rgba(180, 109, 255, 0.65);
+    transform: scaleX(1);
+  }
+}
+
+@keyframes arcade-mobile-title {
+  to { opacity: 0.92; transform: translateY(0); }
+}
+
+@keyframes arcade-mobile-pulse-width {
+  50% { width: min(16rem, 68vw); opacity: 1; }
+}
+
+@keyframes arcade-mobile-scan {
+  to { transform: translateY(4px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -394,7 +684,16 @@ html[data-theme="light"] .arcade-intro.is-canvas .arcade-intro__veil {
   }
 
   .arcade-intro__hint,
-  .arcade-intro__pulse {
+  .arcade-intro__pulse,
+  .arcade-intro.is-mobile::before,
+  .arcade-intro.is-mobile::after,
+  .arcade-intro__mobile-grid,
+  .arcade-intro__mobile-orbit,
+  .arcade-intro__mobile-orbit::before,
+  .arcade-intro__mobile-orbit::after,
+  .arcade-intro__mobile-orbit > span,
+  .arcade-intro__mobile-packets i,
+  .arcade-intro__mobile-progress span {
     animation: none;
     opacity: 0.72;
   }

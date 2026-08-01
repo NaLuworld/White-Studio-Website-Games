@@ -2,6 +2,7 @@
  * Hub entrance overlay controller.
  * Canvas path opens on black with the title, then dips into
  * WhiteStudioArcadeCurrent (first-person cable / data-stream loading);
+ * mobile uses a dedicated portrait signal-link sequence;
  * reduced-motion falls back to lobby still + short hold.
  * Skip: click / Enter / Space / Escape.
  * Wireframe corridor prototype lives in arcade-tunnel-scene.js (not loaded here).
@@ -13,6 +14,7 @@
   var FADE_MS = 350;
   var REDUCED_HOLD_MS = 120;
   var CABLE_LEAD_MS = 700;
+  var MOBILE_HOLD_MS = 2600;
 
   function prefersReducedMotion() {
     try {
@@ -21,6 +23,14 @@
       );
     } catch (_) {
       return false;
+    }
+  }
+
+  function prefersMobileIntro() {
+    try {
+      return Boolean(window.matchMedia && window.matchMedia("(max-width: 768px)").matches);
+    } catch (_) {
+      return window.innerWidth <= 768;
     }
   }
 
@@ -37,8 +47,10 @@
     var resolveDone = null;
     var scene = null;
     var reduced = prefersReducedMotion();
+    var mobile = !reduced && prefersMobileIntro();
     var canvas = el.querySelector(".arcade-intro__canvas");
     var media = el.querySelector(".arcade-intro__media");
+    var mobileSignal = el.querySelector(".arcade-intro__mobile-signal");
 
     var done = new Promise(function (resolve) {
       resolveDone = resolve;
@@ -64,6 +76,7 @@
         "is-ready",
         "is-streaming",
         "is-canvas",
+        "is-mobile",
         "is-fallback-media"
       );
       if (el.parentNode) el.parentNode.removeChild(el);
@@ -108,13 +121,21 @@
 
     var useCanvas =
       canvas &&
+      !mobile &&
       !reduced &&
       global.WhiteStudioArcadeCurrent &&
       typeof global.WhiteStudioArcadeCurrent.create === "function";
 
-    if (useCanvas) {
+    if (mobile) {
+      el.classList.add("is-mobile");
+      if (canvas) canvas.hidden = true;
+      if (media) media.hidden = true;
+      if (mobileSignal) mobileSignal.hidden = false;
+      holdTimer = window.setTimeout(finish, MOBILE_HOLD_MS);
+    } else if (useCanvas) {
       el.classList.add("is-canvas");
       if (media) media.hidden = true;
+      if (mobileSignal) mobileSignal.hidden = true;
       scene = global.WhiteStudioArcadeCurrent.create(canvas, {
         reducedMotion: false,
         durationMs:
@@ -134,6 +155,7 @@
       el.classList.add("is-fallback-media");
       if (canvas) canvas.hidden = true;
       if (media) media.hidden = false;
+      if (mobileSignal) mobileSignal.hidden = true;
       var hold = reduced ? REDUCED_HOLD_MS : HOLD_MS;
       holdTimer = window.setTimeout(finish, hold);
     }
