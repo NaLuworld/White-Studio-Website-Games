@@ -1,5 +1,9 @@
 /* Color Chain — table + cards (chrome uses ws-shared tokens) */
 
+.color-chain-page [hidden] {
+  display: none !important;
+}
+
 .color-chain-page .cc-lobby {
   display: grid;
   gap: 1.25rem;
