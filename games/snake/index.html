@@ -2,18 +2,31 @@
 <html lang="zh-Hant">
   <head>
     <meta charset="utf-8" />
+    <script>
+      // A trailing-dot hostname ("games.white-studio.org.") is served normally but sends an
+      // Origin the API CORS allowlist rejects, so normalize it before any request is issued.
+      (function normalizeHost() {
+        try {
+          var host = location.hostname;
+          if (!host || host.charAt(host.length - 1) !== ".") return;
+          var url = new URL(location.href);
+          url.hostname = host.replace(/\.+$/, "");
+          if (url.hostname) location.replace(url.toString());
+        } catch (_) {}
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="color-scheme" content="dark light" />
     <meta name="ws-api-origin" content="https://api.white-studio.org" />
     <meta
       name="description"
-      content="Classic grid snake. Eat neon bites (+10), grow longer, climb the board ??White Studio Games."
+      content="Classic grid snake. Eat neon bites (+10), grow longer, climb the board — White Studio Games."
     />
     <link rel="canonical" href="https://games.white-studio.org/games/snake/" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="White Studio Games" />
     <meta property="og:url" content="https://games.white-studio.org/games/snake/" />
-    <meta property="og:title" content="貪�???· Snake · White Studio Games" />
+    <meta property="og:title" content="貪食蛇 · Snake · White Studio Games" />
     <meta
       property="og:description"
       content="Classic grid snake. Eat neon bites (+10), grow longer, climb the board."
@@ -21,9 +34,9 @@
     <meta property="og:image" content="https://games.white-studio.org/assets/images/og/snake.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="貪�?????White Studio Games" />
+    <meta property="og:image:alt" content="貪食蛇 · White Studio Games" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="貪�???· Snake · White Studio Games" />
+    <meta name="twitter:title" content="貪食蛇 · Snake · White Studio Games" />
     <meta
       name="twitter:description"
       content="Classic grid snake. Eat neon bites (+10), grow longer, climb the board."
@@ -120,10 +133,10 @@
       </div>
 
       <div class="snake-touch-pad" id="touch-pad" aria-hidden="true">
-        <button type="button" class="snake-touch-pad__btn" data-dir="up" data-i18n-attr="aria-label:snake.pad_up">??/button>
-        <button type="button" class="snake-touch-pad__btn" data-dir="left" data-i18n-attr="aria-label:snake.pad_left">?�</button>
-        <button type="button" class="snake-touch-pad__btn" data-dir="right" data-i18n-attr="aria-label:snake.pad_right">??/button>
-        <button type="button" class="snake-touch-pad__btn" data-dir="down" data-i18n-attr="aria-label:snake.pad_down">??/button>
+        <button type="button" class="snake-touch-pad__btn" data-dir="up" data-i18n-attr="aria-label:snake.pad_up">↑</button>
+        <button type="button" class="snake-touch-pad__btn" data-dir="left" data-i18n-attr="aria-label:snake.pad_left">←</button>
+        <button type="button" class="snake-touch-pad__btn" data-dir="right" data-i18n-attr="aria-label:snake.pad_right">→</button>
+        <button type="button" class="snake-touch-pad__btn" data-dir="down" data-i18n-attr="aria-label:snake.pad_down">↓</button>
       </div>
 
       <section class="snake-result-sheet" id="result-sheet" hidden>
@@ -151,7 +164,7 @@
             <span id="submit-score-value">0</span>
           </button>
         </form>
-        <p class="ws-status" id="board-status" data-i18n="snake.loading">Loading??/p>
+        <p class="ws-status" id="board-status" data-i18n="snake.loading">Loading…</p>
         <div class="snake-result-sheet__actions">
           <button type="button" class="ws-button ws-button--primary" id="again-button" data-i18n="snake.again">
             Play again
@@ -175,7 +188,7 @@
 
     <footer class="ws-site-footer">
       <div class="ws-container ws-site-footer__inner">
-        <a href="/" data-i18n="snake.footer_back">??Back to floor</a>
+        <a href="/" data-i18n="snake.footer_back">← Back to floor</a>
       </div>
     </footer>
 

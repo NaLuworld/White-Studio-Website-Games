@@ -80,6 +80,7 @@
     var mobile = false;
     var phone = false;
     var portrait = false;
+    var ultrawide = false;
     var frameIndex = 0;
 
     var camZ = 0;
@@ -89,6 +90,7 @@
     var tubeRadius = 1.35;
     var tubeInner = 1.18;
     var tubeYScale = 0.72;
+    var projectionXScale = 1;
     var scrollZ = 0;
 
     var streakCount = 90;
@@ -107,6 +109,8 @@
       phone = quality === "phone" || (quality == null && cw < 720);
       portrait = forcePortrait || ch > cw * 1.05;
       mobile = phone || cw < 720;
+      var aspect = cw / ch;
+      ultrawide = !phone && aspect >= 2.25;
 
       var dprCap = phone ? 1.5 : 2;
       dpr = Math.max(1, Math.min(dprCap, window.devicePixelRatio || 1));
@@ -126,6 +130,7 @@
         centerY = portrait ? 0.62 : 0.56;
         ribCount = 9;
         tubeYScale = portrait ? 0.88 : 0.72;
+        projectionXScale = 1;
       } else if (mobile) {
         streakCount = 48;
         packetCount = 18;
@@ -134,14 +139,27 @@
         centerY = 0.56;
         ribCount = 10;
         tubeYScale = 0.72;
+        projectionXScale = 1;
+      } else if (ultrawide) {
+        // Keep the tunnel cinematic at 21:9 without leaving empty side bands.
+        // Height drives focal length so 2560×1080 and 3440×1440 frame alike.
+        streakCount = 126;
+        packetCount = 44;
+        dustCount = 108;
+        baseFocal = clamp(ch * 0.445, 440, 600);
+        centerY = 0.56;
+        ribCount = 16;
+        tubeYScale = 0.72;
+        projectionXScale = clamp(aspect / (16 / 9), 1.18, 1.32);
       } else {
         streakCount = 90;
         packetCount = 32;
         dustCount = 80;
-        baseFocal = 480;
+        baseFocal = clamp(ch * 0.445, 420, 540);
         centerY = 0.58;
         ribCount = 12;
         tubeYScale = 0.72;
+        projectionXScale = 1;
       }
       focal = baseFocal;
       ensureActors();
@@ -216,7 +234,7 @@
       var height = canvas.clientHeight;
       var scale = focal / depth;
       return {
-        x: width * 0.5 + wx * scale,
+        x: width * 0.5 + wx * scale * projectionXScale,
         y: height * centerY - wy * scale,
         depth: depth,
         scale: scale,

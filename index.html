@@ -2,6 +2,19 @@
 <html lang="zh-Hant" class="is-arcade-intro">
   <head>
     <meta charset="utf-8" />
+    <script>
+      // A trailing-dot hostname ("games.white-studio.org.") is served normally but sends an
+      // Origin the API CORS allowlist rejects, so normalize it before any request is issued.
+      (function normalizeHost() {
+        try {
+          var host = location.hostname;
+          if (!host || host.charAt(host.length - 1) !== ".") return;
+          var url = new URL(location.href);
+          url.hostname = host.replace(/\.+$/, "");
+          if (url.hostname) location.replace(url.toString());
+        } catch (_) {}
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="color-scheme" content="dark light" />
     <meta name="ws-api-origin" content="https://api.white-studio.org" />
@@ -34,7 +47,7 @@
     <link rel="apple-touch-icon" href="/assets/images/white-studio-logo.png" />
     <script src="/assets/js/theme-boot.js"></script>
     <link rel="stylesheet" href="/assets/css/ws-shared.css?v=20260802b" />
-    <link rel="stylesheet" href="/assets/css/games-chrome.css?v=20260802b" />
+    <link rel="stylesheet" href="/assets/css/games-chrome.css?v=20260802d" />
   </head>
   <body class="games-page games-lobby">
     <div
@@ -198,7 +211,7 @@
     <script src="/assets/js/games-auth.js"></script>
     <script src="/assets/js/games-api.js"></script>
     <script src="/assets/js/site-chrome.js?v=20260802b"></script>
-    <script src="/assets/js/arcade-current-scene.js?v=20260802c"></script>
+    <script src="/assets/js/arcade-current-scene.js?v=20260802d"></script>
     <script src="/assets/js/arcade-intro.js?v=20260802c"></script>
     <script src="/assets/js/naru-pet.js?v=20260802b"></script>
     <script>

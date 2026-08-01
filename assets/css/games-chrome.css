@@ -268,6 +268,23 @@ html[data-theme="light"] .arcade-intro.is-canvas .arcade-intro__veil {
   animation: arcade-intro-copy-fade 0.9s var(--ws-ease-out) 0.85s both;
 }
 
+/* 21:9+: preserve the tunnel's open center and keep copy in the short-screen safe area. */
+@media (min-aspect-ratio: 21 / 9) and (min-width: 1200px) {
+  .arcade-intro.is-canvas .arcade-intro__panel {
+    width: min(42rem, 52vw);
+    padding-top: clamp(3rem, 10vh, 6rem);
+    padding-bottom: clamp(2rem, 6vh, 3.5rem);
+  }
+
+  .arcade-intro.is-canvas .arcade-intro__title {
+    font-size: clamp(1rem, 1.25vw, 1.5rem);
+  }
+
+  .arcade-intro.is-canvas .arcade-intro__lede {
+    max-width: 28rem;
+  }
+}
+
 .arcade-intro.is-canvas .arcade-intro__hint,
 .arcade-intro.is-canvas .arcade-intro__pulse {
   opacity: 0;
