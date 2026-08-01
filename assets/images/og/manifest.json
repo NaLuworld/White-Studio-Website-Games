@@ -17,6 +17,14 @@
       "description": "Classic grid snake. Eat neon bites (+10), grow longer, climb the board.",
       "path": "/games/snake/",
       "icon": "assets/images/games/snake/icon.png"
+    },
+    {
+      "id": "color-chain",
+      "title": "四色接龍",
+      "title_en": "Color Chain",
+      "description": "Realtime four-color chain battles. Challenge +4s, call last card, climb the board.",
+      "path": "/games/color-chain/",
+      "icon": "assets/images/games/color-chain/icon.png"
     }
   ]
 }

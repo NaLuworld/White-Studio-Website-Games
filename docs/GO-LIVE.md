@@ -58,5 +58,6 @@ Open:
 
 - https://games.white-studio.org/
 - https://games.white-studio.org/games/snake/
+- https://games.white-studio.org/games/color-chain/
 
-Expect: playable Snake, submit score, board updates, no CORS errors.
+Expect: playable Snake, submit score, board updates, no CORS errors. Color Chain lobby can create a room (Worker DO) and play with AI fill or a second browser.

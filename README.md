@@ -45,10 +45,20 @@ Dev origins `http://127.0.0.1:4173` / `http://localhost:4173` are allowlisted on
 6. Wait until SSL status is **Active**
 7. Confirm Worker CORS includes `https://games.white-studio.org` and D1 migration `0003_game_scores` is applied
 
-## First game
+## Games
 
 - Hub: `/`
 - Snake: `/games/snake/` (貪食蛇)
+- Color Chain: `/games/color-chain/` (四色接龍 — realtime rooms via Worker Durable Objects)
+
+Realtime API (Worker): `POST /api/games/color-chain/rooms`, `…/join`, WebSocket `…/ws`. See [`docs/COLOR-CHAIN.md`](docs/COLOR-CHAIN.md).
+
+## Developer handoff
+
+協作：開發者交**完整遊戲企劃書** → NaLuWorld / Cursor 實作。
+
+- 規範（含皮膚 Marketplace / 排行榜預留）：[`docs/GAME-DEVELOPMENT-SPEC.md`](docs/GAME-DEVELOPMENT-SPEC.md)
+- 企劃繳交模板：[`docs/templates/GAME-DESIGN-BRIEF.md`](docs/templates/GAME-DESIGN-BRIEF.md)
 
 ## Design system
 
