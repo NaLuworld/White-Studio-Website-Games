@@ -219,7 +219,7 @@ html[data-theme="light"] .arcade-intro.is-canvas .arcade-intro__veil {
   text-transform: uppercase;
   color: var(--ws-accent-2);
   opacity: 0.85;
-  animation: arcade-intro-heartbeat 1.15s ease-in-out infinite;
+  animation: arcade-intro-datastream 0.85s ease-in-out infinite;
 }
 
 .arcade-intro__pulse {
@@ -229,27 +229,20 @@ html[data-theme="light"] .arcade-intro.is-canvas .arcade-intro__veil {
   border-radius: 999px;
   background: linear-gradient(90deg, transparent, var(--ws-accent-2), transparent);
   box-shadow: var(--ws-neon-glow);
-  animation: arcade-intro-heartbeat 1.15s ease-in-out infinite;
+  animation: arcade-intro-datastream 0.85s ease-in-out infinite;
 }
 
-/* Approximates canvas neon core heartbeat (double peak + rest). */
-@keyframes arcade-intro-heartbeat {
+/* Fast data-pulse rhythm aligned with cable current loading. */
+@keyframes arcade-intro-datastream {
   0%,
   100% {
-    opacity: 0.28;
+    opacity: 0.3;
   }
-  10% {
+  40% {
     opacity: 1;
   }
-  18% {
-    opacity: 0.35;
-  }
-  30% {
-    opacity: 0.9;
-  }
-  42%,
-  100% {
-    opacity: 0.28;
+  70% {
+    opacity: 0.45;
   }
 }
 

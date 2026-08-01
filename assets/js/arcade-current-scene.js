@@ -1,7 +1,7 @@
 /**
- * Hub intro: Canvas2D procedural tunnel loading.
- * Perspective tunnel + floor grid lights + digital particles + neon core pulse.
- * Pixabay tunnel / floor / grid / neon-pulse clips are visual references only (not shipped).
+ * Hub intro: first-person cable / data-stream loading.
+ * Player POV = riding current inside a transmission cable (SAO-inspired tunnel-vision colors;
+ * White Studio neon only — no SAO trademarks or "Link Start" copy).
  * Exposed as WhiteStudioArcadeCurrent.create(canvas, options) → { start, stop, resize }.
  */
 (function (global) {
@@ -9,6 +9,7 @@
 
   var DEFAULT_DURATION_MS = 3200;
   var SETTLE_MS = 280;
+  var TWO_PI = Math.PI * 2;
 
   function parseColor(value, fallback) {
     var v = String(value || "").trim();
@@ -45,21 +46,6 @@
     return 0.92 + easeInOutCubic(local) * 0.08;
   }
 
-  /** Double-peak heartbeat (short-short, long rest). Returns 0–1 amplitude. */
-  function heartbeat(tSec) {
-    var cycle = 1.15;
-    var phase = ((tSec % cycle) + cycle) % cycle;
-    var amp = 0;
-    if (phase < 0.12) {
-      amp = Math.sin((phase / 0.12) * Math.PI);
-    } else if (phase < 0.28) {
-      amp = 0.15 * Math.sin(((phase - 0.12) / 0.16) * Math.PI);
-    } else if (phase < 0.42) {
-      amp = 0.85 * Math.sin(((phase - 0.28) / 0.14) * Math.PI);
-    }
-    return amp;
-  }
-
   function createArcadeCurrentScene(canvas, options) {
     options = options || {};
     var reducedMotion = Boolean(options.reducedMotion);
@@ -86,16 +72,18 @@
     var resolveDone = null;
     var colors = readThemeColors();
     var mobile = false;
-    var particleCount = 48;
-    var particles = [];
+
+    var camZ = 0;
+    var focal = 480;
+    var centerY = 0.58;
+    var tubeRadius = 1.35;
     var scrollZ = 0;
 
-    // Camera / projection
-    var camZ = 0;
-    var focal = 420;
-    var horizonY = 0.6;
-    var tunnelHalfW = 2.4;
-    var tunnelHalfH = 1.55;
+    var streakCount = 56;
+    var packetCount = 22;
+    var streaks = [];
+    var packets = [];
+    var ribCount = 8;
 
     function resize() {
       dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
@@ -109,39 +97,49 @@
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       var cw = Math.max(1, canvas.clientWidth);
       mobile = cw < 720;
-      particleCount = mobile ? 28 : 48;
-      focal = mobile ? 340 : 420;
-      horizonY = mobile ? 0.58 : 0.6;
-      ensureParticles();
+      streakCount = mobile ? 32 : 56;
+      packetCount = mobile ? 14 : 22;
+      focal = mobile ? 380 : 480;
+      centerY = mobile ? 0.56 : 0.58;
+      ensureActors();
     }
 
-    function ensureParticles() {
-      while (particles.length < particleCount) {
-        particles.push(spawnParticle(true));
-      }
-      if (particles.length > particleCount) {
-        particles.length = particleCount;
-      }
+    function ensureActors() {
+      while (streaks.length < streakCount) streaks.push(spawnStreak(true));
+      if (streaks.length > streakCount) streaks.length = streakCount;
+      while (packets.length < packetCount) packets.push(spawnPacket(true));
+      if (packets.length > packetCount) packets.length = packetCount;
     }
 
-    function spawnParticle(scatter) {
+    function spawnStreak(scatter) {
+      var ang = Math.random() * TWO_PI;
+      var radial = tubeRadius * (0.55 + Math.random() * 0.42);
       return {
-        x: (Math.random() - 0.5) * tunnelHalfW * 1.7,
-        y: (Math.random() - 0.5) * tunnelHalfH * 1.5,
-        z: scatter ? 2 + Math.random() * 22 : 18 + Math.random() * 8,
-        speed: 2.2 + Math.random() * 3.4,
-        size: 0.8 + Math.random() * 1.8,
-        hue: Math.random() > 0.55 ? "tip" : "accent"
+        ang: ang,
+        radial: radial,
+        z: scatter ? 1.2 + Math.random() * 24 : 20 + Math.random() * 10,
+        len: 0.35 + Math.random() * 1.4,
+        speed: 6 + Math.random() * 10,
+        tip: Math.random() > 0.45
       };
     }
 
-    /**
-     * Project world (x,y,z) with camera at z=camZ looking +Z into depth.
-     * World Z increases away from camera; we treat ringZ as distance ahead.
-     */
+    function spawnPacket(scatter) {
+      var ang = Math.random() * TWO_PI;
+      var radial = tubeRadius * (0.2 + Math.random() * 0.7);
+      return {
+        ang: ang,
+        radial: radial,
+        z: scatter ? 2 + Math.random() * 22 : 18 + Math.random() * 8,
+        speed: 4.5 + Math.random() * 7,
+        size: 0.06 + Math.random() * 0.1,
+        tip: Math.random() > 0.5
+      };
+    }
+
     function project(wx, wy, wz) {
       var depth = wz - camZ;
-      if (depth <= 0.45) {
+      if (depth <= 0.4) {
         return { x: 0, y: 0, depth: depth, scale: 0, visible: false };
       }
       var width = canvas.clientWidth;
@@ -149,7 +147,7 @@
       var scale = focal / depth;
       return {
         x: width * 0.5 + wx * scale,
-        y: height * horizonY - wy * scale,
+        y: height * centerY - wy * scale,
         depth: depth,
         scale: scale,
         visible: true
@@ -157,308 +155,290 @@
     }
 
     function fogAlpha(depth) {
-      return clamp(1 - (depth - 1.2) / 20, 0.05, 1);
+      return clamp(1 - (depth - 0.9) / 22, 0.04, 1);
+    }
+
+    function tubePoint(ang, radial, z) {
+      return project(Math.cos(ang) * radial, Math.sin(ang) * radial * 0.72, z);
     }
 
     function drawBackground(width, height) {
-      var g = ctx.createLinearGradient(0, 0, 0, height);
-      g.addColorStop(0, colors.page);
-      g.addColorStop(0.45, colors.surface);
-      g.addColorStop(1, colors.page);
+      var g = ctx.createRadialGradient(
+        width * 0.5,
+        height * centerY,
+        10,
+        width * 0.5,
+        height * centerY,
+        Math.max(width, height) * 0.85
+      );
+      g.addColorStop(0, colors.surface);
+      g.addColorStop(0.45, colors.page);
+      g.addColorStop(1, "#030208");
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, width, height);
+    }
 
+    function drawColorWash(width, height, curveProgress, tSec) {
+      // SAO-inspired tunnel-vision color shifts — low opacity brand hues only
+      var phase = (curveProgress * 1.8 + tSec * 0.35) % 1;
+      var r;
+      var g;
+      var b;
+      if (phase < 0.33) {
+        var u = phase / 0.33;
+        r = lerp(138, 98, u);
+        g = lerp(43, 231, u);
+        b = lerp(226, 255, u);
+      } else if (phase < 0.66) {
+        var u2 = (phase - 0.33) / 0.33;
+        r = lerp(98, 220, u2);
+        g = lerp(231, 80, u2);
+        b = lerp(255, 200, u2);
+      } else {
+        var u3 = (phase - 0.66) / 0.34;
+        r = lerp(220, 138, u3);
+        g = lerp(80, 43, u3);
+        b = lerp(200, 226, u3);
+      }
+      var a = 0.07 + curveProgress * 0.08;
       var wash = ctx.createRadialGradient(
         width * 0.5,
-        height * horizonY,
-        20,
+        height * centerY,
+        height * 0.05,
         width * 0.5,
-        height * (horizonY + 0.08),
-        width * 0.72
+        height * centerY,
+        Math.max(width, height) * 0.65
       );
-      wash.addColorStop(0, "rgba(138,43,226,0.18)");
+      wash.addColorStop(
+        0,
+        "rgba(" + Math.round(r) + "," + Math.round(g) + "," + Math.round(b) + "," + (a * 1.4).toFixed(3) + ")"
+      );
+      wash.addColorStop(0.55, "rgba(" + Math.round(r) + "," + Math.round(g) + "," + Math.round(b) + "," + (a * 0.35).toFixed(3) + ")");
       wash.addColorStop(1, "rgba(0,0,0,0)");
       ctx.fillStyle = wash;
       ctx.fillRect(0, 0, width, height);
     }
 
-    function drawVignette(width, height) {
-      var v = ctx.createRadialGradient(
-        width * 0.5,
-        height * 0.55,
-        height * 0.2,
-        width * 0.5,
-        height * 0.55,
-        Math.max(width, height) * 0.72
-      );
-      v.addColorStop(0, "rgba(0,0,0,0)");
-      v.addColorStop(1, "rgba(0,0,0,0.55)");
-      ctx.fillStyle = v;
-      ctx.fillRect(0, 0, width, height);
-    }
-
-    function drawFloor(curveProgress) {
-      var lines = [];
-      var zBase = scrollZ;
-      var zMin = 1.2;
-      var zMax = 22;
-      var stepZ = mobile ? 0.85 : 0.65;
-      var stepX = mobile ? 0.55 : 0.42;
-
-      for (var zi = 0; zi < 36; zi++) {
-        var z = zMin + ((zi * stepZ + zBase) % (zMax - zMin));
-        for (var xi = -8; xi <= 8; xi++) {
-          var x0 = xi * stepX;
-          var x1 = (xi + 1) * stepX;
-          var y = -tunnelHalfH;
-          var a = project(x0, y, z);
-          var b = project(x1, y, z);
-          if (a.visible && b.visible) {
-            lines.push({ a: a, b: b, d: (a.depth + b.depth) * 0.5, kind: "x" });
-          }
-        }
-      }
-
-      for (var xj = -8; xj <= 8; xj++) {
-        var x = xj * stepX;
-        var pNear = project(x, -tunnelHalfH, zMin + 0.2);
-        var pFar = project(x, -tunnelHalfH, zMax);
-        if (pNear.visible && pFar.visible) {
-          lines.push({
-            a: pNear,
-            b: pFar,
-            d: (pNear.depth + pFar.depth) * 0.5,
-            kind: "z"
-          });
-        }
-      }
-
-      lines.sort(function (a, b) {
-        return b.d - a.d;
-      });
-
-      for (var i = 0; i < lines.length; i++) {
-        var L = lines[i];
-        var alpha = fogAlpha(L.d) * (L.kind === "x" ? 0.38 : 0.22);
-        ctx.strokeStyle = "rgba(180,109,255," + alpha.toFixed(3) + ")";
-        ctx.lineWidth = L.kind === "x" ? 1.15 : 1;
-        ctx.beginPath();
-        ctx.moveTo(L.a.x, L.a.y);
-        ctx.lineTo(L.b.x, L.b.y);
-        ctx.stroke();
-      }
-
-      // Sweeping floor light bands
-      var bandCount = 2;
-      for (var bi = 0; bi < bandCount; bi++) {
-        var phase = (curveProgress * 1.4 + bi * 0.37 + scrollZ * 0.04) % 1;
-        var bz = lerp(zMax, zMin + 0.8, phase);
-        var left = project(-tunnelHalfW * 1.05, -tunnelHalfH, bz);
-        var right = project(tunnelHalfW * 1.05, -tunnelHalfH, bz);
-        if (!left.visible || !right.visible) continue;
-        var ba = fogAlpha(bz) * (0.35 + 0.45 * (1 - Math.abs(phase - 0.5) * 2));
-        ctx.save();
-        ctx.strokeStyle = "rgba(98,231,255," + ba.toFixed(3) + ")";
-        ctx.shadowColor = colors.tip;
-        ctx.shadowBlur = 18;
-        ctx.lineWidth = Math.max(2, 4 * (left.scale / 180));
-        ctx.beginPath();
-        ctx.moveTo(left.x, left.y);
-        ctx.lineTo(right.x, right.y);
-        ctx.stroke();
-        ctx.restore();
-      }
-    }
-
-    function ringPoints(z, inflate) {
-      var hw = tunnelHalfW * inflate;
-      var hh = tunnelHalfH * inflate;
-      return [
-        project(-hw, -hh, z),
-        project(hw, -hh, z),
-        project(hw, hh, z),
-        project(-hw, hh, z)
-      ];
-    }
-
-    function drawRing(pts, stroke, width, glow) {
-      var all = true;
-      for (var i = 0; i < pts.length; i++) {
-        if (!pts[i].visible) {
-          all = false;
-          break;
-        }
-      }
-      if (!all) return false;
-      ctx.save();
-      if (glow) {
-        ctx.shadowColor = glow;
-        ctx.shadowBlur = 16;
-      }
-      ctx.strokeStyle = stroke;
-      ctx.lineWidth = width;
-      ctx.beginPath();
-      ctx.moveTo(pts[0].x, pts[0].y);
-      for (var j = 1; j < pts.length; j++) {
-        ctx.lineTo(pts[j].x, pts[j].y);
-      }
-      ctx.closePath();
-      ctx.stroke();
-      ctx.restore();
-      return true;
-    }
-
-    function drawTunnel(curveProgress) {
-      var zBase = scrollZ;
+    function drawTube() {
       var rings = [];
-      var count = mobile ? 14 : 18;
+      var count = mobile ? 16 : 22;
+      var span = 22;
       for (var i = 0; i < count; i++) {
-        var span = 20;
-        var z = 1.4 + ((i * (span / count) + zBase * 0.85) % span);
-        rings.push(z);
+        rings.push(1.1 + ((i * (span / count) + scrollZ * 0.9) % span));
       }
       rings.sort(function (a, b) {
         return b - a;
       });
 
-      var waveZ = lerp(22, 1.6, easeInOutCubic(curveProgress));
+      var segs = mobile ? 20 : 28;
 
       for (var r = 0; r < rings.length; r++) {
         var z = rings[r];
-        var pts = ringPoints(z, 1);
-        var alpha = fogAlpha(z) * 0.55;
-        drawRing(
-          pts,
-          "rgba(138,43,226," + alpha.toFixed(3) + ")",
-          Math.max(1, 1.6 * (focal / (z * 90))),
-          null
-        );
-
-        // Soft side ribs
-        var midL0 = project(-tunnelHalfW, -tunnelHalfH * 0.2, z);
-        var midL1 = project(-tunnelHalfW, tunnelHalfH * 0.2, z);
-        var midR0 = project(tunnelHalfW, -tunnelHalfH * 0.2, z);
-        var midR1 = project(tunnelHalfW, tunnelHalfH * 0.2, z);
-        if (midL0.visible && midL1.visible) {
-          ctx.strokeStyle = "rgba(192,132,255," + (alpha * 0.35).toFixed(3) + ")";
-          ctx.lineWidth = 1;
-          ctx.beginPath();
-          ctx.moveTo(midL0.x, midL0.y);
-          ctx.lineTo(midL1.x, midL1.y);
-          ctx.stroke();
-        }
-        if (midR0.visible && midR1.visible) {
-          ctx.strokeStyle = "rgba(192,132,255," + (alpha * 0.35).toFixed(3) + ")";
-          ctx.lineWidth = 1;
-          ctx.beginPath();
-          ctx.moveTo(midR0.x, midR0.y);
-          ctx.lineTo(midR1.x, midR1.y);
-          ctx.stroke();
-        }
-      }
-
-      // Energy wave ring
-      var wavePts = ringPoints(waveZ, 1.02);
-      var waveAlpha = fogAlpha(waveZ) * (0.55 + 0.45 * curveProgress);
-      drawRing(
-        wavePts,
-        "rgba(98,231,255," + waveAlpha.toFixed(3) + ")",
-        Math.max(2, 3.2 * (focal / (waveZ * 70))),
-        colors.tip
-      );
-      var innerWave = ringPoints(waveZ, 0.92);
-      drawRing(
-        innerWave,
-        "rgba(192,132,255," + (waveAlpha * 0.7).toFixed(3) + ")",
-        Math.max(1.2, 2 * (focal / (waveZ * 90))),
-        colors.accent2
-      );
-    }
-
-    function updateParticles(dt, speedBoost) {
-      for (var i = 0; i < particles.length; i++) {
-        var p = particles[i];
-        p.z -= p.speed * dt * (1.6 + speedBoost);
-        if (p.z < camZ + 0.6) {
-          particles[i] = spawnParticle(false);
-        }
-      }
-    }
-
-    function drawParticles() {
-      for (var i = 0; i < particles.length; i++) {
-        var p = particles[i];
-        var s = project(p.x, p.y, p.z);
-        if (!s.visible) continue;
-        var alpha = fogAlpha(p.depth) * 0.9;
-        var r = Math.max(0.8, Math.min(3.2, p.size * (s.scale / 140)));
+        var alpha = fogAlpha(z) * 0.5;
         ctx.beginPath();
-        if (p.hue === "tip") {
-          ctx.fillStyle = "rgba(98,231,255," + alpha.toFixed(3) + ")";
-        } else {
-          ctx.fillStyle = "rgba(192,132,255," + alpha.toFixed(3) + ")";
+        var started = false;
+        for (var s = 0; s <= segs; s++) {
+          var ang = (s / segs) * TWO_PI;
+          var p = tubePoint(ang, tubeRadius, z);
+          if (!p.visible) {
+            started = false;
+            continue;
+          }
+          if (!started) {
+            ctx.moveTo(p.x, p.y);
+            started = true;
+          } else {
+            ctx.lineTo(p.x, p.y);
+          }
         }
-        ctx.arc(s.x, s.y, r, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.strokeStyle = "rgba(138,43,226," + alpha.toFixed(3) + ")";
+        ctx.lineWidth = Math.max(1, 1.4 * (focal / (z * 100)));
+        ctx.stroke();
+      }
+
+      // Longitudinal ribs
+      for (var rib = 0; rib < ribCount; rib++) {
+        var angR = (rib / ribCount) * TWO_PI + scrollZ * 0.02;
+        ctx.beginPath();
+        var ribStarted = false;
+        for (var zi = 0; zi < 18; zi++) {
+          var zz = 1.2 + zi * 1.25;
+          var pr = tubePoint(angR, tubeRadius * 0.98, zz);
+          if (!pr.visible) {
+            ribStarted = false;
+            continue;
+          }
+          if (!ribStarted) {
+            ctx.moveTo(pr.x, pr.y);
+            ribStarted = true;
+          } else {
+            ctx.lineTo(pr.x, pr.y);
+          }
+        }
+        ctx.strokeStyle = "rgba(192,132,255," + (0.18).toFixed(3) + ")";
+        ctx.lineWidth = 1;
+        ctx.stroke();
       }
     }
 
-    function drawCorePulse(curveProgress, tSec) {
-      var coreZ = 18.5;
-      var c = project(0, 0.05, coreZ);
-      if (!c.visible) return;
+    function updateActors(dt, speedBoost) {
+      var mul = 1.8 + speedBoost;
+      for (var i = 0; i < streaks.length; i++) {
+        streaks[i].z -= streaks[i].speed * dt * mul;
+        if (streaks[i].z < camZ + 0.5) streaks[i] = spawnStreak(false);
+      }
+      for (var j = 0; j < packets.length; j++) {
+        packets[j].z -= packets[j].speed * dt * mul;
+        if (packets[j].z < camZ + 0.5) packets[j] = spawnPacket(false);
+      }
+    }
 
-      var beat = heartbeat(tSec);
+    function drawDataStreaks() {
+      var ordered = streaks.slice().sort(function (a, b) {
+        return b.z - a.z;
+      });
+      for (var i = 0; i < ordered.length; i++) {
+        var s = ordered[i];
+        var near = tubePoint(s.ang, s.radial, s.z);
+        var far = tubePoint(s.ang, s.radial, s.z + s.len);
+        if (!near.visible || !far.visible) continue;
+        var alpha = fogAlpha(s.z) * 0.95;
+        ctx.save();
+        ctx.strokeStyle = s.tip
+          ? "rgba(98,231,255," + alpha.toFixed(3) + ")"
+          : "rgba(192,132,255," + alpha.toFixed(3) + ")";
+        ctx.shadowColor = s.tip ? colors.tip : colors.accent2;
+        ctx.shadowBlur = 10;
+        ctx.lineWidth = Math.max(1.2, Math.min(4.5, 2.2 * (near.scale / 160)));
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(far.x, far.y);
+        ctx.lineTo(near.x, near.y);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      var pk = packets.slice().sort(function (a, b) {
+        return b.z - a.z;
+      });
+      for (var p = 0; p < pk.length; p++) {
+        var pkt = pk[p];
+        var c = tubePoint(pkt.ang, pkt.radial, pkt.z);
+        if (!c.visible) continue;
+        var hs = Math.max(2, Math.min(10, pkt.size * c.scale));
+        var alphaP = fogAlpha(pkt.z);
+        ctx.save();
+        ctx.translate(c.x, c.y);
+        ctx.rotate(0.785);
+        ctx.fillStyle = pkt.tip
+          ? "rgba(98,231,255," + (alphaP * 0.9).toFixed(3) + ")"
+          : "rgba(192,132,255," + (alphaP * 0.85).toFixed(3) + ")";
+        ctx.shadowColor = pkt.tip ? colors.tip : colors.accent2;
+        ctx.shadowBlur = 8;
+        ctx.fillRect(-hs * 0.5, -hs * 0.35, hs, hs * 0.7);
+        ctx.restore();
+      }
+    }
+
+    /** Player is the current: bright core just ahead on the tube axis. */
+    function drawCurrentSelf(curveProgress) {
+      var selfZ = 2.4;
+      var c = project(0, 0, selfZ);
+      if (!c.visible) return;
+      var pulse = 0.65 + 0.35 * Math.sin(elapsedSec * 14);
       var finale = curveProgress >= 0.88 ? easeInOutCubic((curveProgress - 0.88) / 0.12) : 0;
-      var amp = Math.max(beat * 0.85, finale * 1.15);
-      var baseR = Math.max(6, Math.min(42, 18 * (c.scale / 28)));
-      var r = baseR * (0.55 + amp * 0.9);
-      var alpha = fogAlpha(c.depth);
+      var amp = Math.max(pulse, finale);
+      var r = Math.max(4, Math.min(16, 9 * amp * (c.scale / 200)));
 
       ctx.save();
-      ctx.globalAlpha = alpha * (0.35 + amp * 0.65);
-
-      var glow = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, r * 2.8);
+      ctx.shadowColor = colors.tip;
+      ctx.shadowBlur = 22 + amp * 18;
+      var glow = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, r * 3.2);
       glow.addColorStop(0, "rgba(98,231,255,0.55)");
-      glow.addColorStop(0.35, "rgba(192,132,255,0.35)");
+      glow.addColorStop(0.4, "rgba(192,132,255,0.22)");
       glow.addColorStop(1, "rgba(0,0,0,0)");
       ctx.fillStyle = glow;
       ctx.beginPath();
-      ctx.arc(c.x, c.y, r * 2.8, 0, Math.PI * 2);
+      ctx.arc(c.x, c.y, r * 3.2, 0, TWO_PI);
       ctx.fill();
-
-      ctx.shadowColor = colors.accent2;
-      ctx.shadowBlur = 22 + amp * 28;
-      ctx.beginPath();
-      ctx.strokeStyle = colors.accent2;
-      ctx.lineWidth = 2 + amp * 2.5;
-      ctx.arc(c.x, c.y, r * 1.15, 0, Math.PI * 2);
-      ctx.stroke();
 
       ctx.beginPath();
       ctx.fillStyle = colors.tip;
-      ctx.shadowColor = colors.tip;
-      ctx.shadowBlur = 18 + amp * 20;
-      ctx.arc(c.x, c.y, r * (0.28 + amp * 0.12), 0, Math.PI * 2);
+      ctx.arc(c.x, c.y, r, 0, TWO_PI);
       ctx.fill();
-
       ctx.beginPath();
       ctx.fillStyle = "#ffffff";
       ctx.shadowBlur = 0;
-      ctx.globalAlpha = alpha * (0.5 + amp * 0.5);
-      ctx.arc(c.x, c.y, r * 0.12, 0, Math.PI * 2);
+      ctx.arc(c.x, c.y, r * 0.35, 0, TWO_PI);
       ctx.fill();
       ctx.restore();
+
+      // Short trailing current body behind the core (toward camera / past player)
+      var trailA = project(0, 0, 1.1);
+      var trailB = project(0, 0, selfZ);
+      if (trailA.visible && trailB.visible) {
+        ctx.save();
+        ctx.strokeStyle = "rgba(98,231,255,0.55)";
+        ctx.shadowColor = colors.tip;
+        ctx.shadowBlur = 14;
+        ctx.lineWidth = Math.max(2, Math.min(8, 4 * amp));
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(trailA.x, trailA.y);
+        ctx.lineTo(trailB.x, trailB.y);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    function drawExitFlare(curveProgress) {
+      var exitZ = 20;
+      var e = project(0, 0, exitZ);
+      if (!e.visible) return;
+      var finale = curveProgress >= 0.88 ? easeInOutCubic((curveProgress - 0.88) / 0.12) : curveProgress * 0.25;
+      var base = Math.max(8, Math.min(80, 28 * (e.scale / 24)));
+      var r = base * (0.4 + finale * 1.6);
+      var alpha = fogAlpha(exitZ) * (0.2 + finale * 0.85);
+
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      var g = ctx.createRadialGradient(e.x, e.y, 0, e.x, e.y, r);
+      g.addColorStop(0, "rgba(255,255,255,0.95)");
+      g.addColorStop(0.25, "rgba(98,231,255,0.7)");
+      g.addColorStop(0.55, "rgba(192,132,255,0.35)");
+      g.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(e.x, e.y, r, 0, TWO_PI);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawVignette(width, height) {
+      var v = ctx.createRadialGradient(
+        width * 0.5,
+        height * centerY,
+        height * 0.12,
+        width * 0.5,
+        height * centerY,
+        Math.max(width, height) * 0.78
+      );
+      v.addColorStop(0, "rgba(0,0,0,0)");
+      v.addColorStop(0.55, "rgba(0,0,0,0.15)");
+      v.addColorStop(1, "rgba(0,0,0,0.72)");
+      ctx.fillStyle = v;
+      ctx.fillRect(0, 0, width, height);
     }
 
     function renderFrame(curveProgress, tSec) {
       var width = canvas.clientWidth;
       var height = canvas.clientHeight;
       drawBackground(width, height);
-      drawFloor(curveProgress);
-      drawTunnel(curveProgress);
-      drawParticles();
-      drawCorePulse(curveProgress, tSec);
+      drawTube();
+      drawDataStreaks();
+      drawExitFlare(curveProgress);
+      drawCurrentSelf(curveProgress);
+      drawColorWash(width, height, curveProgress, tSec);
       drawVignette(width, height);
     }
 
@@ -474,9 +454,9 @@
       var rawT = reducedMotion ? 1 : clamp(elapsed / durationMs, 0, 1);
       progress = progressEase(rawT);
 
-      var speedBoost = 0.35 + progress * 1.1;
-      scrollZ += dt * (2.8 + progress * 4.5);
-      updateParticles(dt, speedBoost);
+      var speedBoost = 0.5 + progress * 1.8;
+      scrollZ += dt * (4 + progress * 7);
+      updateActors(dt, speedBoost);
 
       renderFrame(progress, elapsedSec);
 
@@ -514,11 +494,12 @@
       elapsedSec = 0;
       settled = false;
       scrollZ = 0;
-      particles = [];
-      ensureParticles();
+      streaks = [];
+      packets = [];
+      ensureActors();
 
       if (reducedMotion) {
-        scrollZ = 4;
+        scrollZ = 3;
         renderFrame(1, 0);
         return new Promise(function (resolve) {
           resolveDone = resolve;

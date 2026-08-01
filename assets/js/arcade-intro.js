@@ -1,8 +1,9 @@
 /**
  * Hub entrance overlay controller.
- * Canvas path uses WhiteStudioArcadeCurrent (procedural tunnel loading);
+ * Canvas path uses WhiteStudioArcadeCurrent (first-person cable / data-stream loading);
  * reduced-motion falls back to lobby still + short hold.
  * Skip: click / Enter / Space / Escape.
+ * Wireframe corridor prototype lives in arcade-tunnel-scene.js (not loaded here).
  */
 (function (global) {
   "use strict";
