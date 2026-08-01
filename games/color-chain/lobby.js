@@ -46,6 +46,11 @@
     if (this.els.inviteBtn) {
       this.els.inviteBtn.addEventListener("click", function () {
         self.showSecondary("invite");
+        if (self.onPhase) self.onPhase("invite_settings");
+      });
+    }
+    if (this.els.inviteCreateBtn) {
+      this.els.inviteCreateBtn.addEventListener("click", function () {
         self.invite().catch(function (err) {
           self.setStatus(err.message || "error");
         });
@@ -154,7 +159,6 @@
     this.quickPending = false;
     this.mode = "invite";
     this.setStatus(t("color_chain.connecting", "Connecting…"));
-    if (this.els.fillBots) this.els.fillBots.checked = false;
     var data = await this.net.createRoom({
       name: this.nickname(),
       maxPlayers: Number(this.els.maxPlayers && this.els.maxPlayers.value) || 2,

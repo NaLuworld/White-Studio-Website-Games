@@ -56,6 +56,7 @@
     entry: false,
     join_prompt: false,
     invite_wait: false,
+    invite_settings: false,
     your_turn: false,
     call_last: false,
     challenge: false,
@@ -85,6 +86,13 @@
         key: "naru.tip_color_chain_join",
         anim: "point_down",
         target: "#cc-join",
+        holdAnim: "look_user"
+      });
+    } else if (phase === "invite_settings") {
+      tipOnce("invite_settings", {
+        key: "naru.tip_color_chain_invite_settings",
+        anim: "point_down",
+        target: "#cc-invite-create",
         holdAnim: "look_user"
       });
     } else if (phase === "invite_wait") {
@@ -140,6 +148,7 @@
     {
       quickPlayBtn: document.getElementById("cc-quick-play"),
       inviteBtn: document.getElementById("cc-invite"),
+      inviteCreateBtn: document.getElementById("cc-invite-create"),
       showJoinBtn: document.getElementById("cc-show-join"),
       joinBtn: document.getElementById("cc-join"),
       startBtn: document.getElementById("cc-start"),

@@ -126,6 +126,13 @@
   flex: 1;
 }
 
+.color-chain-page .cc-secondary-title {
+  margin: 0 0 0.65rem;
+  font-family: var(--ws-font-display);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+}
+
 .color-chain-page .cc-table {
   --cc-felt: #100e18;
   display: flex;
@@ -144,6 +151,108 @@
     linear-gradient(165deg, #161322, var(--cc-felt) 70%);
   box-shadow: 0 0 40px color-mix(in srgb, var(--ws-accent) 18%, transparent);
   min-height: 420px;
+  position: relative;
+  overflow: hidden;
+}
+
+.color-chain-page .cc-fx-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 8;
+}
+
+.color-chain-page .cc-fx-toast {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  transform: translate(-50%, -20%) scale(0.96);
+  z-index: 9;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--ws-cyan, #62e7ff) 45%, transparent);
+  background: color-mix(in srgb, #100e18 88%, var(--ws-accent));
+  color: var(--ws-cyan, #62e7ff);
+  font-family: var(--ws-font-display);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  white-space: nowrap;
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.color-chain-page .cc-fx-toast.is-show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.color-chain-page .cc-card--drawn {
+  animation: cc-draw-in 0.45s ease-out;
+}
+.color-chain-page .cc-card--land {
+  animation: cc-land 0.4s ease-out;
+}
+.color-chain-page .cc-card--fly {
+  position: absolute;
+  z-index: 10;
+  transition: left 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 0.35s ease, opacity 0.35s ease;
+  transform: scale(1.05) rotate(-6deg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+.color-chain-page .cc-card--fly.is-flying {
+  transform: scale(1) rotate(0deg);
+  opacity: 0.92;
+}
+
+.color-chain-page .cc-opp--drew .cc-opp__label {
+  color: var(--ws-cyan, #62e7ff);
+}
+.color-chain-page .cc-opp__badge {
+  display: inline-block;
+  margin-left: 0.35rem;
+  padding: 0.05rem 0.35rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ws-cyan, #62e7ff) 22%, transparent);
+  animation: cc-badge-pop 0.5s ease;
+}
+
+@keyframes cc-draw-in {
+  from {
+    opacity: 0;
+    transform: translateY(-18px) scale(0.88);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes cc-land {
+  0% {
+    transform: scale(1.18) rotate(-4deg);
+  }
+  60% {
+    transform: scale(0.96) rotate(1deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+@keyframes cc-badge-pop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  40% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .color-chain-page .cc-table__top {
@@ -551,5 +660,13 @@
 @media (prefers-reduced-motion: reduce) {
   .color-chain-page .cc-hand--me .cc-card {
     transition: none;
+  }
+  .color-chain-page .cc-card--drawn,
+  .color-chain-page .cc-card--land,
+  .color-chain-page .cc-card--fly,
+  .color-chain-page .cc-opp__badge,
+  .color-chain-page .cc-fx-toast {
+    animation: none !important;
+    transition: none !important;
   }
 }
