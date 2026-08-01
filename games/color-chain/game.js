@@ -1,8 +1,10 @@
 /**
- * Color Chain — page boot + flow (lobby → play → result).
+ * Color Chain — flow + phase Naru tips (lobby → play → result).
  */
 (function () {
   "use strict";
+
+  var GUIDE_SEEN_KEY = "ws_color_chain_guide_v1";
 
   function t(key, fallback, vars) {
     var v = fallback || key;
@@ -18,7 +20,6 @@
     return v;
   }
 
-  // Lightweight SFX (skin node sfx.*)
   var audioCtx = null;
   function ensureAudio() {
     if (!audioCtx) {
@@ -51,6 +52,79 @@
     tone(760, 0.05, 0.1, "triangle", 0.12);
   }
 
+  var guideFlags = {
+    entry: false,
+    join_prompt: false,
+    invite_wait: false,
+    your_turn: false,
+    call_last: false,
+    challenge: false,
+    result: false
+  };
+
+  function tipOnce(flag, tip) {
+    if (guideFlags[flag]) return;
+    guideFlags[flag] = true;
+    if (window.WhiteStudioNaru && WhiteStudioNaru.queueTips) {
+      WhiteStudioNaru.queueTips([tip]);
+    }
+  }
+
+  function onGuidePhase(phase) {
+    if (phase === "entry") {
+      if (localStorage.getItem(GUIDE_SEEN_KEY) === "1") return;
+      tipOnce("entry", {
+        key: "naru.tip_color_chain_entry",
+        anim: "point_down",
+        target: "#cc-quick-play",
+        holdAnim: "look_user"
+      });
+      localStorage.setItem(GUIDE_SEEN_KEY, "1");
+    } else if (phase === "join_prompt") {
+      tipOnce("join_prompt", {
+        key: "naru.tip_color_chain_join",
+        anim: "point_down",
+        target: "#cc-join",
+        holdAnim: "look_user"
+      });
+    } else if (phase === "invite_wait") {
+      tipOnce("invite_wait", {
+        key: "naru.tip_color_chain_invite_wait",
+        anim: "point_up",
+        target: "#cc-room-code",
+        holdAnim: "look_user"
+      });
+    } else if (phase === "your_turn") {
+      tipOnce("your_turn", {
+        key: "naru.tip_color_chain_your_turn",
+        anim: "point_down",
+        target: "#cc-my-hand",
+        holdAnim: "look_user"
+      });
+    } else if (phase === "call_last") {
+      tipOnce("call_last", {
+        key: "naru.tip_color_chain_last",
+        anim: "wave",
+        target: "#cc-last-btn",
+        holdAnim: "look_user"
+      });
+    } else if (phase === "challenge") {
+      tipOnce("challenge", {
+        key: "naru.tip_color_chain_challenge",
+        anim: "think",
+        target: "#cc-challenge-btn",
+        holdAnim: "look_user"
+      });
+    } else if (phase === "result") {
+      tipOnce("result", {
+        key: "naru.tip_color_chain_result",
+        anim: "celebrate",
+        target: "#result-sheet",
+        holdAnim: "look_user"
+      });
+    }
+  }
+
   var net = new ColorChainNet();
   var lastScore = 0;
   var tableRoot = document.getElementById("cc-table");
@@ -64,15 +138,21 @@
 
   var lobby = new ColorChainLobby(
     {
-      createBtn: document.getElementById("cc-create"),
+      quickPlayBtn: document.getElementById("cc-quick-play"),
+      inviteBtn: document.getElementById("cc-invite"),
+      showJoinBtn: document.getElementById("cc-show-join"),
       joinBtn: document.getElementById("cc-join"),
       startBtn: document.getElementById("cc-start"),
+      copyBtn: document.getElementById("cc-copy-link"),
       nameInput: document.getElementById("player-name"),
       codeInput: document.getElementById("cc-code"),
       maxPlayers: document.getElementById("cc-max-players"),
       fillBots: document.getElementById("cc-fill-bots"),
       setupPanel: document.getElementById("cc-setup"),
       waitPanel: document.getElementById("cc-waiting"),
+      secondaryPanel: document.getElementById("cc-secondary"),
+      joinFields: document.getElementById("cc-join-fields"),
+      inviteFields: document.getElementById("cc-invite-fields"),
       seatList: document.getElementById("cc-seat-list"),
       shareLink: document.getElementById("cc-share"),
       roomCode: document.getElementById("cc-room-code"),
@@ -81,7 +161,16 @@
     },
     net
   );
+  lobby.onPhase = onGuidePhase;
   lobby.bind();
+
+  function setPlayingChrome(on) {
+    document.body.classList.toggle("is-cc-playing", !!on);
+    var board = document.getElementById("cc-leaderboard");
+    if (board) board.hidden = !!on;
+    var hud = document.querySelector(".ws-game-hud");
+    if (hud) hud.hidden = !!on;
+  }
 
   function showPlay() {
     var lobbyPanel = document.getElementById("cc-lobby");
@@ -89,9 +178,11 @@
     if (tableRoot) tableRoot.hidden = false;
     var controls = document.getElementById("cc-controls");
     if (controls) controls.hidden = false;
+    setPlayingChrome(true);
   }
 
   function showResult(endMsg) {
+    setPlayingChrome(false);
     var sheet = document.getElementById("result-sheet");
     var body = document.getElementById("result-body");
     if (sheet) sheet.hidden = false;
@@ -100,6 +191,20 @@
     if (scoreEl) scoreEl.textContent = String(lastScore);
     var form = document.getElementById("score-form");
     if (form) form.hidden = lastScore <= 0;
+    var board = document.getElementById("cc-leaderboard");
+    if (board) board.hidden = false;
+    onGuidePhase("result");
+  }
+
+  function maybePlayTips(msg) {
+    if (msg.phase !== "playing") return;
+    if (msg.viewerSeat === msg.currentSeat && !msg.pendingWild && !msg.pendingReveal) {
+      onGuidePhase("your_turn");
+    }
+    var lastBtn = document.getElementById("cc-last-btn");
+    if (lastBtn && !lastBtn.hidden && msg.canCallLast) onGuidePhase("call_last");
+    var challengeBtn = document.getElementById("cc-challenge-btn");
+    if (challengeBtn && !challengeBtn.hidden) onGuidePhase("challenge");
   }
 
   net.on("room:state", function (msg) {
@@ -109,6 +214,7 @@
   net.on("game:state", function (msg) {
     showPlay();
     render.apply(msg);
+    maybePlayTips(msg);
     var hudScore = document.getElementById("live-score");
     if (hudScore && msg.scores && net.playerId && msg.scores[net.playerId] != null) {
       hudScore.textContent = String(msg.scores[net.playerId]);
@@ -148,7 +254,6 @@
     if (tableMsg && msg && msg.error) tableMsg.textContent = String(msg.error);
   });
 
-  // Controls
   var drawBtn = document.getElementById("cc-draw-btn");
   if (drawBtn) {
     drawBtn.addEventListener("click", function () {
@@ -201,7 +306,7 @@
   var againBtn = document.getElementById("again-button");
   if (againBtn) {
     againBtn.addEventListener("click", function () {
-      location.href = location.pathname;
+      location.href = "/games/color-chain/";
     });
   }
 
@@ -214,5 +319,16 @@
     });
   }
 
-  window.ColorChainGame = { net: net, lobby: lobby, render: render };
+  function startGuide() {
+    var params = new URLSearchParams(location.search);
+    if (params.get("room")) onGuidePhase("join_prompt");
+    else onGuidePhase("entry");
+  }
+
+  window.ColorChainGame = {
+    net: net,
+    lobby: lobby,
+    render: render,
+    startGuide: startGuide
+  };
 })();

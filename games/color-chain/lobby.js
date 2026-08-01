@@ -1,8 +1,12 @@
 /**
- * Color Chain lobby UI bindings.
+ * Color Chain lobby — quick play / invite / join.
  */
 (function (global) {
   "use strict";
+
+  var NICK_KEY = "ws_color_chain_nick";
+  var TOKEN_KEY = "ws_color_chain_token";
+  var CODE_KEY = "ws_color_chain_code";
 
   function t(key, fallback) {
     if (global.WhiteStudioI18n && typeof global.WhiteStudioI18n.t === "function") {
@@ -12,40 +16,69 @@
     return fallback || key;
   }
 
+  function guestName() {
+    var alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    var out = "";
+    for (var i = 0; i < 4; i++) out += alphabet[Math.floor(Math.random() * alphabet.length)];
+    return "Guest" + out;
+  }
+
   function ColorChainLobby(els, net) {
     this.els = els;
     this.net = net;
     this.room = null;
+    this.mode = "entry"; // entry | invite | join
+    this.quickPending = false;
+    this.onPhase = null;
   }
 
   ColorChainLobby.prototype.bind = function () {
     var self = this;
-    var createBtn = this.els.createBtn;
-    var joinBtn = this.els.joinBtn;
-    var startBtn = this.els.startBtn;
-    if (createBtn) {
-      createBtn.addEventListener("click", function () {
-        self.create().catch(function (err) {
+    this.restoreNick();
+
+    if (this.els.quickPlayBtn) {
+      this.els.quickPlayBtn.addEventListener("click", function () {
+        self.quickPlay().catch(function (err) {
           self.setStatus(err.message || "error");
         });
       });
     }
-    if (joinBtn) {
-      joinBtn.addEventListener("click", function () {
+    if (this.els.inviteBtn) {
+      this.els.inviteBtn.addEventListener("click", function () {
+        self.showSecondary("invite");
+        self.invite().catch(function (err) {
+          self.setStatus(err.message || "error");
+        });
+      });
+    }
+    if (this.els.showJoinBtn) {
+      this.els.showJoinBtn.addEventListener("click", function () {
+        self.showSecondary("join");
+        if (self.onPhase) self.onPhase("join_prompt");
+      });
+    }
+    if (this.els.joinBtn) {
+      this.els.joinBtn.addEventListener("click", function () {
         self.join().catch(function (err) {
           self.setStatus(err.message || "error");
         });
       });
     }
-    if (startBtn) {
-      startBtn.addEventListener("click", function () {
+    if (this.els.startBtn) {
+      this.els.startBtn.addEventListener("click", function () {
         self.net.send({ type: "game:start" });
       });
     }
+    if (this.els.copyBtn) {
+      this.els.copyBtn.addEventListener("click", function () {
+        self.copyShareLink();
+      });
+    }
+
     var maxSel = this.els.maxPlayers;
     var botsChk = this.els.fillBots;
     function pushConfig() {
-      if (!self.room) return;
+      if (!self.room || self.room.phase !== "lobby") return;
       self.net.send({
         type: "room:configure",
         maxPlayers: Number(maxSel && maxSel.value) || 2,
@@ -55,10 +88,31 @@
     if (maxSel) maxSel.addEventListener("change", pushConfig);
     if (botsChk) botsChk.addEventListener("change", pushConfig);
 
-    // Deep link ?room=CODE
+    if (this.els.nameInput) {
+      this.els.nameInput.addEventListener("change", function () {
+        var v = self.els.nameInput.value.trim();
+        if (v) localStorage.setItem(NICK_KEY, v);
+      });
+    }
+
     var params = new URLSearchParams(location.search);
     var roomQ = params.get("room");
-    if (roomQ && this.els.codeInput) this.els.codeInput.value = roomQ;
+    if (roomQ) {
+      if (this.els.codeInput) this.els.codeInput.value = String(roomQ).toUpperCase();
+      this.showSecondary("join");
+    }
+  };
+
+  ColorChainLobby.prototype.restoreNick = function () {
+    var saved = localStorage.getItem(NICK_KEY) || "";
+    if (this.els.nameInput && saved) this.els.nameInput.value = saved;
+  };
+
+  ColorChainLobby.prototype.showSecondary = function (mode) {
+    this.mode = mode;
+    if (this.els.secondaryPanel) this.els.secondaryPanel.hidden = false;
+    if (this.els.joinFields) this.els.joinFields.hidden = mode !== "join";
+    if (this.els.inviteFields) this.els.inviteFields.hidden = mode !== "invite";
   };
 
   ColorChainLobby.prototype.setStatus = function (text) {
@@ -68,46 +122,103 @@
   ColorChainLobby.prototype.nickname = function () {
     var input = this.els.nameInput;
     var v = input && input.value ? input.value.trim() : "";
-    return v || "Player";
+    if (!v) {
+      v = guestName();
+      if (input) input.value = v;
+    }
+    localStorage.setItem(NICK_KEY, v);
+    return v;
   };
 
-  ColorChainLobby.prototype.create = async function () {
+  ColorChainLobby.prototype.quickPlay = async function () {
+    this.quickPending = true;
+    this.mode = "quick";
     this.setStatus(t("color_chain.connecting", "Connecting…"));
+    if (this.els.fillBots) this.els.fillBots.checked = true;
+    if (this.els.maxPlayers) this.els.maxPlayers.value = "2";
+    var data = await this.net.createRoom({
+      name: this.nickname(),
+      maxPlayers: 2,
+      fillBots: true,
+      playerToken: localStorage.getItem(TOKEN_KEY) || undefined
+    });
+    localStorage.setItem(TOKEN_KEY, data.playerToken);
+    localStorage.setItem(CODE_KEY, data.code);
+    await this.net.connect();
+    this.showWaiting(data, { autoStart: true });
+    this.net.send({ type: "game:start" });
+    this.quickPending = false;
+  };
+
+  ColorChainLobby.prototype.invite = async function () {
+    this.quickPending = false;
+    this.mode = "invite";
+    this.setStatus(t("color_chain.connecting", "Connecting…"));
+    if (this.els.fillBots) this.els.fillBots.checked = false;
     var data = await this.net.createRoom({
       name: this.nickname(),
       maxPlayers: Number(this.els.maxPlayers && this.els.maxPlayers.value) || 2,
       fillBots: !!(this.els.fillBots && this.els.fillBots.checked),
-      playerToken: localStorage.getItem("ws_color_chain_token") || undefined
+      playerToken: localStorage.getItem(TOKEN_KEY) || undefined
     });
-    localStorage.setItem("ws_color_chain_token", data.playerToken);
-    localStorage.setItem("ws_color_chain_code", data.code);
+    localStorage.setItem(TOKEN_KEY, data.playerToken);
+    localStorage.setItem(CODE_KEY, data.code);
     await this.net.connect();
-    this.showWaiting(data);
+    this.showWaiting(data, { autoStart: false });
+    if (this.onPhase) this.onPhase("invite_wait");
   };
 
   ColorChainLobby.prototype.join = async function () {
+    this.quickPending = false;
+    this.mode = "join";
     this.setStatus(t("color_chain.connecting", "Connecting…"));
     var code = (this.els.codeInput && this.els.codeInput.value) || "";
     var data = await this.net.joinRoom({
       code: code,
       name: this.nickname(),
-      playerToken: localStorage.getItem("ws_color_chain_token") || undefined
+      playerToken: localStorage.getItem(TOKEN_KEY) || undefined
     });
-    localStorage.setItem("ws_color_chain_token", data.playerToken);
-    localStorage.setItem("ws_color_chain_code", data.code);
+    localStorage.setItem(TOKEN_KEY, data.playerToken);
+    localStorage.setItem(CODE_KEY, data.code);
     await this.net.connect();
-    this.showWaiting(data);
+    this.showWaiting(data, { autoStart: false });
+    if (this.onPhase) this.onPhase("invite_wait");
   };
 
-  ColorChainLobby.prototype.showWaiting = function (data) {
+  ColorChainLobby.prototype.showWaiting = function (data, opts) {
+    opts = opts || {};
     this.room = data.room;
     if (this.els.setupPanel) this.els.setupPanel.hidden = true;
-    if (this.els.waitPanel) this.els.waitPanel.hidden = false;
+    if (this.els.waitPanel) this.els.waitPanel.hidden = !!opts.autoStart;
     this.renderRoom(data.room);
-    var share = location.origin + location.pathname + "?room=" + encodeURIComponent(data.code);
+    var share = location.origin + "/games/color-chain/?room=" + encodeURIComponent(data.code);
     if (this.els.shareLink) this.els.shareLink.textContent = share;
     if (this.els.roomCode) this.els.roomCode.textContent = data.code;
-    this.setStatus(t("color_chain.in_room", "In room {code}").replace("{code}", data.code));
+    this.setStatus(
+      opts.autoStart
+        ? t("color_chain.connecting", "Connecting…")
+        : t("color_chain.in_room", "In room {code}").replace("{code}", data.code)
+    );
+    if (!opts.autoStart && (this.mode === "invite" || this.mode === "join") && this.onPhase) {
+      this.onPhase("invite_wait");
+    }
+  };
+
+  ColorChainLobby.prototype.copyShareLink = function () {
+    var share = this.els.shareLink ? this.els.shareLink.textContent : "";
+    if (!share) return;
+    var self = this;
+    function done() {
+      self.setStatus(t("color_chain.copied", "Link copied"));
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(share).then(done).catch(function () {
+        window.prompt(t("color_chain.copy_link", "Copy link"), share);
+      });
+    } else {
+      window.prompt(t("color_chain.copy_link", "Copy link"), share);
+      done();
+    }
   };
 
   ColorChainLobby.prototype.renderRoom = function (room) {
@@ -125,7 +236,8 @@
       list.appendChild(li);
     });
     var isHost = this.net.playerId === room.hostId;
-    if (this.els.startBtn) this.els.startBtn.hidden = !isHost || room.phase !== "lobby";
+    var showStart = isHost && room.phase === "lobby" && this.mode !== "quick";
+    if (this.els.startBtn) this.els.startBtn.hidden = !showStart;
     if (this.els.hostControls) this.els.hostControls.hidden = !isHost || room.phase !== "lobby";
   };
 
