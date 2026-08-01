@@ -39,7 +39,7 @@ When adding a game page, HUD label, footer line, toast, or form label:
 
 ## Hub intro keys
 
-Hub-only entrance overlay (`#arcade-intro` on `/` only): `intro.aria`, `intro.title`, `intro.lede`, `intro.hint` (current-link boot copy).  
+Hub-only entrance overlay (`#arcade-intro` on `/` only): `intro.aria`, `intro.title`, `intro.lede`, `intro.hint` (tunnel loading boot copy).  
 Not used on game pages. Plays on every hub load; no Play gate.
 
 ## Naru desk-pet keys

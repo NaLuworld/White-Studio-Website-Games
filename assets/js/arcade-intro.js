@@ -1,3 +1,9 @@
+/**
+ * Hub entrance overlay controller.
+ * Canvas path uses WhiteStudioArcadeCurrent (procedural tunnel loading);
+ * reduced-motion falls back to lobby still + short hold.
+ * Skip: click / Enter / Space / Escape.
+ */
 (function (global) {
   "use strict";
 

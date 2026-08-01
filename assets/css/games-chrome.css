@@ -144,10 +144,11 @@ html.is-arcade-intro {
   background:
     linear-gradient(
       180deg,
-      color-mix(in srgb, var(--ws-bg-page) 42%, transparent) 0%,
-      transparent 34%,
-      color-mix(in srgb, var(--ws-bg-page) 28%, transparent) 68%,
-      color-mix(in srgb, var(--ws-bg-page) 62%, transparent) 100%
+      color-mix(in srgb, var(--ws-bg-page) 58%, transparent) 0%,
+      color-mix(in srgb, var(--ws-bg-page) 22%, transparent) 22%,
+      transparent 38%,
+      color-mix(in srgb, var(--ws-bg-page) 30%, transparent) 70%,
+      color-mix(in srgb, var(--ws-bg-page) 68%, transparent) 100%
     );
 }
 
@@ -165,9 +166,10 @@ html[data-theme="light"] .arcade-intro__veil {
 html[data-theme="light"] .arcade-intro.is-canvas .arcade-intro__veil {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--ws-bg-page) 55%, transparent) 0%,
-    transparent 36%,
-    color-mix(in srgb, var(--ws-bg-page) 48%, transparent) 100%
+    color-mix(in srgb, var(--ws-bg-page) 68%, transparent) 0%,
+    color-mix(in srgb, var(--ws-bg-page) 28%, transparent) 24%,
+    transparent 40%,
+    color-mix(in srgb, var(--ws-bg-page) 55%, transparent) 100%
   );
 }
 
@@ -217,7 +219,7 @@ html[data-theme="light"] .arcade-intro.is-canvas .arcade-intro__veil {
   text-transform: uppercase;
   color: var(--ws-accent-2);
   opacity: 0.85;
-  animation: arcade-intro-pulse 1.6s ease-in-out infinite;
+  animation: arcade-intro-heartbeat 1.15s ease-in-out infinite;
 }
 
 .arcade-intro__pulse {
@@ -227,16 +229,27 @@ html[data-theme="light"] .arcade-intro.is-canvas .arcade-intro__veil {
   border-radius: 999px;
   background: linear-gradient(90deg, transparent, var(--ws-accent-2), transparent);
   box-shadow: var(--ws-neon-glow);
-  animation: arcade-intro-pulse 1.6s ease-in-out infinite;
+  animation: arcade-intro-heartbeat 1.15s ease-in-out infinite;
 }
 
-@keyframes arcade-intro-pulse {
+/* Approximates canvas neon core heartbeat (double peak + rest). */
+@keyframes arcade-intro-heartbeat {
   0%,
   100% {
+    opacity: 0.28;
+  }
+  10% {
+    opacity: 1;
+  }
+  18% {
     opacity: 0.35;
   }
-  50% {
-    opacity: 1;
+  30% {
+    opacity: 0.9;
+  }
+  42%,
+  100% {
+    opacity: 0.28;
   }
 }
 
@@ -256,7 +269,7 @@ html[data-theme="light"] .arcade-intro.is-canvas .arcade-intro__veil {
   .arcade-intro__hint,
   .arcade-intro__pulse {
     animation: none;
-    opacity: 0.75;
+    opacity: 0.72;
   }
 
   .arcade-intro.is-ready .arcade-intro__panel {
