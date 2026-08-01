@@ -5,3 +5,28 @@
     radial-gradient(circle at 80% 0%, rgba(180, 109, 255, 0.16), transparent 38%),
     #05040a;
 }
+
+.snake-page.is-playing main.ws-game-shell {
+  display: flex;
+  flex-direction: column;
+}
+
+.snake-page.is-playing .ws-game-stage {
+  display: flex;
+  flex-direction: column;
+}
+
+.snake-page.is-playing .snake-canvas {
+  flex: 1 1 auto;
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .snake-page.is-playing .snake-touch-pad {
+    width: min(100%, 11rem);
+    gap: 0.3rem;
+  }
+
+  .snake-page.is-playing .snake-canvas {
+    min-height: min(46dvh, 280px);
+  }
+}

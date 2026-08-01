@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="color-scheme" content="dark light" />
     <meta name="ws-api-origin" content="https://api.white-studio.org" />
     <meta
@@ -33,9 +33,9 @@
     <link rel="icon" type="image/png" href="/assets/images/games/snake/icon.png" />
     <link rel="apple-touch-icon" href="/assets/images/games/snake/icon.png" />
     <script src="/assets/js/theme-boot.js"></script>
-    <link rel="stylesheet" href="/assets/css/ws-shared.css?v=20260801a" />
-    <link rel="stylesheet" href="/assets/css/games-chrome.css?v=20260801a" />
-    <link rel="stylesheet" href="./game.css" />
+    <link rel="stylesheet" href="/assets/css/ws-shared.css?v=20260802a" />
+    <link rel="stylesheet" href="/assets/css/games-chrome.css?v=20260802a" />
+    <link rel="stylesheet" href="./game.css?v=20260802a" />
   </head>
   <body class="games-page snake-page">
     <header class="ws-site-header">
@@ -58,7 +58,22 @@
     </header>
 
     <main class="ws-container ws-section ws-game-shell arcade-cabinet-shell">
-      <div class="ws-game-hud arcade-hud">
+      <div class="arcade-play-bar" aria-live="polite">
+        <button type="button" class="ws-button ws-button--ghost" id="back-button" data-i18n="snake.back">
+          Back to floor
+        </button>
+        <div class="arcade-play-bar__actions">
+          <span class="arcade-hud__stat">
+            <span data-i18n="snake.score">Score</span>
+            <strong id="play-score">0</strong>
+          </span>
+          <button type="button" class="ws-button ws-button--ghost" id="pause-button" data-i18n="snake.pause">
+            Pause
+          </button>
+        </div>
+      </div>
+
+      <div class="ws-game-hud arcade-hud arcade-hud__meta">
         <div>
           <p class="ws-card__eyebrow" data-i18n="snake.eyebrow">Arcade</p>
           <h1 class="ws-section__title arcade-hud__title" data-i18n="snake.title">Snake</h1>
@@ -79,28 +94,41 @@
         <canvas
           id="game-canvas"
           class="snake-canvas"
+          tabindex="0"
           data-i18n-attr="aria-label:snake.canvas_aria"
         ></canvas>
-        <div class="snake-overlay" id="game-overlay">
+        <div
+          class="snake-overlay"
+          id="game-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="overlay-title"
+          aria-describedby="overlay-body"
+        >
           <div class="snake-overlay__card arcade-overlay-card">
             <h2 id="overlay-title" data-i18n="snake.overlay_title">Snake</h2>
             <p id="overlay-body" data-i18n="snake.overlay_body">
-              Eat neon bites. +10 each. Submit when the run ends.
+              Swipe or tap the pad to turn. Eat bites for +10. Submit when the run ends.
             </p>
-            <button type="button" class="ws-button ws-button--primary" id="start-button" data-i18n="snake.start">
-              Start
-            </button>
+            <div class="arcade-overlay-card__actions" id="overlay-actions">
+              <button type="button" class="ws-button ws-button--primary" id="start-button" data-i18n="snake.start">
+                Start
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      <section class="leaderboard-panel arcade-board" aria-labelledby="board-title">
-        <div class="leaderboard-panel__head">
-          <h2 id="board-title" data-i18n="snake.board_title">High scores</h2>
-          <button type="button" class="ws-button ws-button--ghost" id="refresh-board" data-i18n="snake.refresh">
-            Refresh
-          </button>
-        </div>
+      <div class="snake-touch-pad" id="touch-pad" aria-hidden="true">
+        <button type="button" class="snake-touch-pad__btn" data-dir="up" data-i18n-attr="aria-label:snake.pad_up">▲</button>
+        <button type="button" class="snake-touch-pad__btn" data-dir="left" data-i18n-attr="aria-label:snake.pad_left">◀</button>
+        <button type="button" class="snake-touch-pad__btn" data-dir="right" data-i18n-attr="aria-label:snake.pad_right">▶</button>
+        <button type="button" class="snake-touch-pad__btn" data-dir="down" data-i18n-attr="aria-label:snake.pad_down">▼</button>
+      </div>
+
+      <section class="snake-result-sheet" id="result-sheet" hidden>
+        <h2 data-i18n="snake.result_title">Run complete</h2>
+        <p id="result-body">Score 0. Play again or submit to the board.</p>
         <form class="score-form" id="score-form">
           <div class="ws-field">
             <label for="player-name" data-i18n="snake.nickname">Nickname</label>
@@ -112,6 +140,8 @@
               minlength="2"
               required
               autocomplete="nickname"
+              inputmode="text"
+              enterkeyhint="done"
               data-i18n-attr="placeholder:snake.nickname_ph"
               placeholder="Neon Fox"
             />
@@ -122,6 +152,23 @@
           </button>
         </form>
         <p class="ws-status" id="board-status" data-i18n="snake.loading">Loading…</p>
+        <div class="snake-result-sheet__actions">
+          <button type="button" class="ws-button ws-button--primary" id="again-button" data-i18n="snake.again">
+            Play again
+          </button>
+          <button type="button" class="ws-button ws-button--ghost" id="view-board-button" data-i18n="snake.view_board">
+            View board
+          </button>
+        </div>
+      </section>
+
+      <section class="leaderboard-panel arcade-board" aria-labelledby="board-title">
+        <div class="leaderboard-panel__head">
+          <h2 id="board-title" data-i18n="snake.board_title">High scores</h2>
+          <button type="button" class="ws-button ws-button--ghost" id="refresh-board" data-i18n="snake.refresh">
+            Refresh
+          </button>
+        </div>
         <div id="leaderboard-root"></div>
       </section>
     </main>
@@ -132,12 +179,13 @@
       </div>
     </footer>
 
-    <script src="/assets/js/i18n.js?v=20260801a"></script>
+    <script src="/assets/js/i18n.js?v=20260802a"></script>
     <script src="/assets/js/games-auth.js"></script>
     <script src="/assets/js/games-api.js"></script>
-    <script src="/assets/js/site-chrome.js"></script>
-    <script src="/assets/js/leaderboard-ui.js?v=20260801a"></script>
-    <script src="./game.js"></script>
+    <script src="/assets/js/site-chrome.js?v=20260802a"></script>
+    <script src="/assets/js/leaderboard-ui.js?v=20260802a"></script>
+    <script src="/assets/js/naru-pet.js?v=20260802a"></script>
+    <script src="./game.js?v=20260802a"></script>
     <script>
       (async function boot() {
         await WhiteStudioGames.bootChrome({
@@ -154,6 +202,15 @@
           refreshButton: document.getElementById("refresh-board"),
           limit: 20
         });
+        if (window.WhiteStudioNaru) {
+          WhiteStudioNaru.mount({
+            tips: [
+              { key: "naru.tip_snake_controls", anim: "point_down", target: "#game-canvas", holdAnim: "look_user" },
+              { key: "naru.tip_snake_submit", anim: "wave" },
+              { key: "naru.tip_snake_back", anim: "point_up", target: ".ws-brand", holdAnim: "look_user" }
+            ]
+          });
+        }
       })();
     </script>
   </body>

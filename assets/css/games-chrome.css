@@ -7,6 +7,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  min-height: 100dvh;
   position: relative;
 }
 
@@ -735,7 +736,7 @@ html[data-theme="light"] .arcade-intro.is-canvas .arcade-intro__veil {
 .arcade-hero-stage {
   position: relative;
   isolation: isolate;
-  min-height: min(88vh, 52rem);
+  min-height: min(88dvh, 52rem);
   display: flex;
   align-items: flex-end;
   overflow: hidden;
@@ -848,7 +849,7 @@ html[data-theme="light"] .arcade-hero-stage__veil {
 
 @media (max-width: 768px) {
   .arcade-hero-stage {
-    min-height: min(92vh, 46rem);
+    min-height: min(78svh, 40rem);
     align-items: flex-start;
   }
 
@@ -860,18 +861,27 @@ html[data-theme="light"] .arcade-hero-stage__veil {
     background:
       linear-gradient(
         180deg,
-        color-mix(in srgb, var(--ws-bg-page) 78%, transparent) 0%,
-        color-mix(in srgb, var(--ws-bg-page) 42%, transparent) 28%,
-        transparent 48%,
-        color-mix(in srgb, var(--ws-bg-page) 55%, transparent) 78%,
-        color-mix(in srgb, var(--ws-bg-page) 88%, transparent) 100%
+        color-mix(in srgb, var(--ws-bg-page) 82%, transparent) 0%,
+        color-mix(in srgb, var(--ws-bg-page) 48%, transparent) 26%,
+        transparent 46%,
+        color-mix(in srgb, var(--ws-bg-page) 58%, transparent) 76%,
+        color-mix(in srgb, var(--ws-bg-page) 92%, transparent) 100%
       );
   }
 
   .arcade-hero-stage .arcade-hero {
     max-width: min(100% - (var(--ws-page-inline) * 2), 40rem);
     margin-inline: auto;
-    padding-block: clamp(1.75rem, 6vh, 3rem) clamp(2rem, 8vh, 3.5rem);
+    padding-block: clamp(1.25rem, 4svh, 2.25rem) clamp(1.5rem, 6svh, 2.75rem);
+  }
+
+  .arcade-hero__cta {
+    width: 100%;
+    max-width: 18rem;
+  }
+
+  .arcade-cabinets {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -911,13 +921,27 @@ html[data-theme="light"] .arcade-hero-stage__veil {
 
 a.arcade-cabinet:hover,
 .arcade-cabinet:hover {
-  border-color: var(--ws-accent-2);
-  box-shadow: var(--ws-neon-glow-strong), var(--ws-shadow-card);
-  transform: translateY(-3px);
+  border-color: var(--ws-border-strong);
 }
 
-a.arcade-cabinet:hover .arcade-cabinet__art {
-  filter: drop-shadow(0 0 22px rgba(180, 109, 255, 0.65));
+@media (hover: hover) and (pointer: fine) {
+  a.arcade-cabinet:hover,
+  .arcade-cabinet:hover {
+    border-color: var(--ws-accent-2);
+    box-shadow: var(--ws-neon-glow-strong), var(--ws-shadow-card);
+    transform: translateY(-3px);
+  }
+
+  a.arcade-cabinet:hover .arcade-cabinet__art {
+    filter: drop-shadow(0 0 22px rgba(180, 109, 255, 0.65));
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  a.arcade-cabinet:active {
+    border-color: var(--ws-accent-2);
+    box-shadow: var(--ws-neon-glow-strong), var(--ws-shadow-card);
+  }
 }
 
 .arcade-cabinet__play {
@@ -1067,9 +1091,10 @@ a.arcade-cabinet:hover .arcade-cabinet__art {
 
 .snake-canvas {
   width: 100%;
-  height: min(70vh, 520px);
+  height: min(58dvh, 520px);
   touch-action: none;
   image-rendering: pixelated;
+  overscroll-behavior: none;
 }
 
 .snake-overlay {
@@ -1090,6 +1115,7 @@ a.arcade-cabinet:hover .arcade-cabinet__art {
 .snake-overlay__card,
 .arcade-overlay-card {
   max-width: 22rem;
+  width: min(100%, 22rem);
   padding: var(--ws-space-6);
   border: 1px solid var(--ws-border-strong);
   border-radius: var(--ws-radius-sm);
@@ -1119,12 +1145,163 @@ a.arcade-cabinet:hover .arcade-cabinet__art {
   border-radius: var(--ws-radius-sm);
 }
 
+.arcade-overlay-card__actions {
+  display: grid;
+  gap: var(--ws-space-3);
+}
+
+.arcade-overlay-card__actions .ws-button {
+  width: 100%;
+}
+
+/* —— Immersive play shell —— */
+
+.snake-page.is-playing .ws-site-header,
+.snake-page.is-playing .ws-site-footer,
+.snake-page.is-playing .leaderboard-panel,
+.snake-page.is-playing .arcade-hud__meta {
+  display: none !important;
+}
+
+.snake-page.is-playing {
+  background: #05040a;
+}
+
+.snake-page.is-playing main {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding:
+    calc(0.65rem + var(--ws-safe-top))
+    max(0.75rem, var(--ws-safe-right))
+    calc(0.75rem + var(--ws-safe-bottom))
+    max(0.75rem, var(--ws-safe-left));
+  min-height: 100dvh;
+  gap: 0.65rem;
+}
+
+.snake-page.is-playing .ws-game-stage {
+  min-height: 0;
+  flex: 1 1 auto;
+  border-radius: 8px;
+}
+
+.snake-page.is-playing .snake-canvas {
+  height: 100%;
+  min-height: min(52dvh, 480px);
+}
+
+.arcade-play-bar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ws-space-3);
+}
+
+.snake-page.is-playing .arcade-play-bar {
+  display: flex;
+}
+
+.arcade-play-bar__actions {
+  display: inline-flex;
+  gap: 0.45rem;
+}
+
+.arcade-play-bar .ws-button {
+  min-width: var(--ws-touch-min);
+  padding-inline: 0.85rem;
+  font-family: var(--ws-font-display);
+  font-size: 0.5rem;
+  letter-spacing: 0.05em;
+  border-radius: var(--ws-radius-sm);
+}
+
+.snake-touch-pad {
+  display: none;
+  grid-template-columns: repeat(3, minmax(var(--ws-touch-min), 1fr));
+  grid-template-rows: repeat(3, minmax(var(--ws-touch-min), 1fr));
+  gap: 0.45rem;
+  width: min(100%, 14rem);
+  margin: 0.35rem auto 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.snake-page.is-playing .snake-touch-pad {
+  display: grid;
+}
+
+.snake-touch-pad__btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--ws-touch-min);
+  min-height: var(--ws-touch-min);
+  border: 1px solid var(--ws-border-strong);
+  border-radius: 0.85rem;
+  background: color-mix(in srgb, var(--ws-bg-surface) 88%, var(--ws-accent) 12%);
+  color: var(--ws-accent-2);
+  font-family: var(--ws-font-display);
+  font-size: 0.72rem;
+  cursor: pointer;
+  box-shadow: inset 0 0 12px rgba(138, 43, 226, 0.12);
+}
+
+.snake-touch-pad__btn:active,
+.snake-touch-pad__btn.is-pressed {
+  background: var(--ws-accent-soft);
+  box-shadow: var(--ws-neon-glow);
+  transform: scale(0.96);
+}
+
+.snake-touch-pad__btn[data-dir="up"] { grid-column: 2; grid-row: 1; }
+.snake-touch-pad__btn[data-dir="left"] { grid-column: 1; grid-row: 2; }
+.snake-touch-pad__btn[data-dir="right"] { grid-column: 3; grid-row: 2; }
+.snake-touch-pad__btn[data-dir="down"] { grid-column: 2; grid-row: 3; }
+
+.snake-result-sheet {
+  display: none;
+}
+
+.snake-result-sheet[hidden] {
+  display: none !important;
+}
+
+.snake-page.is-result .snake-result-sheet:not([hidden]) {
+  display: grid;
+  gap: var(--ws-space-4);
+  margin-top: var(--ws-space-4);
+  padding: var(--ws-space-5);
+  border: 1px solid var(--ws-border-strong);
+  border-radius: var(--ws-radius-sm);
+  background:
+    linear-gradient(180deg, rgba(138, 43, 226, 0.1), transparent 34%),
+    var(--ws-bg-surface);
+  box-shadow: var(--ws-neon-glow);
+}
+
+.snake-result-sheet__actions {
+  display: grid;
+  gap: var(--ws-space-3);
+}
+
+.snake-result-sheet__actions .ws-button {
+  width: 100%;
+}
+
+@media (min-width: 769px) {
+  .snake-touch-pad {
+    display: none !important;
+  }
+}
+
 /* —— Naru desk pet —— */
 
 .naru-pet {
   position: fixed;
-  right: max(0.75rem, env(safe-area-inset-right));
-  bottom: max(0.75rem, env(safe-area-inset-bottom));
+  right: max(0.75rem, var(--ws-safe-right));
+  bottom: max(0.75rem, var(--ws-safe-bottom));
   z-index: 80;
   display: grid;
   justify-items: end;
@@ -1168,7 +1345,7 @@ a.arcade-cabinet:hover .arcade-cabinet__art {
 }
 
 .naru-pet__bubble {
-  max-width: min(16.5rem, calc(100vw - 2rem));
+  max-width: min(16.5rem, calc(100vw - 2rem - var(--ws-safe-left) - var(--ws-safe-right)));
   padding: 0.7rem 0.8rem 0.65rem;
   border: 1px solid var(--ws-border-strong);
   border-radius: 12px;
@@ -1192,8 +1369,8 @@ a.arcade-cabinet:hover .arcade-cabinet__art {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 1.85rem;
-  padding: 0.25rem 0.7rem;
+  min-height: var(--ws-touch-min);
+  padding: 0.25rem 0.85rem;
   border: 1px solid var(--ws-border-subtle);
   border-radius: var(--ws-radius-sm);
   background: var(--ws-accent-soft);
@@ -1218,13 +1395,18 @@ a.arcade-cabinet:hover .arcade-cabinet__art {
 
 @media (max-width: 640px) {
   .naru-pet {
-    right: 0.5rem;
-    bottom: 0.5rem;
+    right: max(0.5rem, var(--ws-safe-right));
+    bottom: max(0.5rem, var(--ws-safe-bottom));
   }
 
   .naru-pet__sprite {
-    transform: scale(0.84);
+    width: 80px;
+    height: 80px;
     transform-origin: bottom right;
+  }
+
+  .snake-page.is-playing .naru-pet {
+    display: none;
   }
 }
 

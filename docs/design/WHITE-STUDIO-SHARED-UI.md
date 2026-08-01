@@ -95,9 +95,22 @@ Tight corner radius; silhouette must read at thumbnail size.
 ## Navbar
 
 - Brand only (logo + title links home)
-- Right actions: Discord login **or** signed-in user menu (never both), language, theme
+- Desktop right actions: Discord login **or** signed-in user menu (never both), language, theme
+- Mobile (≤768px): Discord shortcut + hamburger; language / theme / logout live in the preferences drawer (`.ws-menu-drawer`)
 - Do **not** put Games / Tools / Community / White Studio in the top nav
 - Cross-product links belong in a future **About** surface (see architecture doc)
+
+## Mobile-first chrome (required)
+
+- Viewport: `width=device-width, initial-scale=1, viewport-fit=cover`
+- Heights: prefer `dvh` / `svh` over bare `vh` for hero, stage, and drawers
+- Safe areas: header, toast, footer, Naru, drawers, and immersive HUD must use `--ws-safe-*` / `env(safe-area-inset-*)`
+- Touch targets: `--ws-touch-min` (≥44px); form inputs use `font-size: 16px` to avoid iOS zoom
+- Hover lift only under `@media (hover: hover) and (pointer: fine)`
+- Immersive game shell on play: hide site header/footer/leaderboard; keep safe-area HUD, pause, back, optional on-screen pad
+- Pause on `visibilitychange` / background; confirm before leaving an active run
+- Leaderboard: table on desktop, compact cards on ≤640px
+- Do **not** require browser fullscreen or forced landscape
 
 ## Theme
 
@@ -136,15 +149,17 @@ Aliases: `--bg`, `--panel`, `--text`, `--muted`, `--border`, `--accent`, `--acce
 ## Components
 
 | Class | Use |
-|-------|-----|
+|------|-----|
 | `.ws-site-header` / `.ws-brand` / `.ws-nav` / `.ws-site-header__actions` | Top chrome |
+| `.ws-menu-btn` / `.ws-menu-drawer` / `.ws-menu-overlay` | Mobile preferences drawer |
 | `.ws-i18n-btn` / `.ws-theme-btn` / `.ws-auth-login` | Language, theme, Discord login |
 | `.ws-button` + `--primary` / `--ghost` | Actions |
 | `.ws-card` / `.arcade-cabinet` | Interactive cabinet cards only |
 | `.arcade-hero` / `.ws-section` | Hub copy |
 | `.ws-input` / `.ws-field` | Forms |
-| `.ws-leaderboard` / `.arcade-board` | Rank table |
-| `.ws-game-stage` / `.ws-game-hud` / `.arcade-hud` | Play shell |
+| `.ws-leaderboard` / `.ws-leaderboard-cards` / `.arcade-board` | Rank table (desktop) + cards (phone) |
+| `.ws-game-stage` / `.ws-game-hud` / `.arcade-hud` / `.arcade-play-bar` | Play shell |
+| `.snake-touch-pad` | Optional on-screen D-pad (phone play) |
 
 ## Motion
 

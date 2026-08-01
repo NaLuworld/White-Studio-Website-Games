@@ -32,6 +32,14 @@
     }
   }
 
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
   function renderLeaderboard(root, entries, emptyMessage) {
     if (!root) return;
     var list = Array.isArray(entries) ? entries : [];
@@ -71,6 +79,28 @@
       })
       .join("");
 
+    var cards = list
+      .map(function (entry) {
+        var pushLabel = formatPushTime(entry.createdAt);
+        return (
+          '<article class="ws-leaderboard-card">' +
+          '<span class="ws-leaderboard-card__rank">' +
+          escapeHtml(String(entry.rank)) +
+          "</span>" +
+          '<span class="ws-leaderboard-card__name">' +
+          escapeHtml(entry.playerName || "—") +
+          "</span>" +
+          '<span class="ws-leaderboard-card__score">' +
+          escapeHtml(String(entry.score)) +
+          "</span>" +
+          '<span class="ws-leaderboard-card__time">' +
+          escapeHtml(pushLabel) +
+          "</span>" +
+          "</article>"
+        );
+      })
+      .join("");
+
     root.innerHTML =
       '<table class="ws-leaderboard" aria-label="' +
       escapeHtml(t("snake.board_title")) +
@@ -86,15 +116,12 @@
       "</th></tr></thead>" +
       "<tbody>" +
       rows +
-      "</tbody></table>";
-  }
-
-  function escapeHtml(value) {
-    return String(value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
+      "</tbody></table>" +
+      '<div class="ws-leaderboard-cards" aria-label="' +
+      escapeHtml(t("snake.board_title")) +
+      '">' +
+      cards +
+      "</div>";
   }
 
   async function mountLeaderboard(options) {
@@ -156,6 +183,12 @@
             localStorage.setItem("ws-games-player-name", playerName);
           } catch (_) {}
           await refresh();
+          var board = document.querySelector(".leaderboard-panel");
+          if (board) {
+            try {
+              board.scrollIntoView({ behavior: "smooth", block: "start" });
+            } catch (_) {}
+          }
         } catch (error) {
           if (statusEl) {
             statusEl.textContent = error.message || t("snake.submit_fail");
@@ -170,6 +203,14 @@
         var saved = localStorage.getItem("ws-games-player-name");
         if (saved && !nameInput.value) nameInput.value = saved;
       } catch (_) {}
+
+      nameInput.addEventListener("focus", function () {
+        window.setTimeout(function () {
+          try {
+            nameInput.scrollIntoView({ behavior: "smooth", block: "center" });
+          } catch (_) {}
+        }, 250);
+      });
     }
 
     if (global.WhiteStudioI18n && global.WhiteStudioI18n.onChange) {

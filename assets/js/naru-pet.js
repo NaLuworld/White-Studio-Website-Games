@@ -103,7 +103,11 @@
     el.classList.add("naru-target-glow");
     highlightEl = el;
     try {
-      el.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "center" });
+      var narrow = window.matchMedia && window.matchMedia("(max-width: 640px)").matches;
+      el.scrollIntoView({
+        behavior: prefersReducedMotion() || narrow ? "auto" : "smooth",
+        block: narrow ? "nearest" : "center"
+      });
     } catch (_) {}
   }
 
@@ -293,6 +297,9 @@
         return;
       }
       play("wave", { once: true });
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && tipBusy) dismissTip();
     });
 
     return {

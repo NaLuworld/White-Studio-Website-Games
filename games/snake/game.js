@@ -3,10 +3,21 @@
   var overlay = document.getElementById("game-overlay");
   var overlayTitle = document.getElementById("overlay-title");
   var overlayBody = document.getElementById("overlay-body");
+  var overlayActions = document.getElementById("overlay-actions");
   var startButton = document.getElementById("start-button");
   var scoreEl = document.getElementById("live-score");
+  var playScoreEl = document.getElementById("play-score");
   var bestEl = document.getElementById("best-score");
   var submitScoreEl = document.getElementById("submit-score-value");
+  var pauseButton = document.getElementById("pause-button");
+  var backButton = document.getElementById("back-button");
+  var touchPad = document.getElementById("touch-pad");
+  var resultSheet = document.getElementById("result-sheet");
+  var resultBody = document.getElementById("result-body");
+  var againButton = document.getElementById("again-button");
+  var viewBoardButton = document.getElementById("view-board-button");
+  var boardPanel = document.querySelector(".leaderboard-panel");
+  var page = document.body;
 
   if (!canvas) return;
 
@@ -18,8 +29,10 @@
   var POINTS_PER_FOOD = 10;
   var BASE_STEP_MS = 160;
   var MIN_STEP_MS = 70;
+  var SWIPE_THRESHOLD = 22;
 
   var running = false;
+  var paused = false;
   var raf = 0;
   var score = 0;
   var best = 0;
@@ -29,11 +42,16 @@
   var food = { x: 8, y: 8 };
   var lastStepTs = 0;
   var accum = 0;
+  var pointerId = null;
+  var pointerStartX = 0;
+  var pointerStartY = 0;
+  var pointerMoved = false;
+  var leaveArmed = false;
 
   try {
     best = Number(localStorage.getItem("ws-snake-best") || 0) || 0;
   } catch (_) {}
-  bestEl.textContent = String(best);
+  if (bestEl) bestEl.textContent = String(best);
 
   function t(key, vars) {
     if (window.WhiteStudioI18n && typeof window.WhiteStudioI18n.t === "function") {
@@ -42,10 +60,33 @@
     return key;
   }
 
+  function setScoreDisplay(value) {
+    var text = String(value);
+    if (scoreEl) scoreEl.textContent = text;
+    if (playScoreEl) playScoreEl.textContent = text;
+    if (submitScoreEl) submitScoreEl.textContent = text;
+  }
+
+  function setMode(mode) {
+    page.classList.remove("is-playing", "is-result", "is-paused");
+    if (mode === "playing") page.classList.add("is-playing");
+    if (mode === "result") page.classList.add("is-result");
+    if (mode === "paused") {
+      page.classList.add("is-playing");
+      page.classList.add("is-paused");
+    }
+    if (touchPad) touchPad.setAttribute("aria-hidden", mode === "playing" || mode === "paused" ? "false" : "true");
+    if (resultSheet) {
+      resultSheet.hidden = mode !== "result";
+    }
+  }
+
   function resize() {
     var rect = canvas.getBoundingClientRect();
-    canvas.width = Math.floor(rect.width * dpr);
-    canvas.height = Math.floor(rect.height * dpr);
+    var width = Math.max(1, Math.floor(rect.width));
+    var height = Math.max(1, Math.floor(rect.height));
+    canvas.width = Math.floor(width * dpr);
+    canvas.height = Math.floor(height * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
@@ -74,8 +115,7 @@
     lastStepTs = 0;
     accum = 0;
     placeFood();
-    scoreEl.textContent = "0";
-    submitScoreEl.textContent = "0";
+    setScoreDisplay(0);
   }
 
   function placeFood() {
@@ -101,36 +141,99 @@
     return Math.max(MIN_STEP_MS, BASE_STEP_MS - level * 6);
   }
 
-  function showOverlay(title, body, buttonLabel) {
+  function clearOverlayActions() {
+    if (!overlayActions) return;
+    overlayActions.innerHTML = "";
+  }
+
+  function addOverlayButton(label, className, onClick, primary) {
+    var button = document.createElement("button");
+    button.type = "button";
+    button.className = "ws-button " + (primary ? "ws-button--primary" : "ws-button--ghost");
+    if (className) button.className += " " + className;
+    button.textContent = label;
+    button.addEventListener("click", onClick);
+    overlayActions.appendChild(button);
+    return button;
+  }
+
+  function showOverlay(title, body, buildActions) {
     overlay.hidden = false;
     overlayTitle.textContent = title;
     overlayBody.textContent = body;
-    startButton.textContent = buttonLabel || t("snake.start");
-  }
-
-  function showStartOverlay() {
-    showOverlay(t("snake.overlay_title"), t("snake.overlay_body"), t("snake.start"));
+    clearOverlayActions();
+    if (typeof buildActions === "function") buildActions();
+    var firstBtn = overlayActions && overlayActions.querySelector("button");
+    if (firstBtn) {
+      window.setTimeout(function () {
+        try {
+          firstBtn.focus();
+        } catch (_) {}
+      }, 0);
+    }
   }
 
   function hideOverlay() {
     overlay.hidden = true;
   }
 
+  function showStartOverlay() {
+    setMode("idle");
+    showOverlay(t("snake.overlay_title"), t("snake.overlay_body"), function () {
+      addOverlayButton(t("snake.start"), "js-start", start, true);
+    });
+  }
+
+  function showPauseOverlay() {
+    setMode("paused");
+    showOverlay(t("snake.paused_title"), t("snake.paused_body"), function () {
+      addOverlayButton(t("snake.resume"), "js-resume", resume, true);
+      addOverlayButton(t("snake.leave_quit"), "js-leave", requestLeave, false);
+    });
+    if (pauseButton) pauseButton.textContent = t("snake.resume");
+  }
+
+  function showLeaveConfirm() {
+    showOverlay(t("snake.leave_confirm"), t("snake.leave_confirm"), function () {
+      addOverlayButton(t("snake.leave_stay"), "js-stay", resume, true);
+      addOverlayButton(t("snake.leave_quit"), "js-quit", function () {
+        window.location.href = "/";
+      }, false);
+    });
+  }
+
   function endGame() {
     running = false;
+    paused = false;
     cancelAnimationFrame(raf);
     if (score > best) {
       best = score;
-      bestEl.textContent = String(best);
+      if (bestEl) bestEl.textContent = String(best);
       try {
         localStorage.setItem("ws-snake-best", String(best));
       } catch (_) {}
     }
-    submitScoreEl.textContent = String(score);
+    setScoreDisplay(score);
+    setMode("result");
+    if (resultBody) {
+      resultBody.textContent = t("snake.result_body", { score: String(score) });
+    }
     showOverlay(
       t("snake.overlay_go"),
       t("snake.overlay_go_body", { score: String(score) }),
-      t("snake.again")
+      function () {
+        addOverlayButton(t("snake.again"), "js-again", start, true);
+        addOverlayButton(t("snake.submit_score"), "js-submit-focus", function () {
+          hideOverlay();
+          if (resultSheet) {
+            try {
+              resultSheet.scrollIntoView({ behavior: "smooth", block: "start" });
+            } catch (_) {}
+            var input = document.getElementById("player-name");
+            if (input) input.focus();
+          }
+        }, false);
+      }
     );
   }
 
@@ -162,8 +265,7 @@
 
     if (next.x === food.x && next.y === food.y) {
       score += POINTS_PER_FOOD;
-      scoreEl.textContent = String(score);
-      submitScoreEl.textContent = String(score);
+      setScoreDisplay(score);
       placeFood();
       if (food.x < 0) {
         endGame();
@@ -228,35 +330,190 @@
   }
 
   function tick(ts) {
-    if (!running) return;
+    if (!running || paused) return;
     if (!lastStepTs) lastStepTs = ts;
     var dt = Math.min(48, ts - lastStepTs);
     lastStepTs = ts;
     accum += dt;
 
     var interval = stepMs();
-    while (accum >= interval && running) {
+    while (accum >= interval && running && !paused) {
       accum -= interval;
       if (!step()) break;
     }
 
     draw(canvas.clientWidth, canvas.clientHeight);
-    if (running) raf = requestAnimationFrame(tick);
+    if (running && !paused) raf = requestAnimationFrame(tick);
   }
 
   function start() {
     resetGame();
     hideOverlay();
     running = true;
+    paused = false;
+    leaveArmed = true;
+    lastStepTs = 0;
+    accum = 0;
+    setMode("playing");
+    if (pauseButton) pauseButton.textContent = t("snake.pause");
+    try {
+      canvas.focus({ preventScroll: true });
+    } catch (_) {
+      try {
+        canvas.focus();
+      } catch (__) {}
+    }
+    raf = requestAnimationFrame(tick);
+  }
+
+  function pause(options) {
+    options = options || {};
+    if (!running || paused) return;
+    paused = true;
+    cancelAnimationFrame(raf);
+    accum = 0;
+    lastStepTs = 0;
+    if (!options.silent) showPauseOverlay();
+    else setMode("paused");
+  }
+
+  function resume() {
+    if (!running) {
+      start();
+      return;
+    }
+    paused = false;
+    hideOverlay();
+    setMode("playing");
+    if (pauseButton) pauseButton.textContent = t("snake.pause");
     lastStepTs = 0;
     accum = 0;
     raf = requestAnimationFrame(tick);
   }
 
-  startButton.addEventListener("click", start);
+  function requestLeave() {
+    if (!running) {
+      window.location.href = "/";
+      return;
+    }
+    if (!paused) pause({ silent: true });
+    showLeaveConfirm();
+  }
+
+  function applySwipe(dx, dy) {
+    if (Math.abs(dx) < SWIPE_THRESHOLD && Math.abs(dy) < SWIPE_THRESHOLD) return;
+    if (Math.abs(dx) > Math.abs(dy)) {
+      setDirection(dx > 0 ? 1 : -1, 0);
+    } else {
+      setDirection(0, dy > 0 ? 1 : -1);
+    }
+  }
+
+  function onPointerDown(event) {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    pointerId = event.pointerId;
+    pointerStartX = event.clientX;
+    pointerStartY = event.clientY;
+    pointerMoved = false;
+    try {
+      canvas.setPointerCapture(pointerId);
+    } catch (_) {}
+  }
+
+  function onPointerMove(event) {
+    if (pointerId !== event.pointerId) return;
+    var dx = event.clientX - pointerStartX;
+    var dy = event.clientY - pointerStartY;
+    if (!pointerMoved && (Math.abs(dx) >= SWIPE_THRESHOLD || Math.abs(dy) >= SWIPE_THRESHOLD)) {
+      pointerMoved = true;
+      applySwipe(dx, dy);
+      pointerStartX = event.clientX;
+      pointerStartY = event.clientY;
+    } else if (pointerMoved && (Math.abs(dx) >= SWIPE_THRESHOLD || Math.abs(dy) >= SWIPE_THRESHOLD)) {
+      applySwipe(dx, dy);
+      pointerStartX = event.clientX;
+      pointerStartY = event.clientY;
+    }
+    if (running && !paused && event.cancelable) event.preventDefault();
+  }
+
+  function onPointerUp(event) {
+    if (pointerId !== event.pointerId) return;
+    if (!pointerMoved) {
+      var dx = event.clientX - pointerStartX;
+      var dy = event.clientY - pointerStartY;
+      applySwipe(dx, dy);
+    }
+    pointerId = null;
+    pointerMoved = false;
+  }
+
+  function bindTouchPad() {
+    if (!touchPad) return;
+    var buttons = touchPad.querySelectorAll("[data-dir]");
+    for (var i = 0; i < buttons.length; i++) {
+      (function (button) {
+        var dirName = button.getAttribute("data-dir");
+        function press(event) {
+          if (event) event.preventDefault();
+          button.classList.add("is-pressed");
+          if (dirName === "up") setDirection(0, -1);
+          else if (dirName === "down") setDirection(0, 1);
+          else if (dirName === "left") setDirection(-1, 0);
+          else if (dirName === "right") setDirection(1, 0);
+        }
+        function release() {
+          button.classList.remove("is-pressed");
+        }
+        button.addEventListener("pointerdown", press);
+        button.addEventListener("pointerup", release);
+        button.addEventListener("pointercancel", release);
+        button.addEventListener("pointerleave", release);
+      })(buttons[i]);
+    }
+  }
+
+  if (startButton) {
+    startButton.addEventListener("click", start);
+  }
+  if (pauseButton) {
+    pauseButton.addEventListener("click", function () {
+      if (paused) resume();
+      else pause();
+    });
+  }
+  if (backButton) {
+    backButton.addEventListener("click", function (event) {
+      event.preventDefault();
+      requestLeave();
+    });
+  }
+  if (againButton) {
+    againButton.addEventListener("click", start);
+  }
+  if (viewBoardButton && boardPanel) {
+    viewBoardButton.addEventListener("click", function () {
+      try {
+        boardPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+      } catch (_) {}
+    });
+  }
+
+  bindTouchPad();
+
+  canvas.addEventListener("pointerdown", onPointerDown);
+  canvas.addEventListener("pointermove", onPointerMove, { passive: false });
+  canvas.addEventListener("pointerup", onPointerUp);
+  canvas.addEventListener("pointercancel", onPointerUp);
 
   window.addEventListener("keydown", function (event) {
     var key = event.key;
+    if (key === "Escape" && running) {
+      event.preventDefault();
+      if (paused) resume();
+      else pause();
+      return;
+    }
     if (key === "ArrowUp" || key === "w" || key === "W") {
       event.preventDefault();
       setDirection(0, -1);
@@ -273,51 +530,56 @@
       if (!running) {
         event.preventDefault();
         start();
+      } else if (paused) {
+        event.preventDefault();
+        resume();
       }
     }
   });
 
-  var touchStartX = 0;
-  var touchStartY = 0;
-  canvas.addEventListener(
-    "touchstart",
-    function (event) {
-      if (!event.changedTouches[0]) return;
-      touchStartX = event.changedTouches[0].clientX;
-      touchStartY = event.changedTouches[0].clientY;
-    },
-    { passive: true }
-  );
-  canvas.addEventListener(
-    "touchend",
-    function (event) {
-      if (!event.changedTouches[0]) return;
-      var dx = event.changedTouches[0].clientX - touchStartX;
-      var dy = event.changedTouches[0].clientY - touchStartY;
-      if (Math.abs(dx) < 24 && Math.abs(dy) < 24) return;
-      if (Math.abs(dx) > Math.abs(dy)) {
-        setDirection(dx > 0 ? 1 : -1, 0);
-      } else {
-        setDirection(0, dy > 0 ? 1 : -1);
-      }
-    },
-    { passive: true }
-  );
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden && running && !paused) pause();
+  });
 
-  window.addEventListener("resize", function () {
+  window.addEventListener("pagehide", function () {
+    if (running && !paused) pause({ silent: true });
+  });
+
+  window.addEventListener("beforeunload", function (event) {
+    if (leaveArmed && running) {
+      event.preventDefault();
+      event.returnValue = "";
+    }
+  });
+
+  function handleResize() {
     resize();
     draw(canvas.clientWidth, canvas.clientHeight);
-  });
+  }
+
+  window.addEventListener("resize", handleResize);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", handleResize);
+    window.visualViewport.addEventListener("scroll", handleResize);
+  }
+  if (typeof ResizeObserver !== "undefined") {
+    var stage = canvas.parentElement;
+    if (stage) {
+      var observer = new ResizeObserver(handleResize);
+      observer.observe(stage);
+    }
+  }
 
   if (window.WhiteStudioI18n && window.WhiteStudioI18n.onChange) {
     window.WhiteStudioI18n.onChange(function () {
+      if (pauseButton) {
+        pauseButton.textContent = t(paused ? "snake.resume" : "snake.pause");
+      }
       if (!running && !overlay.hidden) {
-        if (score > 0) {
-          showOverlay(
-            t("snake.overlay_go"),
-            t("snake.overlay_go_body", { score: String(score) }),
-            t("snake.again")
-          );
+        if (score > 0 && page.classList.contains("is-result")) {
+          endGame();
+        } else if (paused) {
+          showPauseOverlay();
         } else {
           showStartOverlay();
         }
@@ -328,5 +590,5 @@
   resize();
   resetGame();
   draw(canvas.clientWidth, canvas.clientHeight);
-  // Initial overlay copy comes from HTML data-i18n; bootChrome applyAll fills locale.
+  showStartOverlay();
 })();

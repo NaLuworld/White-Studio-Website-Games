@@ -14,7 +14,8 @@
   var FADE_MS = 350;
   var REDUCED_HOLD_MS = 120;
   var CABLE_LEAD_MS = 700;
-  var MOBILE_HOLD_MS = 2600;
+  var MOBILE_HOLD_MS = 1800;
+  var INTRO_SKIP_KEY = "ws_arcade_intro_skip_v1";
 
   function prefersReducedMotion() {
     try {
@@ -32,6 +33,24 @@
     } catch (_) {
       return window.innerWidth <= 768;
     }
+  }
+
+  function shouldSkipIntro() {
+    try {
+      var raw = sessionStorage.getItem(INTRO_SKIP_KEY);
+      if (!raw) return false;
+      var parsed = JSON.parse(raw);
+      if (!parsed || !parsed.at) return false;
+      return Date.now() - Number(parsed.at) < 1000 * 60 * 60 * 12;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function markIntroSeen() {
+    try {
+      sessionStorage.setItem(INTRO_SKIP_KEY, JSON.stringify({ at: Date.now() }));
+    } catch (_) {}
   }
 
   function mountArcadeIntro(root) {
@@ -57,6 +76,7 @@
     });
 
     function cleanupListeners() {
+      el.removeEventListener("pointerup", onSkip);
       el.removeEventListener("click", onSkip);
       document.removeEventListener("keydown", onKey);
       window.removeEventListener("resize", onResize);
@@ -89,6 +109,7 @@
     function finish() {
       if (finished) return;
       finished = true;
+      markIntroSeen();
       cleanupListeners();
       window.clearTimeout(holdTimer);
       if (scene) scene.stop();
@@ -98,7 +119,10 @@
     }
 
     function onSkip(event) {
-      if (event) event.preventDefault();
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
       finish();
     }
 
@@ -112,6 +136,16 @@
 
     function onResize() {
       if (scene) scene.resize();
+    }
+
+    if (shouldSkipIntro()) {
+      html.classList.remove("is-arcade-intro");
+      el.hidden = true;
+      el.setAttribute("aria-hidden", "true");
+      el.setAttribute("aria-busy", "false");
+      if (el.parentNode) el.parentNode.removeChild(el);
+      if (resolveDone) resolveDone(false);
+      return done;
     }
 
     html.classList.add("is-arcade-intro");
@@ -166,6 +200,7 @@
       });
     });
 
+    el.addEventListener("pointerup", onSkip);
     el.addEventListener("click", onSkip);
     document.addEventListener("keydown", onKey);
 
