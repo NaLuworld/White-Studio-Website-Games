@@ -1,96 +1,15 @@
 (function (global) {
   "use strict";
 
-  var STORAGE_THEME_KEY = "ws_games_theme_v1";
-  var LEGACY_THEME_KEY = "theme-mode";
   var menuOpen = false;
   var menuLastFocus = null;
   var drawerEls = null;
-
-  function normalizeTheme(input) {
-    return String(input || "").trim().toLowerCase() === "light" ? "light" : "dark";
-  }
-
-  function readStoredTheme() {
-    try {
-      var next = localStorage.getItem(STORAGE_THEME_KEY);
-      if (next === "light" || next === "dark") return next;
-      var legacy = localStorage.getItem(LEGACY_THEME_KEY);
-      if (legacy === "light" || legacy === "dark") return legacy;
-    } catch (_) {}
-    return "dark";
-  }
-
-  function persistTheme(theme) {
-    try {
-      localStorage.setItem(STORAGE_THEME_KEY, theme);
-      localStorage.setItem(LEGACY_THEME_KEY, theme);
-    } catch (_) {}
-  }
-
-  function applyTheme(nextTheme, options) {
-    var theme = normalizeTheme(nextTheme);
-    document.documentElement.dataset.theme = theme;
-    document.documentElement.style.colorScheme = theme;
-    if (!options || options.persist !== false) persistTheme(theme);
-    syncThemeButtons();
-    syncDrawerChoices();
-    return theme;
-  }
 
   function t(key, vars) {
     if (global.WhiteStudioI18n && typeof global.WhiteStudioI18n.t === "function") {
       return global.WhiteStudioI18n.t(key, vars);
     }
     return key;
-  }
-
-  function syncThemeButtons() {
-    var theme = normalizeTheme(document.documentElement.dataset.theme);
-    var next = theme === "dark" ? "light" : "dark";
-    var buttons = document.querySelectorAll("[data-ws-theme-btn]");
-    for (var i = 0; i < buttons.length; i++) {
-      var button = buttons[i];
-      button.dataset.theme = theme;
-      button.setAttribute(
-        "aria-label",
-        t(next === "light" ? "theme.switch_to_light" : "theme.switch_to_dark")
-      );
-      button.title = button.getAttribute("aria-label");
-      var label = button.querySelector(".ws-theme-label");
-      if (label) label.textContent = t(theme === "light" ? "theme.light" : "theme.dark");
-    }
-  }
-
-  function bindThemeButton(button) {
-    if (!button) return;
-    button.setAttribute("data-ws-theme-btn", "");
-    if (!button.querySelector(".ws-theme-icon")) {
-      button.innerHTML =
-        '<span class="ws-theme-icon" aria-hidden="true"></span><span class="ws-theme-label"></span>';
-    }
-    button.addEventListener("click", function () {
-      var current = normalizeTheme(document.documentElement.dataset.theme);
-      applyTheme(current === "dark" ? "light" : "dark");
-    });
-    syncThemeButtons();
-  }
-
-  function mountThemeButton(host) {
-    if (!host) return null;
-    var existing = host.querySelector("[data-ws-theme-btn]");
-    if (existing) {
-      bindThemeButton(existing);
-      return existing;
-    }
-    var button = document.createElement("button");
-    button.type = "button";
-    button.className = "ws-theme-btn";
-    button.innerHTML =
-      '<span class="ws-theme-icon" aria-hidden="true"></span><span class="ws-theme-label"></span>';
-    host.appendChild(button);
-    bindThemeButton(button);
-    return button;
   }
 
   function getFocusable(root) {
@@ -106,7 +25,6 @@
 
   function syncDrawerChoices() {
     if (!drawerEls) return;
-    var theme = normalizeTheme(document.documentElement.dataset.theme);
     var lang =
       global.WhiteStudioI18n && typeof global.WhiteStudioI18n.getLang === "function"
         ? global.WhiteStudioI18n.getLang()
@@ -118,7 +36,6 @@
     drawerEls.prefsTitle.textContent = t("nav.prefs_title");
     drawerEls.accountTitle.textContent = t("nav.account_title");
     drawerEls.langLabel.textContent = t("nav.language");
-    drawerEls.themeLabel.textContent = t("nav.theme");
 
     var langButtons = drawerEls.scroll.querySelectorAll("[data-drawer-lang]");
     for (var i = 0; i < langButtons.length; i++) {
@@ -128,16 +45,6 @@
       lb.classList.toggle("is-active", active);
       lb.setAttribute("aria-checked", active ? "true" : "false");
       lb.textContent = t(code === "en" ? "lang.english" : "lang.traditional_chinese");
-    }
-
-    var themeButtons = drawerEls.scroll.querySelectorAll("[data-drawer-theme]");
-    for (var j = 0; j < themeButtons.length; j++) {
-      var tb = themeButtons[j];
-      var value = tb.getAttribute("data-drawer-theme");
-      var on = value === theme;
-      tb.classList.toggle("is-active", on);
-      tb.setAttribute("aria-checked", on ? "true" : "false");
-      tb.textContent = t(value === "light" ? "theme.light" : "theme.dark");
     }
 
     var session =
@@ -234,11 +141,6 @@
       '<button type="button" class="ws-menu-drawer__choice" data-drawer-lang="zh-Hant" role="radio"></button>' +
       '<button type="button" class="ws-menu-drawer__choice" data-drawer-lang="en" role="radio"></button>' +
       "</div>" +
-      '<div class="ws-menu-drawer__row">' +
-      '<p class="ws-menu-drawer__hint" data-ws-menu-theme-label></p>' +
-      '<button type="button" class="ws-menu-drawer__choice" data-drawer-theme="dark" role="radio"></button>' +
-      '<button type="button" class="ws-menu-drawer__choice" data-drawer-theme="light" role="radio"></button>' +
-      "</div>" +
       "</section>" +
       '<section class="ws-menu-drawer__section">' +
       '<p class="ws-menu-drawer__section-title" data-ws-menu-account-title></p>' +
@@ -261,7 +163,6 @@
       prefsTitle: drawer.querySelector("[data-ws-menu-prefs-title]"),
       accountTitle: drawer.querySelector("[data-ws-menu-account-title]"),
       langLabel: drawer.querySelector("[data-ws-menu-lang-label]"),
-      themeLabel: drawer.querySelector("[data-ws-menu-theme-label]"),
       accountHint: drawer.querySelector("[data-ws-menu-account-hint]"),
       login: drawer.querySelector("[data-ws-menu-login]"),
       logout: drawer.querySelector("[data-ws-menu-logout]")
@@ -285,11 +186,6 @@
             syncDrawerChoices();
           }
         );
-        return;
-      }
-      var themeBtn = event.target.closest("[data-drawer-theme]");
-      if (themeBtn) {
-        applyTheme(themeBtn.getAttribute("data-drawer-theme"));
       }
     });
 
@@ -354,7 +250,6 @@
 
   async function bootChrome(options) {
     options = options || {};
-    applyTheme(readStoredTheme(), { persist: false });
 
     if (global.WhiteStudioI18n) {
       await global.WhiteStudioI18n.init();
@@ -371,12 +266,6 @@
         switcherHost.setAttribute("data-i18n-skip", "true");
         actions.appendChild(switcherHost);
         global.WhiteStudioI18n.mountSwitcher(switcherHost);
-        mountThemeButton(switcherHost);
-      } else {
-        var themeHost = document.createElement("div");
-        themeHost.className = "ws-site-controls ws-desktop-only";
-        actions.appendChild(themeHost);
-        mountThemeButton(themeHost);
       }
       mountMenuDrawer(actions);
     }
@@ -396,7 +285,6 @@
 
     if (global.WhiteStudioI18n) {
       global.WhiteStudioI18n.onChange(function () {
-        syncThemeButtons();
         syncDrawerChoices();
         if (global.WhiteStudioI18n.applyAll) global.WhiteStudioI18n.applyAll(document);
       });
@@ -404,28 +292,17 @@
     }
 
     return {
-      theme: normalizeTheme(document.documentElement.dataset.theme),
       lang: global.WhiteStudioI18n ? global.WhiteStudioI18n.getLang() : "zh-Hant",
       setMenuOpen: setMenuOpen
     };
   }
 
-  function bindThemeToggle(button) {
-    if (!button) return;
-    button.classList.add("ws-theme-btn");
-    bindThemeButton(button);
-  }
-
   if (global.WhiteStudioGames) {
-    global.WhiteStudioGames.bindThemeToggle = bindThemeToggle;
     global.WhiteStudioGames.bootChrome = bootChrome;
-    global.WhiteStudioGames.applyTheme = applyTheme;
     global.WhiteStudioGames.setMenuOpen = setMenuOpen;
   } else {
     global.WhiteStudioGames = {
-      bindThemeToggle: bindThemeToggle,
       bootChrome: bootChrome,
-      applyTheme: applyTheme,
       setMenuOpen: setMenuOpen
     };
   }

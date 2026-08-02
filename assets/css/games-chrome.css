@@ -174,28 +174,6 @@ html.is-arcade-intro {
     );
 }
 
-html[data-theme="light"] .arcade-intro__veil {
-  background:
-    radial-gradient(ellipse 70% 55% at 50% 42%, transparent 0%, rgba(239, 232, 251, 0.45) 70%, rgba(239, 232, 251, 0.82) 100%),
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--ws-bg-page) 75%, transparent) 0%,
-      transparent 30%,
-      color-mix(in srgb, var(--ws-bg-page) 70%, transparent) 100%
-    );
-}
-
-html[data-theme="light"] .arcade-intro.is-canvas .arcade-intro__veil {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--ws-bg-page) 70%, transparent) 0%,
-    color-mix(in srgb, var(--ws-bg-page) 22%, transparent) 20%,
-    transparent 36%,
-    transparent 64%,
-    color-mix(in srgb, var(--ws-bg-page) 58%, transparent) 100%
-  );
-}
-
 .arcade-intro__panel {
   position: relative;
   z-index: 2;
@@ -536,23 +514,6 @@ html[data-theme="light"] .arcade-intro.is-canvas .arcade-intro__veil {
       color-mix(in srgb, var(--ws-bg-page) 55%, transparent) 0%,
       transparent 22%,
       color-mix(in srgb, var(--ws-bg-page) 70%, transparent) 100%
-    );
-}
-
-html[data-theme="light"] .arcade-hero-stage__veil {
-  background:
-    linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--ws-bg-page) 92%, transparent) 0%,
-      color-mix(in srgb, var(--ws-bg-page) 78%, transparent) 40%,
-      color-mix(in srgb, #efe8fb 35%, transparent) 70%,
-      transparent 88%
-    ),
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--ws-bg-page) 50%, transparent) 0%,
-      transparent 30%,
-      color-mix(in srgb, var(--ws-bg-page) 75%, transparent) 100%
     );
 }
 

@@ -2,8 +2,8 @@
  * White Studio shared design tokens + primitives
  * Cross-site CSS for Games (primary consumer). Tools / main site may migrate later.
  *
- * Runtime theme: html[data-theme="dark"|"light"]
- * Prefer --ws-* tokens. Tools-style aliases (--accent, --bg, --panel, --text, --muted, --border)
+ * Games is dark-only (arcade floor). Prefer --ws-* tokens.
+ * Tools-style aliases (--accent, --bg, --panel, --text, --muted, --border)
  * are provided for prompt / legacy compatibility.
  */
 
@@ -20,8 +20,7 @@
   font-display: swap;
 }
 
-:root,
-html[data-theme="dark"] {
+:root {
   color-scheme: dark;
 
   --ws-bg-page: #07060c;
@@ -73,64 +72,7 @@ html[data-theme="dark"] {
   --ws-glass-highlight: rgba(255, 255, 255, 0.08);
 
   --button-gradient: linear-gradient(135deg, #9b3ef0, #8a2be2 45%, #6b1fb8);
-}
 
-html[data-theme="light"] {
-  color-scheme: light;
-
-  /* Brighter arcade lightbox — still purple-led, not flat SaaS white */
-  --ws-bg-page: #efe8fb;
-  --ws-bg-shell: #f7f2ff;
-  --ws-bg-surface: #ffffff;
-  --ws-bg-surface-raised: #f9f5ff;
-  --ws-bg-surface-muted: rgba(124, 58, 237, 0.08);
-  --ws-bg-card: rgba(255, 255, 255, 0.94);
-  --ws-bg-card-hover: #ffffff;
-  --ws-bg-input: #ffffff;
-  --ws-bg-button: #ffffff;
-  --ws-bg: var(--ws-bg-page);
-  --ws-bg-elev: #e8def8;
-  --ws-panel: var(--ws-bg-surface);
-  --ws-panel-soft: #f3ecff;
-
-  --ws-text-primary: #161827;
-  --ws-text-secondary: #3f4254;
-  --ws-text-muted: #6f7285;
-  --ws-text-disabled: #9ca3af;
-  --ws-text-inverse: #ffffff;
-
-  --ws-border-subtle: rgba(91, 33, 182, 0.16);
-  --ws-border-strong: rgba(124, 58, 237, 0.42);
-  --ws-border-focus: rgba(124, 58, 237, 0.55);
-
-  --ws-accent: #7c3aed;
-  --ws-accent-hover: #6d28d9;
-  --ws-accent-2: #8b5cf6;
-  --ws-accent-soft: rgba(124, 58, 237, 0.12);
-  --ws-accent-text: #5b21b6;
-
-  --ws-neon-glow: 0 0 10px rgba(124, 58, 237, 0.22), 0 0 22px rgba(139, 92, 246, 0.12);
-  --ws-neon-glow-strong: 0 0 14px rgba(124, 58, 237, 0.35), 0 0 32px rgba(139, 92, 246, 0.2);
-
-  --ws-success: #0f8a53;
-  --ws-danger: #c2414f;
-  --ws-warning: #c47a00;
-
-  --ws-shadow-soft: 0 12px 30px rgba(17, 24, 39, 0.08);
-  --ws-shadow-sm: 0 8px 18px rgba(17, 24, 39, 0.08);
-  --ws-shadow-md: 0 14px 34px rgba(17, 24, 39, 0.1);
-  --ws-shadow-card: 0 18px 45px rgba(91, 33, 182, 0.12), var(--ws-neon-glow);
-  --ws-shadow-lg: 0 24px 60px rgba(17, 24, 39, 0.14);
-  --ws-shadow-button: 0 0 16px rgba(124, 58, 237, 0.28);
-
-  --ws-glass-bg: rgba(255, 255, 255, 0.82);
-  --ws-glass-border: rgba(124, 58, 237, 0.2);
-  --ws-glass-highlight: rgba(255, 255, 255, 0.92);
-
-  --button-gradient: linear-gradient(135deg, #8b5cf6, #7c3aed 50%, #5b21b6);
-}
-
-:root {
   /* Tools-compatible aliases */
   --bg: var(--ws-bg-page);
   --bg-elev: var(--ws-bg-elev);
@@ -393,7 +335,6 @@ textarea {
 }
 
 .ws-i18n-btn,
-.ws-theme-btn,
 .ws-menu-btn {
   appearance: none;
   display: inline-flex;
@@ -415,7 +356,6 @@ textarea {
 }
 
 .ws-i18n-btn:hover,
-.ws-theme-btn:hover,
 .ws-menu-btn:hover {
   border-color: var(--ws-border-strong);
   background: var(--ws-accent-soft);
@@ -519,41 +459,6 @@ body[data-menu-open="1"] .ws-menu-btn__bars::after {
 .ws-i18n-menu button:hover,
 .ws-i18n-menu button.active {
   background: var(--ws-accent-soft);
-}
-
-.ws-theme-icon {
-  display: inline-block;
-  width: 0.875rem;
-  height: 0.875rem;
-  flex: 0 0 auto;
-  border-radius: 999px;
-  background: currentColor;
-  box-shadow: 0 0 0 2px color-mix(in oklab, currentColor 18%, transparent);
-}
-
-.ws-theme-btn[data-theme="dark"] .ws-theme-icon {
-  background:
-    radial-gradient(
-      circle at 68% 32%,
-      color-mix(in oklab, var(--ws-bg-surface-raised) 92%, #000 8%) 0 34%,
-      transparent 36%
-    ),
-    currentColor;
-}
-
-.ws-theme-btn[data-theme="light"] .ws-theme-icon {
-  /* Sun: compact disc + 8 rays (cardinal + diagonal) */
-  background: radial-gradient(circle, var(--ws-accent) 0 36%, transparent 38%);
-  box-shadow:
-    0 -0.42rem 0 -0.3rem var(--ws-accent),
-    0 0.42rem 0 -0.3rem var(--ws-accent),
-    0.42rem 0 0 -0.3rem var(--ws-accent),
-    -0.42rem 0 0 -0.3rem var(--ws-accent),
-    0.3rem -0.3rem 0 -0.3rem var(--ws-accent),
-    -0.3rem 0.3rem 0 -0.3rem var(--ws-accent),
-    0.3rem 0.3rem 0 -0.3rem var(--ws-accent),
-    -0.3rem -0.3rem 0 -0.3rem var(--ws-accent),
-    0 0 0 2px color-mix(in oklab, var(--ws-accent) 18%, transparent);
 }
 
 .ws-auth-controls {
@@ -954,7 +859,6 @@ body[data-menu-open="1"] .ws-menu-btn__bars::after {
 
 @media (max-width: 1100px) {
   .ws-auth-login span,
-  .ws-theme-label,
   .ws-i18n-label,
   .ws-i18n-arrow,
   .ws-auth-copy {
@@ -962,7 +866,6 @@ body[data-menu-open="1"] .ws-menu-btn__bars::after {
   }
 
   .ws-auth-login,
-  .ws-theme-btn,
   .ws-i18n-btn,
   .ws-menu-btn {
     width: var(--ws-touch-min);
@@ -1043,7 +946,6 @@ body[data-menu-open="1"] .ws-menu-btn__bars::after {
   .ws-button,
   .ws-input,
   .ws-i18n-btn,
-  .ws-theme-btn,
   .ws-menu-btn,
   .ws-auth-login {
     min-height: var(--ws-touch-min);

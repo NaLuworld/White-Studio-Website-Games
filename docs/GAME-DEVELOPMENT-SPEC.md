@@ -198,7 +198,7 @@ LeaderboardEntry (目標形狀)
 | 遊戲頁 HUD | 分數、狀態、按鈕文案；手機沉浸式 HUD | `.ws-game-hud` / `.arcade-play-bar` |
 | 遊玩舞台 | 規則、操作、回饋、失敗／重開；Pointer + 可選虛擬鍵；背景自動暫停 | `.ws-game-stage` + canvas |
 | 排行榜面板 | 文案、提交 UX、皮膚展示需求；手機卡片列 | `WhiteStudioLeaderboard` |
-| 主題／語系 | 無額外需求則寫「跟隨平台」 | theme + i18n |
+| 語系 | 無額外需求則寫「跟隨平台」 | i18n |
 | Discord | 登入後要多做什麼（預填、未來庫存） | `ws_games_session` |
 | Naru tip | 時機 + 中英文案 | Hub／可擴到遊戲頁 |
 | OG 分享 | 標題、描述方向 | 靜態 OG 卡流程 |

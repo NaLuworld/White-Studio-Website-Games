@@ -63,28 +63,8 @@
     };
   }
 
-  function bindThemeToggle(button) {
-    if (!button) return;
-    function syncLabel() {
-      var mode = document.documentElement.dataset.theme === "light" ? "light" : "dark";
-      button.setAttribute("aria-pressed", mode === "light" ? "true" : "false");
-      button.textContent = mode === "light" ? "Dark" : "Light";
-    }
-    syncLabel();
-    button.addEventListener("click", function () {
-      var next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
-      document.documentElement.dataset.theme = next;
-      document.documentElement.style.colorScheme = next;
-      try {
-        localStorage.setItem("theme-mode", next);
-      } catch (_) {}
-      syncLabel();
-    });
-  }
-
   global.WhiteStudioGames = {
     createGamesApi: createGamesApi,
-    bindThemeToggle: bindThemeToggle,
     resolveApiOrigin: resolveApiOrigin
   };
 })(window);

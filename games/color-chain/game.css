@@ -1,7 +1,4 @@
-/* Color Chain — table + cards (chrome uses ws-shared tokens)
- * Paired --cc-* tokens: dark immersive ↔ light purple lightbox.
- * Theme switch: html[data-theme="dark"|"light"] (site-chrome / theme-boot).
- */
+/* Color Chain — table + cards (chrome uses ws-shared tokens; dark arcade only) */
 
 .color-chain-page {
   /* Felt / table */
@@ -9,10 +6,8 @@
   --cc-felt-top: #161322;
   --cc-felt-hatch: rgba(255, 255, 255, 0.02);
   --cc-felt-glow: color-mix(in srgb, var(--ws-accent) 14%, transparent);
-  /* Status cyan (dark neon ↔ light readable teal) */
   --cc-status-accent: #62e7ff;
   --cc-status-glow: rgba(98, 231, 255, 0.45);
-  /* Surfaces / overlays */
   --cc-toast-bg: color-mix(in srgb, #100e18 88%, var(--ws-accent));
   --cc-scrim: rgba(7, 6, 12, 0.78);
   --cc-banner-scrim: rgba(5, 4, 10, 0.9);
@@ -23,46 +18,15 @@
   );
   --cc-sticky-fade: color-mix(in srgb, var(--ws-bg-page) 92%, #000);
   --cc-panel-bg: color-mix(in srgb, var(--ws-panel) 92%, #000);
-  /* Card backs */
   --cc-card-back-a: #1c1830;
   --cc-card-back-b: #2a2148;
   --cc-card-back-border: rgba(255, 255, 255, 0.15);
-  /* Banner outcome titles */
   --cc-title-win: #7dffb3;
   --cc-title-win-glow: rgba(61, 210, 143, 0.5);
   --cc-title-lose: #ff8fa0;
   --cc-title-lose-glow: rgba(255, 107, 122, 0.45);
   --cc-title-accent-glow: rgba(180, 109, 255, 0.55);
   --cc-result-wash: rgba(138, 43, 226, 0.1);
-}
-
-html[data-theme="light"] .color-chain-page {
-  /* Soft purple felt — deeper than page, never pure white */
-  --cc-felt: #cfc4e4;
-  --cc-felt-top: #d9d0ec;
-  --cc-felt-hatch: rgba(91, 33, 182, 0.045);
-  --cc-felt-glow: color-mix(in srgb, var(--ws-accent) 10%, transparent);
-  --cc-status-accent: #0e7490;
-  --cc-status-glow: rgba(14, 116, 144, 0.28);
-  --cc-toast-bg: color-mix(in srgb, var(--ws-bg-surface) 88%, var(--ws-accent-soft));
-  --cc-scrim: color-mix(in srgb, var(--ws-bg-page) 78%, transparent);
-  --cc-banner-scrim: color-mix(in srgb, var(--ws-bg-page) 88%, transparent);
-  --cc-banner-card-bg: linear-gradient(
-    165deg,
-    color-mix(in srgb, var(--ws-accent) 12%, var(--ws-bg-surface-raised)),
-    var(--ws-panel-soft) 70%
-  );
-  --cc-sticky-fade: var(--ws-bg-page);
-  --cc-panel-bg: var(--ws-panel);
-  --cc-card-back-a: #9b8fc0;
-  --cc-card-back-b: #b5a8d4;
-  --cc-card-back-border: rgba(91, 33, 182, 0.22);
-  --cc-title-win: var(--ws-success);
-  --cc-title-win-glow: color-mix(in srgb, var(--ws-success) 28%, transparent);
-  --cc-title-lose: var(--ws-danger);
-  --cc-title-lose-glow: color-mix(in srgb, var(--ws-danger) 28%, transparent);
-  --cc-title-accent-glow: color-mix(in srgb, var(--ws-accent-2) 22%, transparent);
-  --cc-result-wash: rgba(124, 58, 237, 0.08);
 }
 
 .color-chain-page [hidden] {

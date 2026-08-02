@@ -142,7 +142,7 @@ flowchart TD
 - [x] Encode WebP under budgets; optional JPEG fallback
 - [x] `<picture>` / CSS background for PC vs mobile
 - [x] Wire into [`index.html`](../../index.html) + [`games-chrome.css`](../../assets/css/games-chrome.css)
-- [ ] Verify 360 / 768 / 1440 / 4K and dark + light themes
+- [ ] Verify 360 / 768 / 1440 / 4K on the dark arcade chrome
 - [x] Keep CSS neon/scanline as overlay; art stays under chrome z-index rules
 
 ## Status

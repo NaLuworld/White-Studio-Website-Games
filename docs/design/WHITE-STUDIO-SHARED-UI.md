@@ -23,7 +23,7 @@ Games is **not** a Tools SaaS clone. Direction:
 - **Pixel display** for titles / HUD (`--ws-font-display`): Latin → Press Start 2P; CJK → [Zpix](https://github.com/SolidZORO/zpix-pixel-font) (`/assets/fonts/zpix.ttf`)
 - Body + long Chinese copy stays **Noto Sans TC** / Space Grotesk (`--ws-font-body`)
 - Accent remains White Studio purple (`#8a2be2` family) with neon glow tokens (`--ws-neon-glow`)
-- Light theme = brighter purple “lightbox”, not flat dashboard white
+- **Dark-only** arcade floor — no light theme switcher
 
 Brand name is hero-level on the hub. One composition per viewport. Game canvas may use its own palette; chrome (nav, HUD, forms, boards) must use tokens.
 
@@ -86,17 +86,16 @@ Tight corner radius; silhouette must read at thumbnail size.
 - Left/right `8%` crop margins
 - Bottom `12%`: no critical content
 
-### Theme compatibility for art
+### Art + dark chrome
 
-- One art family serves both themes
-- **Dark:** full immersive background
-- **Light:** same assets as a stage / lightbox with a light CSS veil — do **not** generate a separate whitewashed set that breaks family consistency
+- One art family for the dark arcade floor
+- Full immersive backgrounds; CSS veils stay dark-page mixes — do **not** generate a separate whitewashed light set
 
 ## Navbar
 
 - Brand only (logo + title links home)
-- Desktop right actions: Discord login **or** signed-in user menu (never both), language, theme
-- Mobile (≤768px): Discord shortcut + hamburger; language / theme / logout live in the preferences drawer (`.ws-menu-drawer`)
+- Desktop right actions: Discord login **or** signed-in user menu (never both), language
+- Mobile (≤768px): Discord shortcut + hamburger; language / logout live in the preferences drawer (`.ws-menu-drawer`)
 - Do **not** put Games / Tools / Community / White Studio in the top nav
 - Cross-product links belong in a future **About** surface (see architecture doc)
 
@@ -112,12 +111,11 @@ Tight corner radius; silhouette must read at thumbnail size.
 - Leaderboard: table on desktop, compact cards on ≤640px
 - Do **not** require browser fullscreen or forced landscape
 
-## Theme
+## Color scheme
 
-- `html[data-theme="dark"|"light"]`
-- Boot with `/assets/js/theme-boot.js` before paint
-- Storage key: `localStorage["ws_games_theme_v1"]` (reads legacy `theme-mode` too)
-- Controls: `.ws-theme-btn` via `/assets/js/site-chrome.js`
+- Dark-only: `color-scheme: dark` on `:root` in `/assets/css/ws-shared.css`
+- Meta: `<meta name="color-scheme" content="dark" />`
+- No theme toggle, no `data-theme` switch, no light token path
 
 ## Language
 
@@ -152,7 +150,7 @@ Aliases: `--bg`, `--panel`, `--text`, `--muted`, `--border`, `--accent`, `--acce
 |------|-----|
 | `.ws-site-header` / `.ws-brand` / `.ws-nav` / `.ws-site-header__actions` | Top chrome |
 | `.ws-menu-btn` / `.ws-menu-drawer` / `.ws-menu-overlay` | Mobile preferences drawer |
-| `.ws-i18n-btn` / `.ws-theme-btn` / `.ws-auth-login` | Language, theme, Discord login |
+| `.ws-i18n-btn` / `.ws-auth-login` | Language, Discord login |
 | `.ws-button` + `--primary` / `--ghost` | Actions |
 | `.ws-card` / `.arcade-cabinet` | Interactive cabinet cards only |
 | `.arcade-hero` / `.ws-section` | Hub copy |

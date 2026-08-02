@@ -27,7 +27,7 @@ Add a new playable mini-game under `/games/<game-id>/` on `https://games.white-s
 1. Create `games/<game-id>/index.html`, game script/CSS.
 2. Reuse header/footer + chrome boot from `games/snake/index.html`:
    - the inline trailing-dot hostname guard as the first `<script>` in `<head>` (right after `<meta charset>`)
-   - `/assets/js/theme-boot.js` in `<head>`
+   - `<meta name="color-scheme" content="dark" />` (Games is dark-only)
    - `/assets/js/i18n.js`, `/assets/js/games-auth.js`, `/assets/js/games-api.js`, `/assets/js/site-chrome.js`, `/assets/js/leaderboard-ui.js`
    - `WhiteStudioGames.bootChrome({ nicknameInput })`
    - `WhiteStudioLeaderboard.mountLeaderboard({ gameId: "<game-id>", ... })`
@@ -40,13 +40,13 @@ Add a new playable mini-game under `/games/<game-id>/` on `https://games.white-s
    - Append the game to `assets/images/og/manifest.json`
    - Run `python scripts/compose_og_cards.py`
    - Paste OG + Twitter `summary_large_image` meta (absolute `og/<game-id>.png` URLs) into the game `index.html`
-8. Validate locally: theme + language switch, Discord login UI, play → submit score → refresh board.
+8. Validate locally: language switch, Discord login UI, play → submit score → refresh board.
 9. Push Games repo `main` (Pages auto-deploy). Deploy Worker if catalog changed.
 10. Live check: `https://games.white-studio.org/games/<game-id>/` and CORS-free score POST.
 
 ## Acceptance
 
-- [ ] Page matches shared chrome (tokens, nav, theme, language, Discord login)
+- [ ] Page matches shared chrome (tokens, nav, language, Discord login)
 - [ ] New strings exist in both locale dictionaries
 - [ ] Game is playable on phone + desktop
 - [ ] Scores persist and appear on leaderboard (guest nickname)
