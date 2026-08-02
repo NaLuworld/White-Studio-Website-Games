@@ -182,17 +182,75 @@
     if (hud) hud.hidden = !!on;
   }
 
+  var titleTimer = null;
+  var sawPlaying = false;
+  var matchEnded = false;
+
+  function showTitleBanner(opts, done) {
+    opts = opts || {};
+    var banner = document.getElementById("cc-title-banner");
+    var eyebrow = document.getElementById("cc-title-eyebrow");
+    var title = document.getElementById("cc-title-main");
+    var sub = document.getElementById("cc-title-sub");
+    if (!banner || !title) {
+      if (typeof done === "function") done();
+      return;
+    }
+    if (titleTimer) {
+      clearTimeout(titleTimer);
+      titleTimer = null;
+    }
+    banner.hidden = false;
+    banner.classList.remove("is-leave", "is-show", "cc-title-banner--start", "cc-title-banner--win", "cc-title-banner--lose", "cc-title-banner--end");
+    if (opts.tone === "start") banner.classList.add("cc-title-banner--start");
+    else if (opts.tone === "win") banner.classList.add("cc-title-banner--win");
+    else if (opts.tone === "lose") banner.classList.add("cc-title-banner--lose");
+    else banner.classList.add("cc-title-banner--end");
+    if (eyebrow) eyebrow.textContent = opts.eyebrow || "";
+    title.textContent = opts.title || "";
+    if (sub) {
+      sub.textContent = opts.sub || "";
+      sub.hidden = !opts.sub;
+    }
+    void banner.offsetWidth;
+    banner.classList.add("is-show");
+    var holdMs = opts.holdMs != null ? opts.holdMs : opts.tone === "start" ? 1600 : 2000;
+    var reduce =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) holdMs = Math.min(holdMs, 700);
+    titleTimer = setTimeout(function () {
+      banner.classList.add("is-leave");
+      titleTimer = setTimeout(function () {
+        banner.classList.remove("is-show", "is-leave");
+        banner.hidden = true;
+        titleTimer = null;
+        if (typeof done === "function") done();
+      }, reduce ? 0 : 320);
+    }, holdMs);
+  }
+
   function showPlay() {
+    matchEnded = false;
     var lobbyPanel = document.getElementById("cc-lobby");
     if (lobbyPanel) lobbyPanel.hidden = true;
     if (tableRoot) tableRoot.hidden = false;
     var controls = document.getElementById("cc-controls");
     if (controls) controls.hidden = false;
+    var sheet = document.getElementById("result-sheet");
+    if (sheet) sheet.hidden = true;
+    document.body.classList.remove("is-cc-result");
     setPlayingChrome(true);
   }
 
   function showResult(endMsg) {
+    matchEnded = true;
     setPlayingChrome(false);
+    if (tableRoot) tableRoot.hidden = true;
+    var controls = document.getElementById("cc-controls");
+    if (controls) controls.hidden = true;
+    var lobbyPanel = document.getElementById("cc-lobby");
+    if (lobbyPanel) lobbyPanel.hidden = true;
     var sheet = document.getElementById("result-sheet");
     var body = document.getElementById("result-body");
     if (sheet) sheet.hidden = false;
@@ -203,6 +261,7 @@
     if (form) form.hidden = lastScore <= 0;
     var board = document.getElementById("cc-leaderboard");
     if (board) board.hidden = false;
+    document.body.classList.add("is-cc-result");
     onGuidePhase("result");
   }
 
@@ -222,12 +281,29 @@
   });
 
   net.on("game:state", function (msg) {
-    showPlay();
+    if (msg.phase === "ended" || matchEnded) {
+      render.apply(msg);
+      return;
+    }
+    var justStarted = msg.phase === "playing" && !sawPlaying;
+    if (msg.phase === "playing") {
+      sawPlaying = true;
+      showPlay();
+    }
     render.apply(msg);
     maybePlayTips(msg);
     var hudScore = document.getElementById("live-score");
     if (hudScore && msg.scores && net.playerId && msg.scores[net.playerId] != null) {
       hudScore.textContent = String(msg.scores[net.playerId]);
+    }
+    if (justStarted) {
+      showTitleBanner({
+        tone: "start",
+        eyebrow: t("color_chain.title_start_eyebrow", "Match live"),
+        title: t("color_chain.title_start", "Game start"),
+        sub: t("color_chain.title_start_sub", "Watch the discard, play matching color or number."),
+        holdMs: 1700
+      });
     }
   });
 
@@ -247,13 +323,26 @@
       msg.room && msg.room.seats && msg.room.seats[msg.winnerSeat]
         ? msg.room.seats[msg.winnerSeat].name
         : "?";
-    showResult(
-      won
-        ? t("color_chain.result_win", "You win! Score {score}.", { score: lastScore })
-        : t("color_chain.result_lose", "{name} wins. Score {score}.", {
-            name: winnerName,
-            score: lastScore
-          })
+    var endMsg = won
+      ? t("color_chain.result_win", "You win! Score {score}.", { score: lastScore })
+      : t("color_chain.result_lose", "{name} wins. Score {score}.", {
+          name: winnerName,
+          score: lastScore
+        });
+    matchEnded = true;
+    showTitleBanner(
+      {
+        tone: won ? "win" : "lose",
+        eyebrow: t("color_chain.title_end_eyebrow", "Final"),
+        title: won
+          ? t("color_chain.title_you_win", "You win!")
+          : t("color_chain.title_they_win", "{name} wins", { name: winnerName }),
+        sub: endMsg,
+        holdMs: 2100
+      },
+      function () {
+        showResult(endMsg);
+      }
     );
   });
 

@@ -621,6 +621,124 @@
   margin-top: 1rem;
 }
 
+.color-chain-page .snake-result-sheet:not([hidden]) {
+  display: grid;
+  gap: var(--ws-space-4);
+  margin-top: var(--ws-space-4);
+  padding: var(--ws-space-5);
+  border: 1px solid var(--ws-border-strong);
+  border-radius: var(--ws-radius-sm);
+  background:
+    linear-gradient(180deg, rgba(138, 43, 226, 0.1), transparent 34%),
+    var(--ws-bg-surface);
+  box-shadow: var(--ws-neon-glow);
+}
+
+.color-chain-page .cc-title-banner {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 45%, color-mix(in srgb, var(--ws-accent) 28%, transparent), transparent 70%),
+    rgba(7, 6, 12, 0.72);
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+}
+
+.color-chain-page .cc-title-banner[hidden] {
+  display: none !important;
+}
+
+.color-chain-page .cc-title-banner__card {
+  text-align: center;
+  max-width: min(28rem, 92vw);
+  padding: 1.35rem 1.5rem 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--ws-accent-2, #c084ff) 55%, transparent);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--ws-bg-shell, #100e18) 92%, #000);
+  box-shadow: var(--ws-neon-glow-strong), var(--ws-shadow-lg);
+  transform: scale(0.82) translateY(18px);
+  opacity: 0;
+}
+
+.color-chain-page .cc-title-banner.is-show .cc-title-banner__card {
+  animation: cc-title-in 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.color-chain-page .cc-title-banner.is-leave .cc-title-banner__card {
+  animation: cc-title-out 0.35s ease-in forwards;
+}
+
+.color-chain-page .cc-title-banner__eyebrow {
+  margin: 0 0 0.55rem;
+  font-family: var(--ws-font-display);
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ws-cyan, #62e7ff);
+}
+
+.color-chain-page .cc-title-banner__title {
+  margin: 0;
+  font-family: var(--ws-font-display);
+  font-size: clamp(0.95rem, 3.2vw, 1.45rem);
+  line-height: 1.45;
+  letter-spacing: 0.04em;
+  color: var(--ws-accent-2, #c084ff);
+  text-shadow: 0 0 18px rgba(180, 109, 255, 0.55);
+}
+
+.color-chain-page .cc-title-banner__sub {
+  margin: 0.7rem 0 0;
+  font-size: 0.92rem;
+  line-height: 1.4;
+  color: var(--ws-text-muted, rgba(255, 255, 255, 0.72));
+}
+
+.color-chain-page .cc-title-banner--start .cc-title-banner__title {
+  color: var(--ws-cyan, #62e7ff);
+  text-shadow: 0 0 18px rgba(98, 231, 255, 0.45);
+}
+
+.color-chain-page .cc-title-banner--win .cc-title-banner__title {
+  color: #7dffb3;
+  text-shadow: 0 0 18px rgba(61, 210, 143, 0.5);
+}
+
+.color-chain-page .cc-title-banner--lose .cc-title-banner__title {
+  color: #ff8fa0;
+  text-shadow: 0 0 18px rgba(255, 107, 122, 0.45);
+}
+
+@keyframes cc-title-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.82) translateY(18px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.04) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes cc-title-out {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.06) translateY(-10px);
+  }
+}
+
 /*
  * Compact landscape play mode for laptops and short browser windows.
  * Width-only breakpoints miss 1366×768-class displays once browser chrome
@@ -939,8 +1057,14 @@
   .color-chain-page .cc-card--fly,
   .color-chain-page .cc-opp__badge,
   .color-chain-page .cc-opp--played,
-  .color-chain-page .cc-fx-toast {
+  .color-chain-page .cc-fx-toast,
+  .color-chain-page .cc-title-banner.is-show .cc-title-banner__card,
+  .color-chain-page .cc-title-banner.is-leave .cc-title-banner__card {
     animation: none !important;
     transition: none !important;
+  }
+  .color-chain-page .cc-title-banner.is-show .cc-title-banner__card {
+    opacity: 1;
+    transform: none;
   }
 }
