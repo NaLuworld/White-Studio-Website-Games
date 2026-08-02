@@ -201,12 +201,16 @@
       titleTimer = null;
     }
     banner.hidden = false;
+    document.body.classList.add("is-cc-title");
     banner.classList.remove("is-leave", "is-show", "cc-title-banner--start", "cc-title-banner--win", "cc-title-banner--lose", "cc-title-banner--end");
     if (opts.tone === "start") banner.classList.add("cc-title-banner--start");
     else if (opts.tone === "win") banner.classList.add("cc-title-banner--win");
     else if (opts.tone === "lose") banner.classList.add("cc-title-banner--lose");
     else banner.classList.add("cc-title-banner--end");
-    if (eyebrow) eyebrow.textContent = opts.eyebrow || "";
+    if (eyebrow) {
+      eyebrow.textContent = opts.eyebrow || "";
+      eyebrow.hidden = !opts.eyebrow;
+    }
     title.textContent = opts.title || "";
     if (sub) {
       sub.textContent = opts.sub || "";
@@ -224,6 +228,7 @@
       titleTimer = setTimeout(function () {
         banner.classList.remove("is-show", "is-leave");
         banner.hidden = true;
+        document.body.classList.remove("is-cc-title");
         titleTimer = null;
         if (typeof done === "function") done();
       }, reduce ? 0 : 320);

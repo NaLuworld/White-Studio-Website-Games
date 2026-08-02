@@ -350,7 +350,7 @@
   justify-content: center;
   gap: 1.75rem;
   position: relative;
-  margin: 0.25rem 0;
+  margin: 0.35rem 0 1.55rem;
 }
 
 .color-chain-page .cc-pile {
@@ -383,7 +383,8 @@
 
 .color-chain-page .cc-table-msg {
   text-align: center;
-  min-height: 1.4em;
+  min-height: 1.5em;
+  margin: 0.15rem 0 0.75rem;
   font-family: var(--ws-font-display);
   font-size: 0.7rem;
   letter-spacing: 0.04em;
@@ -394,6 +395,10 @@
   display: flex;
   justify-content: center;
   min-height: 96px;
+}
+.color-chain-page .cc-hand--me {
+  margin-top: 0.35rem;
+  padding-top: 0.35rem;
 }
 .color-chain-page .cc-hand--opp .cc-card {
   margin-left: -28px;
@@ -637,14 +642,14 @@
 .color-chain-page .cc-title-banner {
   position: fixed;
   inset: 0;
-  z-index: 90;
+  z-index: 120;
   display: grid;
   place-items: center;
-  padding: 1.25rem;
+  padding: max(1.25rem, env(safe-area-inset-top, 0px)) 1.25rem max(1.25rem, env(safe-area-inset-bottom, 0px));
   background:
-    radial-gradient(ellipse 70% 50% at 50% 45%, color-mix(in srgb, var(--ws-accent) 28%, transparent), transparent 70%),
-    rgba(7, 6, 12, 0.72);
-  backdrop-filter: blur(6px);
+    radial-gradient(ellipse 60% 42% at 50% 42%, color-mix(in srgb, var(--ws-accent) 22%, transparent), transparent 72%),
+    rgba(5, 4, 10, 0.9);
+  backdrop-filter: blur(10px);
   pointer-events: none;
 }
 
@@ -654,13 +659,15 @@
 
 .color-chain-page .cc-title-banner__card {
   text-align: center;
-  max-width: min(28rem, 92vw);
-  padding: 1.35rem 1.5rem 1.25rem;
-  border: 1px solid color-mix(in srgb, var(--ws-accent-2, #c084ff) 55%, transparent);
-  border-radius: 16px;
-  background: color-mix(in srgb, var(--ws-bg-shell, #100e18) 92%, #000);
+  width: min(22rem, 88vw);
+  max-width: 92vw;
+  padding: 1.55rem 1.4rem 1.4rem;
+  border: 1px solid color-mix(in srgb, var(--ws-accent-2, #c084ff) 60%, transparent);
+  border-radius: 18px;
+  background:
+    linear-gradient(165deg, color-mix(in srgb, var(--ws-accent) 16%, #161322), #100e18 70%);
   box-shadow: var(--ws-neon-glow-strong), var(--ws-shadow-lg);
-  transform: scale(0.82) translateY(18px);
+  transform: scale(0.86) translateY(14px);
   opacity: 0;
 }
 
@@ -673,7 +680,7 @@
 }
 
 .color-chain-page .cc-title-banner__eyebrow {
-  margin: 0 0 0.55rem;
+  margin: 0 0 0.65rem;
   font-family: var(--ws-font-display);
   font-size: 0.55rem;
   letter-spacing: 0.14em;
@@ -684,17 +691,17 @@
 .color-chain-page .cc-title-banner__title {
   margin: 0;
   font-family: var(--ws-font-display);
-  font-size: clamp(0.95rem, 3.2vw, 1.45rem);
-  line-height: 1.45;
+  font-size: clamp(1.05rem, 3.6vw, 1.55rem);
+  line-height: 1.4;
   letter-spacing: 0.04em;
   color: var(--ws-accent-2, #c084ff);
   text-shadow: 0 0 18px rgba(180, 109, 255, 0.55);
 }
 
 .color-chain-page .cc-title-banner__sub {
-  margin: 0.7rem 0 0;
-  font-size: 0.92rem;
-  line-height: 1.4;
+  margin: 0.85rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
   color: var(--ws-text-muted, rgba(255, 255, 255, 0.72));
 }
 
@@ -711,6 +718,28 @@
 .color-chain-page .cc-title-banner--lose .cc-title-banner__title {
   color: #ff8fa0;
   text-shadow: 0 0 18px rgba(255, 107, 122, 0.45);
+}
+
+/* While the title plate is up, keep board regions from competing with it. */
+.color-chain-page.is-cc-title .cc-table {
+  gap: 1.1rem;
+}
+
+.color-chain-page.is-cc-title .cc-center,
+.color-chain-page.is-cc-playing.is-cc-title .cc-center {
+  margin: 0.45rem 0 1.85rem;
+}
+
+.color-chain-page.is-cc-title .cc-hand--me,
+.color-chain-page.is-cc-title .cc-controls,
+.color-chain-page.is-cc-title .naru-pet {
+  opacity: 0.18;
+  filter: saturate(0.7);
+}
+
+.color-chain-page.is-cc-title .cc-table-msg,
+.color-chain-page.is-cc-title .cc-fx-toast {
+  opacity: 0;
 }
 
 @keyframes cc-title-in {
@@ -889,7 +918,11 @@
 
   .color-chain-page.is-cc-playing .cc-center {
     gap: 1.25rem;
-    margin: 0;
+    margin: 0.25rem 0 1.35rem;
+  }
+
+  .color-chain-page.is-cc-playing.is-cc-title .cc-center {
+    margin: 0.35rem 0 1.75rem;
   }
 
   .color-chain-page.is-cc-playing .cc-pile {
