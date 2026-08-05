@@ -189,6 +189,31 @@
     if (this.onPhase) this.onPhase("invite_wait");
   };
 
+  ColorChainLobby.prototype.tryRestoreSession = async function () {
+    var token = localStorage.getItem(TOKEN_KEY);
+    var code = localStorage.getItem(CODE_KEY);
+    if (!token || !code) return false;
+    if (this.els.codeInput) this.els.codeInput.value = code;
+    this.setStatus(t("color_chain.reconnecting", "Reconnecting…"));
+    try {
+      var data = await this.net.joinRoom({
+        code: code,
+        name: this.nickname(),
+        playerToken: token
+      });
+      localStorage.setItem(TOKEN_KEY, data.playerToken);
+      localStorage.setItem(CODE_KEY, data.code);
+      await this.net.connect();
+      this.showWaiting(data, { autoStart: false });
+      if (this.onPhase) this.onPhase("invite_wait");
+      return true;
+    } catch (err) {
+      localStorage.removeItem(CODE_KEY);
+      this.setStatus(err.message || "reconnect_failed");
+      return false;
+    }
+  };
+
   ColorChainLobby.prototype.showWaiting = function (data, opts) {
     opts = opts || {};
     this.room = data.room;

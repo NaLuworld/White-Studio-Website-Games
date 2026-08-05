@@ -52,7 +52,8 @@ Cross-product discovery (Tools, Community Discord, main `white-studio.org`) will
 ## Backend
 
 - Routes: `/api/games`, `/api/games/:id/leaderboard`, `/api/games/:id/scores`
-- Color Chain realtime: `/api/games/color-chain/rooms` (+ `/join`, `/ws`) via Durable Object `ColorChainRoom` (`COLOR_CHAIN_ROOMS`)
+- Party rooms (Color Chain + Sketch Chain): `https://rooms.white-studio.org` — Node service in `White-Studio-Website/website-games-rooms/` (Fly.io). Paths `/api/games/{game}/rooms` (+ `/join`, `/ws`). Worker returns **410** for those paths (rooms moved).
+- Catalog / scores remain on Worker `api.white-studio.org`
 - Games Discord identity: `/auth/games/discord/start`, `/api/games/session`, `/api/games/logout` (`ws_games_session`)
 - Shared Discord OAuth app with Tools/account; join key = `discordUserId`
 - Storage: D1 `AUTH_DB` tables `game_scores`, `game_score_rate_limits` (migration `0003_game_scores.sql`)

@@ -174,6 +174,13 @@
   lobby.onPhase = onGuidePhase;
   lobby.bind();
 
+  var params = new URLSearchParams(location.search);
+  var urlRoom = params.get("room");
+  var savedCode = localStorage.getItem("ws_color_chain_code");
+  if (!urlRoom || String(urlRoom).toUpperCase() === String(savedCode || "").toUpperCase()) {
+    lobby.tryRestoreSession();
+  }
+
   function setPlayingChrome(on) {
     document.body.classList.toggle("is-cc-playing", !!on);
     var board = document.getElementById("cc-leaderboard");

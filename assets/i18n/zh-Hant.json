@@ -165,6 +165,7 @@
   "color_chain.waiting_title": "房間",
   "color_chain.start": "開始對局",
   "color_chain.connecting": "連線中…",
+  "color_chain.reconnecting": "重新連線中…",
   "color_chain.in_room": "已在房間 {code}",
   "color_chain.status_your_turn": "你的回合",
   "color_chain.status_wait": "等待中…",

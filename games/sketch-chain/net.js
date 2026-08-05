@@ -4,9 +4,16 @@
 (function (global) {
   "use strict";
 
+  function roomsOrigin() {
+    var roomsMeta = document.querySelector('meta[name="ws-rooms-origin"]');
+    if (roomsMeta && roomsMeta.content) return roomsMeta.content;
+    var apiMeta = document.querySelector('meta[name="ws-api-origin"]');
+    if (apiMeta && apiMeta.content) return apiMeta.content;
+    return "https://rooms.white-studio.org";
+  }
+
   function apiOrigin() {
-    var meta = document.querySelector('meta[name="ws-api-origin"]');
-    return (meta && meta.content) || "https://api.white-studio.org";
+    return roomsOrigin();
   }
 
   function wsOrigin() {

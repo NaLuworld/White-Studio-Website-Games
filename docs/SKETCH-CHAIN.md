@@ -16,55 +16,32 @@ Realtime multiplayer party game on `games.white-studio.org/games/sketch-chain/`.
 | Piece | Location |
 |-------|----------|
 | Frontend | This repo: `games/sketch-chain/` |
-| Room + rules engine | `White-Studio-Website/website-worker/src/games/sketch-chain/` (Durable Object `SketchChainRoom`) |
-| Image blobs (drawings) | v1：`dataURL` 存在 DO state（JPEG base64）；日後可改 R2 |
-| Catalog | `website-worker/src/games/catalog.js` — **category `party`，無排行榜** |
+| Rooms (REST + WebSocket) | `White-Studio-Website/website-games-rooms/` (Fly.io Node) |
+| Rules engine | `website-games-rooms/src/games/sketch-chain/engine.js` |
+| Image blobs (drawings) | v1：JPEG `dataURL` in room memory（≤600KB）；日後可改物件儲存 |
+| Catalog | Worker `catalog.js` — **category `party`，無排行榜** |
 
-**不要**另架 Socket.IO / Render 伺服器；對齊 `color-chain` 的 REST + WebSocket + DO 模式。
+Frontend:
+
+```html
+<meta name="ws-rooms-origin" content="https://rooms.white-studio.org" />
+<meta name="ws-api-origin" content="https://api.white-studio.org" />
+```
 
 ## Hub 分類
 
 與四色接龍同屬 **團康遊戲（party）** 區塊，與街機高分遊戲（Snake 等）分開展示。
 
-## 規格來源
-
-- 企劃書：`你畫我猜 多人連線企劃書.md`（玩法、事件、Reveal 時間軸）
-- 前端 Demo：`pictionary.html`（Lobby / Stage / Reveal UI、畫布 Pointer Events、假資料流程）
-
 ## Local check
 
-1. Worker：`npm test`（含 engine 單元測）→ `npx wrangler dev`
-2. Games 頁 `meta ws-api-origin` 指向本機 Worker（例 `http://127.0.0.1:8787`）
-3. 靜態 serve Games repo；開兩個分頁建立房間 / 加入房號，完成一局並看 Reveal 是否同步
+1. Rooms：`cd website-games-rooms && npm start`（`:8788`）
+2. Games 頁 `ws-rooms-origin` → `http://127.0.0.1:8788`
+3. 靜態 serve；兩分頁建房／加入，完成一局並確認 Reveal 同步
 
 ## Deploy
 
-1. Worker（`website-worker`）：
+1. `website-games-rooms` → `fly deploy`
+2. Games Pages push
+3. Worker：房間 API 已改 **410**；catalog 仍由 Worker 提供
 
-```bash
-npx wrangler deploy
-```
-
-需套用 migration `v1-sketch-chain`（`SketchChainRoom` DO）。
-
-2. Push Games `main` → Cloudflare Pages
-
-3. Verify：
-
-- `GET https://api.white-studio.org/api/games` → `sketch-chain`，`category: party`，`leaderboard: false`
-- `POST https://api.white-studio.org/api/games/sketch-chain/rooms` 可建房
-- `https://games.white-studio.org/games/sketch-chain/` 雙瀏覽器可完成一局 + Reveal
-
-## API
-
-| Method | Path |
-|--------|------|
-| `POST` | `/api/games/sketch-chain/rooms` |
-| `POST` | `/api/games/sketch-chain/rooms/:code/join` |
-| `GET` | `/api/games/sketch-chain/rooms/:code/ws?playerId=&token=` |
-
-WebSocket 事件契約見 [`docs/prompts/IMPLEMENT-SKETCH-CHAIN.md`](prompts/IMPLEMENT-SKETCH-CHAIN.md)。
-
-## Score / Leaderboard
-
-**v1 不實作排行榜。** 不接 `mountLeaderboard`、不新增 `/scores` 路由、Catalog 標 `leaderboard: false`（或等價欄位）。
+Legacy DO 房間路徑不再承接新局。

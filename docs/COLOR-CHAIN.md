@@ -7,33 +7,32 @@ Realtime multiplayer card game on `games.white-studio.org/games/color-chain/`.
 | Piece | Location |
 |-------|----------|
 | Frontend | This repo: `games/color-chain/` |
-| Rules engine + Durable Object room | `White-Studio-Website/website-worker/src/games/color-chain/` |
-| Catalog + scores | same Worker (`GAMES_CATALOG`, `/api/games/color-chain/scores`) |
+| Rooms (REST + WebSocket) | `White-Studio-Website/website-games-rooms/` (Fly.io Node) |
+| Rules engine (source of truth copy) | `website-games-rooms/src/games/color-chain/engine.js` (+ Worker copy for tests) |
+| Catalog + scores | Worker `api.white-studio.org` |
 
-Server-authoritative: clients send intents (`action:playCard`, …); the `ColorChainRoom` DO validates and broadcasts personalized `game:state`.
+Server-authoritative: clients send intents (`action:playCard`, …); the Node room validates and broadcasts personalized `game:state`.
+
+Frontend rooms origin:
+
+```html
+<meta name="ws-rooms-origin" content="https://rooms.white-studio.org" />
+<meta name="ws-api-origin" content="https://api.white-studio.org" />
+```
 
 ## Local check
 
-1. In `website-worker`: `npm test` (includes engine unit tests) then `npx wrangler dev`
-2. Point the game page meta `ws-api-origin` at the local Worker origin (e.g. `http://127.0.0.1:8787`)
-3. Serve Games repo statically; open two tabs — create room / join with code (or enable AI fill for solo)
+1. Rooms: `cd website-games-rooms && npm start` (default `:8788`)
+2. Set game page `ws-rooms-origin` to `http://127.0.0.1:8788`
+3. Serve Games repo statically; open two tabs — create room / join (or AI fill for solo)
 
 ## Deploy
 
-1. Deploy Worker (applies DO migration `v1-color-chain`):
+1. Rooms: `cd website-games-rooms && fly deploy` (see service README)
+2. Push Games `main` → Pages deploy
+3. Worker catalog/scores: `npx wrangler deploy` as needed
 
-```bash
-cd website-worker
-npx wrangler deploy
-```
-
-2. Push Games `main` → Cloudflare Pages auto-deploy.
-
-3. Verify:
-
-- `GET https://api.white-studio.org/api/games` lists `color-chain`
-- `https://games.white-studio.org/games/color-chain/` loads lobby
-- Two browsers can complete a match; winner can submit score
+Legacy Worker `/api/games/color-chain/rooms*` returns **410** (rooms moved).
 
 ## Score
 
