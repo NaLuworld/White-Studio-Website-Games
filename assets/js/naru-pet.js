@@ -326,7 +326,8 @@
   function defaultHubTips() {
     return [
       { key: "naru.tip_welcome", anim: "wave" },
-      { key: "naru.tip_cabinets", anim: "point_left", target: "#cabinets", holdAnim: "look_user" },
+      { key: "naru.tip_cabinets", anim: "point_left", target: "#arcade-cabinets", holdAnim: "look_user" },
+      { key: "naru.tip_party", anim: "point_left", target: "#party-cabinets", holdAnim: "look_user" },
       { key: "naru.tip_discord", anim: "point_up", target: "[data-games-auth-controls]", holdAnim: "look_user" }
     ];
   }

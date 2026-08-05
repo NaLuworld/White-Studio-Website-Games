@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <script>
+      (function normalizeHost() {
+        try {
+          var host = location.hostname;
+          if (!host || host.charAt(host.length - 1) !== ".") return;
+          var url = new URL(location.href);
+          url.hostname = host.replace(/\.+$/, "");
+          if (url.hostname) location.replace(url.toString());
+        } catch (_) {}
+      })();
+    </script>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="color-scheme" content="light" />
+    <meta name="ws-api-origin" content="https://api.white-studio.org" />
+    <meta
+      name="description"
+      content="Sketch Chain — write, draw, guess. Party pass-the-sketch game for friends. White Studio Games."
+    />
+    <link rel="canonical" href="https://games.white-studio.org/games/sketch-chain/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="White Studio Games" />
+    <meta property="og:url" content="https://games.white-studio.org/games/sketch-chain/" />
+    <meta property="og:title" content="傳畫本 · Sketch Chain · White Studio Games" />
+    <meta
+      property="og:description"
+      content="Write a prompt, pass the sketch, guess the chaos. Auto-reveal party game for 2–8 players."
+    />
+    <meta property="og:image" content="https://games.white-studio.org/assets/images/og/sketch-chain.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="傳畫本 · White Studio Games" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="傳畫本 · Sketch Chain · White Studio Games" />
+    <meta
+      name="twitter:description"
+      content="Write a prompt, pass the sketch, guess the chaos. Auto-reveal party game for 2–8 players."
+    />
+    <meta name="twitter:image" content="https://games.white-studio.org/assets/images/og/sketch-chain.png" />
+    <title data-i18n="meta.title_sketch_chain">傳畫本 · White Studio Games</title>
+    <link rel="icon" type="image/png" href="/assets/images/games/sketch-chain/icon.png" />
+    <link rel="apple-touch-icon" href="/assets/images/games/sketch-chain/icon.png" />
+    <link rel="stylesheet" href="/assets/css/ws-shared.css?v=20260805a" />
+    <link rel="stylesheet" href="/assets/css/games-chrome.css?v=20260805a" />
+    <link rel="stylesheet" href="./game.css?v=20260805a" />
+  </head>
+  <body class="games-page sketch-chain-page">
+    <header class="ws-site-header">
+      <div class="ws-site-header__inner">
+        <a class="ws-brand" href="/" data-i18n-attr="aria-label:brand.home_aria">
+          <img
+            class="ws-brand__mark"
+            src="/assets/images/white-studio-logo.png"
+            alt=""
+            aria-hidden="true"
+          />
+          <span class="ws-brand__text">
+            <p class="ws-brand__title" data-i18n="brand.title">White Studio Games</p>
+            <p class="ws-brand__sub" data-i18n="brand.sub">Arcade floor</p>
+          </span>
+        </a>
+        <div class="ws-site-header__actions" data-ws-header-actions></div>
+      </div>
+    </header>
+
+    <main class="sketch-chain-shell">
+      <div class="sketch-chain-play-bar">
+        <button type="button" class="ws-button ws-button--ghost" id="sc-back" data-i18n="sketch_chain.back">
+          Back to floor
+        </button>
+      </div>
+
+      <div id="sketch-chain-app" class="sketch-chain-app">
+        <!-- LOBBY -->
+        <div id="screen-lobby" class="screen active">
+          <div class="lobby-wrap">
+            <div class="lobby-header">
+              <h1 class="brush-title" data-i18n="sketch_chain.title">傳畫本</h1>
+              <p data-i18n="sketch_chain.subtitle">Write, draw, guess — see how warped it gets!</p>
+            </div>
+
+            <div class="lobby-grid">
+              <div class="card lobby-card">
+                <h2 data-i18n="sketch_chain.room_info">Room</h2>
+                <div class="field">
+                  <label for="nickname-input" data-i18n="sketch_chain.nickname">Nickname</label>
+                  <input id="nickname-input" type="text" maxlength="10" data-i18n-attr="placeholder:sketch_chain.nickname_ph" />
+                </div>
+                <div class="field">
+                  <label data-i18n="sketch_chain.room_code_label">Room code (share with friends)</label>
+                  <div class="room-code-row">
+                    <div class="room-code" id="room-code">----</div>
+                    <button type="button" class="btn ghost sm" id="copy-code-btn" data-i18n="sketch_chain.copy_link">
+                      Copy link
+                    </button>
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="draw-duration-range" data-i18n="sketch_chain.draw_duration">Draw time per round (host)</label>
+                  <input type="range" id="draw-duration-range" min="60" max="600" step="30" value="300" />
+                  <div style="text-align:right; font-size:12.5px; color:var(--sc-ink-soft); font-weight:700;">
+                    <span id="draw-duration-val" class="num">5</span>
+                    <span data-i18n="sketch_chain.minutes">min</span>
+                  </div>
+                </div>
+                <div class="rule-box">
+                  <span data-i18n="sketch_chain.rules_prefix">Round 1: write prompts (1 min). Then draw (</span>
+                  <b id="rule-draw-minutes" class="num">5</b>
+                  <span data-i18n="sketch_chain.rules_suffix"> min) → guess → … for </span>
+                  <b id="rule-round-count" class="num">4</b>
+                  <span data-i18n="sketch_chain.rules_end"> rounds (player count). Auto-advance when all submit; auto chain reveal at the end.</span>
+                </div>
+                <div class="sc-join-row" style="margin-top:14px;">
+                  <div class="field">
+                    <label for="join-code" data-i18n="sketch_chain.join_code">Join with code</label>
+                    <input id="join-code" type="text" maxlength="8" autocomplete="off" placeholder="AB12" />
+                  </div>
+                  <button type="button" class="btn blue" id="join-room-btn" data-i18n="sketch_chain.join">Join</button>
+                </div>
+                <p class="sc-status" id="lobby-status"></p>
+              </div>
+
+              <div class="card lobby-card">
+                <h2>
+                  <span data-i18n="sketch_chain.players">Players</span>
+                  （<span id="player-count" class="num">0</span>/8）
+                </h2>
+                <ul class="player-list" id="lobby-players"></ul>
+              </div>
+            </div>
+
+            <div class="lobby-actions">
+              <button type="button" class="btn green" id="create-room-btn" data-i18n="sketch_chain.create_room">
+                Create room
+              </button>
+              <button type="button" class="btn green" id="start-game-btn" hidden data-i18n="sketch_chain.start">
+                Start game (host)
+              </button>
+            </div>
+            <p class="hint" data-i18n="sketch_chain.hint_backend">
+              Create a room and share the code, or join with a friend's link.
+            </p>
+          </div>
+        </div>
+
+        <!-- STAGE -->
+        <div id="screen-stage" class="screen">
+          <div class="stage-topbar">
+            <div class="brand">
+              <div class="logo-badge">📖</div>
+              <h1 class="brush-title" style="font-size:20px;" data-i18n="sketch_chain.title">傳畫本</h1>
+            </div>
+            <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+            <div class="stage-label" id="stage-label">✍️</div>
+            <div class="pill timer num" id="timer">00:45</div>
+          </div>
+          <div class="stage-body" id="stage-body"></div>
+        </div>
+
+        <!-- REVEAL -->
+        <div id="screen-reveal" class="screen">
+          <div class="reveal-topbar">
+            <div class="brand">
+              <div class="logo-badge">🎉</div>
+              <h1 class="brush-title" style="font-size:26px;" data-i18n="sketch_chain.reveal_title">Chain reveal</h1>
+            </div>
+            <div class="pill num" id="reveal-step-count">1 / 1</div>
+          </div>
+          <div class="reveal-progress-track"><div class="reveal-progress-fill" id="reveal-progress"></div></div>
+          <div class="reveal-chain-title" id="reveal-chain-title"></div>
+          <div class="reveal-stage" id="reveal-stage"></div>
+        </div>
+
+        <div class="waiting-overlay" id="waiting-overlay">
+          <div class="waiting-card">
+            <div class="spin">🎨</div>
+            <div class="waiting-text" style="font-weight:800; margin-top:8px;" data-i18n="sketch_chain.waiting">
+              Submitted — waiting for others…
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="ws-site-footer">
+      <div class="ws-container ws-site-footer__inner">
+        <a href="/" data-i18n="sketch_chain.footer_back">← Back to floor</a>
+      </div>
+    </footer>
+
+    <script src="/assets/js/i18n.js?v=20260805a"></script>
+    <script src="/assets/js/games-auth.js"></script>
+    <script src="/assets/js/games-api.js"></script>
+    <script src="/assets/js/site-chrome.js?v=20260805a"></script>
+    <script src="/assets/js/naru-pet.js?v=20260805b"></script>
+    <script src="./net.js?v=20260805b"></script>
+    <script src="./stage.js?v=20260805b"></script>
+    <script src="./reveal.js?v=20260805b"></script>
+    <script src="./lobby.js?v=20260805b"></script>
+    <script src="./game.js?v=20260805b"></script>
+    <script>
+      (async function boot() {
+        await WhiteStudioGames.bootChrome({ nicknameInput: document.getElementById("nickname-input") });
+        if (window.WhiteStudioI18n) {
+          WhiteStudioI18n.applyAll(document);
+        }
+        var game = new SketchChainGame();
+        game.start({
+          backBtn: document.getElementById("sc-back"),
+          nameInput: document.getElementById("nickname-input"),
+          roomCode: document.getElementById("room-code"),
+          lobbyPlayers: document.getElementById("lobby-players"),
+          playerCount: document.getElementById("player-count"),
+          ruleRoundCount: document.getElementById("rule-round-count"),
+          ruleDrawMin: document.getElementById("rule-draw-minutes"),
+          drawRange: document.getElementById("draw-duration-range"),
+          drawVal: document.getElementById("draw-duration-val"),
+          createBtn: document.getElementById("create-room-btn"),
+          joinBtn: document.getElementById("join-room-btn"),
+          joinCode: document.getElementById("join-code"),
+          startBtn: document.getElementById("start-game-btn"),
+          copyBtn: document.getElementById("copy-code-btn"),
+          status: document.getElementById("lobby-status"),
+          stageBody: document.getElementById("stage-body"),
+          stageLabel: document.getElementById("stage-label"),
+          progressFill: document.getElementById("progress-fill"),
+          timer: document.getElementById("timer"),
+          waitingOverlay: document.getElementById("waiting-overlay"),
+          revealStepCount: document.getElementById("reveal-step-count"),
+          revealProgress: document.getElementById("reveal-progress"),
+          revealChainTitle: document.getElementById("reveal-chain-title"),
+          revealStage: document.getElementById("reveal-stage")
+        });
+        if (window.WhiteStudioNaru) {
+          WhiteStudioNaru.mount({ tips: false });
+          game.startGuide();
+        }
+      })();
+    </script>
+  </body>
+</html>

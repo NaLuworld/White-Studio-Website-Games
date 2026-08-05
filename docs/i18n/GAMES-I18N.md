@@ -44,9 +44,11 @@ Not used on game pages. Plays on every hub load; no Play gate.
 
 ## Naru desk-pet keys
 
-Hub guide pet (`WhiteStudioNaru`): `naru.aria`, `naru.dismiss`, `naru.tip_welcome`, `naru.tip_cabinets`, `naru.tip_discord`.
+Hub guide pet (`WhiteStudioNaru`): `naru.aria`, `naru.dismiss`, `naru.tip_welcome`, `naru.tip_cabinets`, `naru.tip_party`, `naru.tip_discord`.
 
-Color Chain phase tips: `naru.tip_color_chain_entry`, `_join`, `_invite_wait`, `_your_turn`, `_last`, `_challenge`, `_result`.  
+Color Chain phase tips: `naru.tip_color_chain_entry`, `_join`, `_invite_wait`, `_your_turn`, `_last`, `_challenge`, `_result`.
+
+Sketch Chain phase tips: `naru.tip_sketch_chain_entry`, `_join`, `_invite_wait`, `_start`, `_write`, `_draw`, `_reveal`, `_again`.  
 Tips run once per browser (`localStorage.ws_naru_tips_v1`); pet still idles after every intro.
 
 ## Forbidden

@@ -157,55 +157,101 @@
       </section>
 
       <section class="ws-section ws-container arcade-floor" id="cabinets">
-        <h2 class="ws-section__title" data-i18n="hub.play_title">Cabinets</h2>
-        <p class="ws-section__lede" data-i18n="hub.play_lede">
-          One arcade cabinet in v1. More machines can share the same shell and API contract.
-        </p>
-        <div class="ws-grid-cards arcade-cabinets" id="games-grid">
-          <a class="ws-card arcade-cabinet" href="/games/snake/">
-            <img
-              class="arcade-cabinet__art"
-              src="/assets/images/arcade/cabinet-snake.webp"
-              alt=""
-              width="428"
-              height="800"
-              decoding="async"
-              loading="lazy"
-            />
-            <p class="ws-card__eyebrow" data-i18n="hub.card_eyebrow">Arcade</p>
-            <h3 class="ws-card__title" data-i18n="hub.card_title">Snake</h3>
-            <p class="ws-card__body" data-i18n="hub.card_body">
-              Classic grid snake. Eat neon bites, grow longer, climb the board.
-            </p>
-            <div class="game-card__meta">
-              <span data-i18n="hub.card_meta">Leaderboard on</span>
-              <span class="ws-button ws-button--primary arcade-cabinet__play" data-i18n="hub.card_play"
-                >Play</span
-              >
+        <div class="arcade-floor-section" id="arcade-cabinets">
+          <h2 class="ws-section__title" data-i18n="hub.section_arcade_title">Arcade</h2>
+          <p class="ws-section__lede" data-i18n="hub.section_arcade_lede">
+            Score-chase cabinets. Climb the leaderboard after each run.
+          </p>
+          <div class="ws-grid-cards arcade-cabinets">
+            <a class="ws-card arcade-cabinet" href="/games/snake/">
+              <img
+                class="arcade-cabinet__art"
+                src="/assets/images/arcade/cabinet-snake.webp"
+                alt=""
+                width="428"
+                height="800"
+                decoding="async"
+                loading="lazy"
+              />
+              <p class="ws-card__eyebrow" data-i18n="hub.card_eyebrow">Arcade</p>
+              <h3 class="ws-card__title" data-i18n="hub.card_title">Snake</h3>
+              <p class="ws-card__body" data-i18n="hub.card_body">
+                Classic grid snake. Eat neon bites, grow longer, climb the board.
+              </p>
+              <div class="game-card__meta">
+                <span data-i18n="hub.card_meta">Leaderboard on</span>
+                <span class="ws-button ws-button--primary arcade-cabinet__play" data-i18n="hub.card_play"
+                  >Play</span
+                >
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <div class="arcade-floor-section" id="party-cabinets">
+          <h2 class="ws-section__title" data-i18n="hub.section_party_title">Party games</h2>
+          <p class="ws-section__lede" data-i18n="hub.section_party_lede">
+            Group play with friends — realtime rooms, no scoreboard required.
+          </p>
+          <div class="ws-grid-cards arcade-cabinets">
+            <a class="ws-card arcade-cabinet" href="/games/color-chain/">
+              <img
+                class="arcade-cabinet__art"
+                src="/assets/images/games/color-chain/icon.png"
+                alt=""
+                width="428"
+                height="800"
+                decoding="async"
+                loading="lazy"
+              />
+              <p class="ws-card__eyebrow" data-i18n="hub.card_color_chain_eyebrow">Party</p>
+              <h3 class="ws-card__title" data-i18n="hub.card_color_chain_title">Color Chain</h3>
+              <p class="ws-card__body" data-i18n="hub.card_color_chain_body">
+                Realtime four-color chain battles. Challenge +4s, call last card.
+              </p>
+              <div class="game-card__meta">
+                <span data-i18n="hub.card_party_meta">Live multiplayer</span>
+                <span class="ws-button ws-button--primary arcade-cabinet__play" data-i18n="hub.card_play"
+                  >Play</span
+                >
+              </div>
+            </a>
+            <a class="ws-card arcade-cabinet" href="/games/sketch-chain/">
+              <img
+                class="arcade-cabinet__art"
+                src="/assets/images/games/sketch-chain/icon.png"
+                alt=""
+                width="428"
+                height="800"
+                decoding="async"
+                loading="lazy"
+              />
+              <p class="ws-card__eyebrow" data-i18n="hub.card_sketch_chain_eyebrow">Party</p>
+              <h3 class="ws-card__title" data-i18n="hub.card_sketch_chain_title">Sketch Chain</h3>
+              <p class="ws-card__body" data-i18n="hub.card_sketch_chain_body">
+                Write, draw, guess — pass the sketch and watch chains go off the rails.
+              </p>
+              <div class="game-card__meta">
+                <span data-i18n="hub.card_party_meta">Live multiplayer</span>
+                <span class="ws-button ws-button--primary arcade-cabinet__play" data-i18n="hub.card_play"
+                  >Play</span
+                >
+              </div>
+            </a>
+            <div class="ws-card arcade-cabinet arcade-cabinet--soon" aria-disabled="true">
+              <div class="arcade-cabinet__art arcade-cabinet__art--placeholder" aria-hidden="true">
+                <span class="arcade-cabinet__placeholder-label" data-i18n="hub.card_uno_title">UNO</span>
+              </div>
+              <p class="ws-card__eyebrow" data-i18n="hub.card_uno_eyebrow">Party</p>
+              <h3 class="ws-card__title" data-i18n="hub.card_uno_title">UNO</h3>
+              <p class="ws-card__body" data-i18n="hub.card_uno_body">
+                Classic card chaos with friends — same party row, coming soon.
+              </p>
+              <div class="game-card__meta">
+                <span data-i18n="hub.card_coming_soon">Coming soon</span>
+              </div>
             </div>
-          </a>
-          <a class="ws-card arcade-cabinet" href="/games/color-chain/">
-            <img
-              class="arcade-cabinet__art"
-              src="/assets/images/games/color-chain/icon.png"
-              alt=""
-              width="428"
-              height="800"
-              decoding="async"
-              loading="lazy"
-            />
-            <p class="ws-card__eyebrow" data-i18n="hub.card_color_chain_eyebrow">Realtime</p>
-            <h3 class="ws-card__title" data-i18n="hub.card_color_chain_title">Color Chain</h3>
-            <p class="ws-card__body" data-i18n="hub.card_color_chain_body">
-              Realtime four-color chain battles. Challenge +4s, call last card, climb the board.
-            </p>
-            <div class="game-card__meta">
-              <span data-i18n="hub.card_color_chain_meta">Live multiplayer</span>
-              <span class="ws-button ws-button--primary arcade-cabinet__play" data-i18n="hub.card_play"
-                >Play</span
-              >
-            </div>
-          </a>
+          </div>
         </div>
         <p class="ws-status" id="catalog-status" hidden></p>
       </section>

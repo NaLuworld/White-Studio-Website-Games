@@ -22,9 +22,17 @@
       "id": "color-chain",
       "title": "四色接龍",
       "title_en": "Color Chain",
-      "description": "Realtime four-color chain battles. Challenge +4s, call last card, climb the board.",
+      "description": "Realtime four-color chain battles. Challenge +4s, call last card.",
       "path": "/games/color-chain/",
       "icon": "assets/images/games/color-chain/icon.png"
+    },
+    {
+      "id": "sketch-chain",
+      "title": "傳畫本",
+      "title_en": "Sketch Chain",
+      "description": "Write, draw, guess — pass the sketch and watch chains go off the rails.",
+      "path": "/games/sketch-chain/",
+      "icon": "assets/images/games/sketch-chain/icon.png"
     }
   ]
 }

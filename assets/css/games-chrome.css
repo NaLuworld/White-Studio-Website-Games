@@ -642,6 +642,38 @@ html.is-arcade-intro {
   image-rendering: auto;
 }
 
+.arcade-cabinet--soon {
+  cursor: default;
+  opacity: 0.72;
+  pointer-events: none;
+  border-style: dashed;
+}
+
+.arcade-cabinet--soon::before {
+  opacity: 0.35;
+}
+
+.arcade-cabinet__art--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 428 / 800;
+  width: min(58%, 9.5rem);
+  margin: 0 auto var(--ws-space-2);
+  border-radius: var(--ws-radius-sm);
+  border: 2px dashed var(--ws-border-strong);
+  background: rgba(138, 43, 226, 0.08);
+  filter: none;
+}
+
+.arcade-cabinet__placeholder-label {
+  font-family: var(--ws-font-display, inherit);
+  font-size: clamp(1.75rem, 5vw, 2.25rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--ws-text-muted);
+}
+
 a.arcade-cabinet:hover,
 .arcade-cabinet:hover {
   border-color: var(--ws-border-strong);
