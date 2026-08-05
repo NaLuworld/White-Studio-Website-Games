@@ -28,8 +28,8 @@
     },
     {
       "id": "sketch-chain",
-      "title": "傳畫本",
-      "title_en": "Sketch Chain",
+      "title": "你畫我猜",
+      "title_en": "Draw & Guess",
       "description": "Write, draw, guess — pass the sketch and watch chains go off the rails.",
       "path": "/games/sketch-chain/",
       "icon": "assets/images/games/sketch-chain/icon.png"

@@ -1,8 +1,15 @@
-# Sketch Chain（傳畫本 · 你畫我猜接龍）
+# 你畫我猜（Draw & Guess · game-id: `sketch-chain`）
 
 Realtime multiplayer party game on `games.white-studio.org/games/sketch-chain/`.
 
 玩法類 Gartic Phone：每人寫題 → 畫別人的題 → 猜別人的圖 → 再畫… N 輪後自動播放接龍大公開。
+
+**顯示名稱**：中文「你畫我猜」、英文「Draw & Guess」。`game-id` 仍為 `sketch-chain`（URL / API 不變）。
+
+## Visual
+
+- Dark arcade shell — `games/sketch-chain/game.css`（scoped `.sketch-chain-page`，用 `--ws-*` tokens）
+- 對齊 [`docs/design/WHITE-STUDIO-SHARED-UI.md`](./design/WHITE-STUDIO-SHARED-UI.md)；畫布紙面維持淺色以便作畫
 
 ## Architecture
 
@@ -17,7 +24,7 @@ Realtime multiplayer party game on `games.white-studio.org/games/sketch-chain/`.
 
 ## Hub 分類
 
-與未來 Uno、現有四色接龍同屬 **團康遊戲（party）** 區塊，與街機高分遊戲（Snake 等）分開展示。
+與四色接龍同屬 **團康遊戲（party）** 區塊，與街機高分遊戲（Snake 等）分開展示。
 
 ## 規格來源
 

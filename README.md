@@ -50,11 +50,11 @@ Dev origins `http://127.0.0.1:4173` / `http://localhost:4173` are allowlisted on
 - Hub: `/`
 - Snake: `/games/snake/` (貪食蛇)
 - Color Chain: `/games/color-chain/` (四色接龍 — realtime rooms via Worker Durable Objects)
-- Sketch Chain: `/games/sketch-chain/` (傳畫本 — party pass-the-sketch; see [`docs/SKETCH-CHAIN.md`](docs/SKETCH-CHAIN.md))
+- Sketch Chain / 你畫我猜: `/games/sketch-chain/` (Draw & Guess — party pass-the-sketch; see [`docs/SKETCH-CHAIN.md`](docs/SKETCH-CHAIN.md))
 
 Realtime API (Worker): `POST /api/games/color-chain/rooms`, `…/join`, WebSocket `…/ws`. See [`docs/COLOR-CHAIN.md`](docs/COLOR-CHAIN.md).
 
-Planned party games (團康): **傳畫本** `sketch-chain` — spec + Cursor prompt in [`docs/prompts/IMPLEMENT-SKETCH-CHAIN.md`](docs/prompts/IMPLEMENT-SKETCH-CHAIN.md), architecture [`docs/SKETCH-CHAIN.md`](docs/SKETCH-CHAIN.md). No leaderboard v1.
+Party games (團康): **你畫我猜** `sketch-chain` — spec + Cursor prompt in [`docs/prompts/IMPLEMENT-SKETCH-CHAIN.md`](docs/prompts/IMPLEMENT-SKETCH-CHAIN.md), architecture [`docs/SKETCH-CHAIN.md`](docs/SKETCH-CHAIN.md). No leaderboard v1.
 
 ## Developer handoff
 
