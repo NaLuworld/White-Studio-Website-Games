@@ -16,7 +16,7 @@ Realtime multiplayer party game on `games.white-studio.org/games/sketch-chain/`.
 | Piece | Location |
 |-------|----------|
 | Frontend | This repo: `games/sketch-chain/` |
-| Rooms (REST + WebSocket) | `White-Studio-Website/website-games-rooms/` (Fly.io Node) |
+| Rooms (REST + WebSocket) | **Production:** Fly `rooms.white-studio.org`. **Not** on Color Chain DO v2 canary. Legacy Worker DO only if `GAMES_ROOMS_BACKEND=do` — do not cut over until drawings use asset refs (see `docs/architecture/DO-USAGE-AUDIT.md`). |
 | Rules engine | `website-games-rooms/src/games/sketch-chain/engine.js` |
 | Image blobs (drawings) | v1：JPEG `dataURL` in room memory（≤600KB）；日後可改物件儲存 |
 | Catalog | Worker `catalog.js` — **category `party`，無排行榜** |
@@ -44,4 +44,4 @@ Frontend:
 2. Games Pages push
 3. Worker：房間 API 已改 **410**；catalog 仍由 Worker 提供
 
-Legacy DO 房間路徑不再承接新局。
+Legacy DO 房間路徑在 `GAMES_ROOMS_BACKEND=fly`（預設）時回 **410**。Color Chain DO v2 canary（`COLOR_CHAIN_ROOM_TRANSPORT=do-v2`）**不會**啟用 Sketch Chain DO；Sketch 維持 Fly，直到 asset-reference 架構就緒。

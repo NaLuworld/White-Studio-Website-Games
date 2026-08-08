@@ -52,7 +52,7 @@ Cross-product discovery (Tools, Community Discord, main `white-studio.org`) will
 ## Backend
 
 - Routes: `/api/games`, `/api/games/:id/leaderboard`, `/api/games/:id/scores`
-- Party rooms (Color Chain + Sketch Chain): `https://rooms.white-studio.org` — Node service in `White-Studio-Website/website-games-rooms/` (Fly.io). Paths `/api/games/{game}/rooms` (+ `/join`, `/ws`). Worker returns **410** for those paths (rooms moved).
+- Party rooms (Color Chain + Sketch Chain): **production** = Fly.io `https://rooms.white-studio.org`. Worker room paths return **410** unless canary/DO flags are set. Color Chain DO v2 canary: `COLOR_CHAIN_ROOM_TRANSPORT=do-v2` on Worker + `ws-rooms-origin` → `api.white-studio.org`. Sketch Chain is **not** on DO v2 yet (large drawing payloads). See `docs/architecture/DO-USAGE-AUDIT.md` and `website-worker/docs/GAMES-ROOMS-MIGRATION.md`.
 - Catalog / scores remain on Worker `api.white-studio.org`
 - Games Discord identity: `/auth/games/discord/start`, `/api/games/session`, `/api/games/logout` (`ws_games_session`)
 - Shared Discord OAuth app with Tools/account; join key = `discordUserId`

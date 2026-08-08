@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DO Staging — White Studio Games</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 40rem;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        line-height: 1.5;
+      }
+      a {
+        display: block;
+        margin: 0.5rem 0;
+      }
+      code {
+        background: #f0f0f0;
+        padding: 0.1em 0.35em;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>DO Staging QA</h1>
+    <p>
+      Worker 需以
+      <code>npx wrangler dev --var GAMES_ROOMS_BACKEND=do --port 8787</code>
+      執行。此頁會將房間 origin 覆寫為本地 Worker。
+    </p>
+    <p><strong>雙分頁測試：</strong>各開一個遊戲連結，一個建房、一個用房號加入。</p>
+    <ul>
+      <li><a id="cc" href="/games/color-chain/?staging=do">Color Chain（DO staging）</a></li>
+      <li><a id="sc" href="/games/sketch-chain/?staging=do">Sketch Chain（DO staging）</a></li>
+    </ul>
+    <script>
+      (function () {
+        var origin = "http://127.0.0.1:8787";
+        document.getElementById("cc").href =
+          "/games/color-chain/?staging=do&rooms=" + encodeURIComponent(origin);
+        document.getElementById("sc").href =
+          "/games/sketch-chain/?staging=do&rooms=" + encodeURIComponent(origin);
+      })();
+    </script>
+  </body>
+</html>
