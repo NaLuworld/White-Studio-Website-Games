@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>Japanese Station — Tactical FPS</title>
+  <link rel="icon" href="data:," />
+  <style>
+    :root { color-scheme: dark; font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif; }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #05070a; }
+    canvas { display: block; width: 100%; height: 100%; }
+    .overlay { position: fixed; inset: 0; pointer-events: none; color: #f3f5f7; text-shadow: 0 1px 8px #000; }
+    #loading, #menu, #victory {
+      pointer-events: auto; display: grid; place-items: center; background:
+        radial-gradient(circle at 50% 42%, rgba(22,28,36,.56), rgba(3,5,8,.94) 65%);
+      backdrop-filter: blur(8px);
+    }
+    #menu, #victory { display: none; }
+    .panel { width: min(760px, 88vw); padding: 30px 34px; border: 1px solid rgba(255,255,255,.12); background: rgba(6,9,13,.76); }
+    .eyebrow { color: #ff4655; font-size: 12px; letter-spacing: .28em; font-weight: 800; }
+    h1 { margin: 8px 0 2px; font-size: clamp(34px, 6vw, 76px); line-height: .95; letter-spacing: -.04em; }
+    h2 { margin: 0 0 20px; color: #bfc8d4; font-weight: 500; letter-spacing: .12em; }
+    .start { margin-top: 24px; padding: 13px 18px; border: 1px solid #ff4655; background: rgba(255,70,85,.08); color: white; font-weight: 800; letter-spacing: .15em; cursor: pointer; }
+    .controls { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 7px 20px; color: #aeb8c4; font-size: 12px; margin-top: 18px; }
+    #menu .panel { max-height:calc(100dvh - 20px);overflow-y:auto; }
+    #difficultyRow { display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px;font-size:12px;color:#d7e6f0;letter-spacing:.12em;font-weight:750; }
+    #difficulty { background:#090c10;border:1px solid #5a6674;color:#fff;padding:8px;min-width:142px; }
+    #difficultyHelp { margin:7px 0 0;min-height:1.2em;color:#aeb8c4;font-size:12px;letter-spacing:normal; }
+    #motionRow { display:flex;align-items:center;gap:10px;margin-top:12px;font-size:12px;color:#c8d7e2; }
+    #reducedMotion { width:17px;height:17px;accent-color:#ff4655; }
+    body.reduced-motion .scanlines { display:none; }
+    body.reduced-motion .overlay *,body.reduced-motion .overlay { transition:none !important; }
+    @media (prefers-reduced-motion:reduce) {.scanlines {display:none;} .overlay *, .overlay {transition:none !important;}}
+    .key { color: white; font-weight: 800; display: inline-block; min-width: 72px; }
+    #progressTrack { height: 3px; background: #252a31; margin: 20px 0 8px; }
+    #progressBar { height: 100%; width: 0%; background: #ff4655; transition: width .2s; }
+    #loadingText, #assetStatus { font-size: 12px; color: #9da8b4; letter-spacing: .08em; }
+    #hud { display: none; }
+    #crosshair { position: absolute; left: 50%; top: 50%; width: 16px; height: 16px; transform: translate(-50%,-50%); opacity: .85; }
+    #crosshair:before, #crosshair:after { content: ""; position: absolute; background: #fff; box-shadow: 0 0 8px rgba(255,255,255,.5); }
+    #crosshair:before { width: 1px; height: 16px; left: 7.5px; }
+    #crosshair:after { height: 1px; width: 16px; top: 7.5px; }
+    #hitmarker { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%) rotate(45deg); width: 28px; height: 28px; opacity: 0; }
+    #hitmarker:before, #hitmarker:after { content:""; position:absolute; background:#fff; }
+    #hitmarker:before { width: 2px; height: 28px; left: 13px; }
+    #hitmarker:after { height: 2px; width: 28px; top: 13px; }
+    #hitFeedback { position:absolute;left:50%;top:55%;transform:translateX(-50%);font:700 11px ui-monospace,Consolas,monospace;letter-spacing:.14em;text-align:center;color:#ffe4b3;text-shadow:0 1px 9px #04070c;opacity:0;pointer-events:none;white-space:nowrap; }
+    #incomingCue { position:absolute;left:50%;top:62%;transform:translateX(-50%);font:700 11px ui-monospace,Consolas,monospace;letter-spacing:.13em;color:#ff9aa3;text-shadow:0 1px 8px #000;opacity:0;pointer-events:none;white-space:nowrap; }
+    .hudbox { position:absolute; font-weight:800; letter-spacing:.09em; }
+    #health { left:28px; bottom:26px; font-size:16px; }
+    #ammo { right:28px; bottom:26px; text-align:right; font-size:24px; }
+    #slotHud {right:28px;bottom:63px;font:700 11px/1.4 ui-monospace,Consolas,monospace;
+      text-align:right;color:#a9c6d4;max-width:calc(100vw - 56px);white-space:normal;}
+    #gadgetHud {display:none;right:28px;bottom:86px;max-width:calc(100vw - 56px);text-align:right;
+      font:700 10px/1.5 ui-monospace,Consolas,monospace;color:#7ff1df;white-space:normal;}
+    #adsReadout {position:absolute;left:50%;top:67%;transform:translateX(-50%);
+      text-align:center;white-space:nowrap;opacity:0;pointer-events:none;color:#bbd5db;
+      font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.16em;}
+    #targets { right:28px; top:22px; font-size:13px; }
+    #mission { left:28px; top:22px; font-size:12px; color:#d2d8df; }
+    #encounterHud { left:28px; top:45px; max-width:min(420px, calc(100vw - 56px)); white-space:pre-line; font:700 10px/1.55 ui-monospace,Consolas,monospace; color:#b9d3d7; opacity:.83; pointer-events:none; }
+    #notice { left:50%; top:18%; transform:translateX(-50%); font-size:13px; letter-spacing:.18em; opacity:0; transition:opacity .15s; }
+    #traversalHint { position:absolute;left:50%;bottom:12%;transform:translateX(-50%);max-width:calc(100vw - 24px);text-align:center;white-space:normal;line-height:1.5;color:#a9eced;font-size:11px;letter-spacing:.15em;font-weight:750;text-shadow:0 1px 7px #020810;opacity:0;transition:opacity .18s; }
+    #interactionHint {position:absolute;left:50%;bottom:17%;transform:translateX(-50%);max-width:calc(100vw - 24px);text-align:center;color:#f5e1ac;letter-spacing:.12em;font:750 12px/1.5 ui-monospace,Consolas,monospace;opacity:0;pointer-events:none;}
+    #combatFlow { position:absolute;left:50%;bottom:7%;transform:translateX(-50%);max-width:calc(100vw - 24px);text-align:center;color:#ffe3a0;font-size:11px;letter-spacing:.14em;font-weight:750;text-shadow:0 1px 7px #020810;opacity:0;transition:opacity .1s; }
+    #damageVignette { position:absolute; inset:0; box-shadow: inset 0 0 120px 35px rgba(255,30,45,0); transition: box-shadow .12s; }
+    #debug { left: 18px; bottom: 74px; font: 11px/1.5 ui-monospace,Consolas,monospace; color:#a8b6c3; opacity:.72; }
+    #qualityWrap { position:absolute; left:18px; top:130px; pointer-events:auto; }
+    #quality { background:#090c10; color:white; border:1px solid #303741; padding:5px 7px; font-size:11px; }
+    .scanlines { position:absolute; inset:0; opacity:.045; background: repeating-linear-gradient(0deg,transparent 0 2px,#fff 3px); mix-blend-mode:overlay; }
+    #autotestPanel { display:none; position:fixed; z-index:20; right:14px; top:14px; gap:6px; padding:8px; background:#080b10dd; border:1px solid #3a424d; pointer-events:auto; }
+    #autotestPanel button { background:#111820; color:#fff; border:1px solid #4d5966; padding:6px 8px; font:11px ui-monospace,monospace; cursor:pointer; }
+  </style>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="loading" class="overlay">
+    <div class="panel">
+      <div class="eyebrow">MISSION SYSTEM / BOOT</div>
+      <h1>JAPANESE STATION</h1>
+      <h2>TACTICAL FPS</h2>
+      <div id="progressTrack"><div id="progressBar"></div></div>
+      <div id="loadingText">LOADING STATION... 0%</div>
+      <div id="assetStatus">Preparing procedural fallback systems.</div>
+    </div>
+  </div>
+
+  <div id="menu" class="overlay">
+    <div class="panel">
+      <div class="eyebrow">MISSION 01</div>
+      <h1>SECURE THE STATION</h1>
+      <h2>Clear three combat sectors. Use cover and parkour routes.</h2>
+      <label id="difficultyRow" for="difficulty">THREAT LEVEL
+        <select id="difficulty" aria-describedby="difficultyHelp">
+          <option value="RECRUIT">RECRUIT</option>
+          <option value="TACTICAL" selected>TACTICAL</option>
+          <option value="VETERAN">VETERAN</option>
+        </select>
+      </label>
+      <p id="difficultyHelp">Original encounter timing and incoming damage.</p>
+      <label id="motionRow" for="reducedMotion"><input type="checkbox" id="reducedMotion" />REDUCE VISUAL MOTION (SHAKE / WEAPON BOB)</label>
+      <button id="startBtn" class="start">CLICK TO START</button>
+      <div class="controls" aria-label="Keyboard and mouse controls">
+        <div><span class="key">WASD</span>MOVE</div><div><span class="key">SHIFT</span>SPRINT</div>
+        <div><span class="key">SPACE</span>JUMP / VAULT / CLIMB / WALL KICK</div><div><span class="key">SHIFT+CTRL</span>SPRINT SLIDE</div>
+        <div><span class="key">LMB</span>FIRE</div><div><span class="key">R</span>RELOAD</div>
+        <div><span class="key">1 / 2 / 3</span>RIFLE / PISTOL / KNIFE</div>
+        <div><span class="key">RMB / Q</span>AIM / FALLBACK USE Q</div>
+        <div><span class="key">G / TAB</span>GADGET USE / SWITCH (WITH ?gadgets=1)</div>
+        <div><span class="key">E</span>OPEN DOORS / TOGGLE ALARM (WITH ?sandbox=1)</div>
+        <div><span class="key">W / CTRL</span>LEDGE CLIMB / DROP</div><div><span class="key">ESC</span>UNLOCK</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="victory" class="overlay">
+    <div class="panel">
+      <div class="eyebrow">MISSION COMPLETE</div>
+      <h1>STATION SECURED</h1>
+      <h2 id="results">KILLS 0 · ACCURACY 0% · TIME 0:00</h2>
+      <button id="restartBtn" class="start">RESTART MISSION</button>
+    </div>
+  </div>
+
+  <div id="hud" class="overlay">
+    <div class="scanlines"></div>
+    <div id="crosshair"></div><div id="hitmarker"></div><div id="damageVignette"></div>
+    <div id="hitFeedback" aria-live="off"></div><div id="incomingCue" aria-live="off"></div>
+    <div id="mission" class="hudbox">MISSION 01 / SECURE THE STATION</div>
+    <div id="encounterHud" class="hudbox" aria-live="off"></div>
+    <div id="targets" class="hudbox">TARGETS 0</div>
+    <div id="health" class="hudbox">HP 100</div>
+    <div id="ammo" class="hudbox">30 / 120</div>
+    <div id="slotHud" class="hudbox">1 RIFLE / 2 PISTOL / 3 KNIFE</div>
+    <div id="gadgetHud" class="hudbox" aria-live="off"></div>
+    <div id="adsReadout" aria-live="off"></div>
+    <div id="notice" class="hudbox"></div>
+    <div id="traversalHint" aria-live="off"></div>
+    <div id="interactionHint" aria-live="off"></div>
+    <div id="combatFlow" aria-live="off"></div>
+    <div id="debug" class="hudbox">FPS --<br>DRAW --<br>TRIS --</div>
+    <div id="qualityWrap"><select id="quality"><option>LOW</option><option>MEDIUM</option><option selected>HIGH</option><option>ULTRA</option></select></div>
+  </div>
+
+<div id="autotestPanel"><button id="testLookLeft">LOOK LEFT</button><button id="testLookRight">LOOK RIGHT</button><button id="testLookUp">LOOK UP</button><button id="testLookDown">LOOK DOWN</button><button id="testFire">FIRE</button><button id="testReload">RELOAD</button><button id="testDamage">DAMAGE</button><button id="testComplete">COMPLETE</button></div>
+
+<script type="module" src="./src/main.js"></script>
+
+</body>
+</html>
