@@ -51,6 +51,7 @@ Dev origins `http://127.0.0.1:4173` / `http://localhost:4173` are allowlisted on
 - Snake: `/games/snake/` (貪食蛇)
 - Color Chain: `/games/color-chain/` (四色接龍 — realtime rooms via Worker Durable Objects)
 - Sketch Chain / 你畫我猜: `/games/sketch-chain/` (Draw & Guess — party pass-the-sketch; see [`docs/SKETCH-CHAIN.md`](docs/SKETCH-CHAIN.md))
+- FPSGame (unlisted testing preview): `/games/fpsgame/` (Phase32 static browser snapshot from 2026-10-16; kept off the Games homepage intentionally; direct URL only, public to anyone with the link; not a release build)
 
 Realtime API (Worker): `POST /api/games/color-chain/rooms`, `…/join`, WebSocket `…/ws`. See [`docs/COLOR-CHAIN.md`](docs/COLOR-CHAIN.md).
 
