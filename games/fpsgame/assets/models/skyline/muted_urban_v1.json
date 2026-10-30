@@ -1,0 +1,190 @@
+{
+  "id": "muted-urban-v1",
+  "intent": "Low-saturation architectural/character/weapon art without reducing critical combat UI contrast",
+  "facades": [
+    "#747D7F",
+    "#667175",
+    "#898A87",
+    "#787F7C",
+    "#817A75"
+  ],
+  "world": {
+    "sky": "#232B2F",
+    "fog": "#283238",
+    "road": "#33383B",
+    "wall": "#737C7F",
+    "deck": "#555F63",
+    "cover": "#6B7375",
+    "anchor": "#8EAEB0",
+    "anchorEmissive": "#314B4D",
+    "glass": "#47595F",
+    "roofEquipment": "#5B6567",
+    "default": "#727A7B",
+    "horizonGlazing": "#41545B",
+    "horizonGlazingEmissive": "#18272A",
+    "horizonBands": "#58686D",
+    "horizonGround": "#333B3E"
+  },
+  "lighting": {
+    "hemiSky": "#C1CDCF",
+    "hemiGround": "#41403D",
+    "directional": "#D9DEDC",
+    "gallerySky": "#252E31",
+    "galleryGround": "#3A4143",
+    "gallerySun": "#E3E2DA"
+  },
+  "character": {
+    "suit": "#3C4244",
+    "armor": "#2D3437",
+    "skin": "#988B81",
+    "dark": "#262B2D",
+    "receiver": "#4A5559",
+    "barrel": "#293335",
+    "ceramic": "#6B7374",
+    "straps": "#363C3E",
+    "highlight": "#969B98",
+    "visor": "#46595C"
+  },
+  "weapons": {
+    "anodized": "#40494C",
+    "blued": "#2B3336",
+    "edge": "#79817F",
+    "marking": "#848B80",
+    "pistolSlide": "#485154",
+    "pistolEdge": "#303638",
+    "galleryRifle": "#30383B",
+    "galleryPistol": "#384043"
+  },
+  "hands": {
+    "glove": "#303639",
+    "seam": "#24292B",
+    "sleeve": "#464D4F",
+    "elbow": "#363D40",
+    "cuff": "#62696A"
+  },
+  "blender": {
+    "commercial_tower_a": {
+      "main-concrete": [
+        "#787F7E",
+        0.04,
+        0.79
+      ],
+      "dark-structural-metal": [
+        "#384449",
+        0.52,
+        0.46
+      ],
+      "window-glass": [
+        "#4D6066",
+        0.44,
+        0.33
+      ],
+      "warm-podium": [
+        "#807C75",
+        0.08,
+        0.72
+      ],
+      "pale-edge-trim": [
+        "#A9ADAA",
+        0.25,
+        0.48
+      ],
+      "roof-equipment": [
+        "#5A6465",
+        0.42,
+        0.58
+      ],
+      "warning-accent": [
+        "#9D8C73",
+        0.18,
+        0.62
+      ]
+    },
+    "residential_tower_a": {
+      "base": [
+        "#888480",
+        0.06,
+        0.8
+      ],
+      "structure": [
+        "#636E70",
+        0.24,
+        0.65
+      ],
+      "windows": [
+        "#506267",
+        0.22,
+        0.33
+      ],
+      "trim": [
+        "#B1ACA3",
+        0.1,
+        0.63
+      ],
+      "accent": [
+        "#847973",
+        0.13,
+        0.72
+      ],
+      "equipment": [
+        "#616969",
+        0.33,
+        0.65
+      ]
+    },
+    "industrial_tower_a": {
+      "base": [
+        "#6D7677",
+        0.12,
+        0.79
+      ],
+      "structure": [
+        "#434F51",
+        0.52,
+        0.6
+      ],
+      "windows": [
+        "#465A5D",
+        0.18,
+        0.4
+      ],
+      "trim": [
+        "#9DA6A2",
+        0.36,
+        0.57
+      ],
+      "accent": [
+        "#A18E73",
+        0.28,
+        0.62
+      ],
+      "equipment": [
+        "#596163",
+        0.47,
+        0.64
+      ]
+    }
+  },
+  "authoredCity": {
+    "road": "#33383B",
+    "lane": "#777D7B",
+    "pavement": "#464D50",
+    "plaza": "#535C5E",
+    "floor": "#6D7476",
+    "wall": "#50595D",
+    "structure": "#4D595D",
+    "partition": "#777B7C",
+    "deck": "#687375",
+    "towerBrick": "#77716F",
+    "towerSlate": "#657276",
+    "towerGlass": "#4F6268",
+    "towerRoof": "#858B89",
+    "cover": "#757D7D",
+    "stair": "#8B9090",
+    "trim": "#A1A7A3",
+    "glass": "#556C70",
+    "parapet": "#525E62",
+    "light": "#9FC4C2",
+    "anchor": "#9BC9C7"
+  }
+}

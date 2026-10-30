@@ -1,0 +1,33 @@
+{
+  "schema": "white-studio-building-kit-v1",
+  "generated_by": "Blender 4.5 LTS (bpy)",
+  "units": "meters",
+  "up": "Y",
+  "coordinate_system": "right-handed",
+  "kit_id": "residential_tower_a",
+  "pivot": "ground-center",
+  "footprint": {
+    "x": 14,
+    "z": 14
+  },
+  "height": 25.775,
+  "walkable_roof_y": 21.58,
+  "collision": "external_authoritative",
+  "lods": {
+    "0": {
+      "path": "assets/models/skyline/residential_tower_a_lod0.glb",
+      "bytes": 181508,
+      "sha256": "6a1f8be117ed48fe5c867745f780e4f7c42867556c88f7e21b470d4cd05ec87f",
+      "mesh_count": 6,
+      "triangles": 2512
+    },
+    "1": {
+      "path": "assets/models/skyline/residential_tower_a_lod1.glb",
+      "bytes": 26872,
+      "sha256": "d4ca9574ca7de0bc0595526af2f2f705071177e5635b38b547789b2d1caebef0",
+      "mesh_count": 6,
+      "triangles": 304
+    }
+  },
+  "editable_source": "tools/asset_pipeline/sources/residential_tower_a.blend"
+}

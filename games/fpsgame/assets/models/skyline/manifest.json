@@ -1,0 +1,34 @@
+{
+  "schema": "white-studio-building-kit-v1",
+  "generated_by": "Blender 4.5 LTS (bpy)",
+  "units": "meters",
+  "up": "Y",
+  "coordinate_system": "right-handed",
+  "kit_id": "commercial_tower_a",
+  "pivot": "ground-center",
+  "footprint": {
+    "x": 14,
+    "z": 14
+  },
+  "height": 25.8,
+  "walkable_roof_y": 21.58,
+  "collision": "external_authoritative",
+  "lods": {
+    "0": {
+      "mesh_count": 7,
+      "triangles": 2100,
+      "path": "assets/models/skyline/commercial_tower_a_lod0.glb",
+      "bytes": 144244,
+      "sha256": "426fc381a6360a011a0bafd1730238b86c23f87a73ad75d538d7c5d206573019"
+    },
+    "1": {
+      "mesh_count": 6,
+      "triangles": 348,
+      "path": "assets/models/skyline/commercial_tower_a_lod1.glb",
+      "bytes": 30632,
+      "sha256": "ccc1c7150520f01ea2f20c925d37ab1622aa8f984ad3069727479a777da8a32d"
+    }
+  },
+  "editable_source": "tools/asset_pipeline/sources/CommercialTower_A.blend",
+  "intended_use": "visual-only; WorldInteractionRegistry unchanged"
+}

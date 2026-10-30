@@ -2,22 +2,33 @@ import {ParkourSensor} from './ParkourSensor.js';
 import {TraversalStateMachine,TRAVERSAL_STATES as STATES} from './TraversalStateMachine.js';
 import {TraversalMotion} from './TraversalMotion.js';
 import {advanceSlide} from './SlideDynamics.js';
+import {slideCameraFeel} from './SlideCameraFeel.js?v=slide-cam-1';
+import {SprintSlideIntent} from './SprintSlideIntent.js';
+import {WallKickCarry} from './WallKickCarry.js';
 
 // Traversal decides intent. The PlayerController remains the only writer of player position.
 export class ParkourController {
   constructor(player,boxes,onTransition=null){
     this.player=player;this.sensor=new ParkourSensor(boxes,player.config);
     this.machine=new TraversalStateMachine(onTransition);this.motion=new TraversalMotion();
+    this.wallKickCarry=new WallKickCarry();
     this.timer=0;this.cooldown=0;this.slideSpeed=0;this.slideX=0;this.slideZ=0;
     this.wallSide=null;this.wallNormalX=0;this.wallNormalZ=0;this.lastResult='idle';this._direction={x:0,z:-1};
+    this.wallKickBuffer=0;
+    this.slideIntent=new SprintSlideIntent();
   }
   get state(){return this.machine.state;}
+  queueSlideTap(){this.slideIntent.queueTap();}
   direction(){const yaw=this.player.controls.yaw;this._direction.x=-Math.sin(yaw);this._direction.z=-Math.cos(yaw);return this._direction;}
   reset(reason='reset'){
     this.machine.cancel(reason);this.motion.cancel();this.timer=0;this.cooldown=0;
-    this.slideSpeed=0;this.wallSide=null;this.lastResult='idle';this.player.controls.setTraversalRoll(0);
+    this.slideSpeed=0;this.wallSide=null;this.lastResult='idle';this.wallKickCarry.reset();
+    this.wallKickBuffer=0;this.slideIntent.reset();this.player.controls.setTraversalRoll(0);
   }
   cancel(reason='interrupt'){
+    if(reason!=='wall-kick')this.wallKickCarry.reset();
+    this.wallKickBuffer=0;
+    if(['input-reset','respawn','player-death','reset'].includes(reason))this.slideIntent.reset();
     if(!this.state)return;
     this.machine.cancel(reason);this.motion.cancel();this.timer=0;
     this.wallSide=null;this.cooldown=Math.max(this.cooldown,.23);
@@ -32,6 +43,18 @@ export class ParkourController {
     player.horizontalVelocity.set(0,0,0);player.velocity.y=0;player.onGround=false;
     this.timer=0;return true;
   }
+  // A slightly early air-space press can connect to an imminent PHYSICAL wall run.
+  // Never queue on the ground, away from tagged geometry, or without forward motion.
+  bufferWallKick(){
+    const p=this.player;
+    if(p.onGround||this.state||this.cooldown>0||p.crouch||!p.keys?.has('KeyW'))return false;
+    if(Math.hypot(p.horizontalVelocity.x,p.horizontalVelocity.z)<3.2)return false;
+    const d=this.direction();
+    if(!this.sensor.wall(p.camera.position.x,p.camera.position.z,p.feetY,d.x,d.z,-1)&&
+       !this.sensor.wall(p.camera.position.x,p.camera.position.z,p.feetY,d.x,d.z,1))return false;
+    this.wallKickBuffer=.14;
+    return true;
+  }
   jump(){
     const p=this.player;
     if(this.state===STATES.LEDGE_HANG){
@@ -42,12 +65,13 @@ export class ParkourController {
     if(this.state===STATES.WALL_RUN){
       const d=this.direction();
       p.horizontalVelocity.set(d.x*5.8+this.wallNormalX*4.5,0,d.z*5.8+this.wallNormalZ*4.5);
+      this.wallKickCarry.begin(this.wallNormalX,this.wallNormalZ);
       p.velocity.y=6.4;p.onGround=false;this.cancel('wall-kick');this.cooldown=.7;
       return true;
     }
     if(this.state===STATES.SLIDE){this.cancel('slide-jump');p.crouch=false;return null;}
     if(this.state)return false;
-    if(!p.onGround)return false;
+    if(!p.onGround)return this.bufferWallKick();
     const d=this.direction(),hit=this.sensor.forward(p.camera.position.x,p.camera.position.z,p.feetY,d.x,d.z);
     const approach=p.horizontalVelocity.x*d.x+p.horizontalVelocity.z*d.z;
     if(hit&&approach>1.8){
@@ -65,7 +89,9 @@ export class ParkourController {
                  this.sensor.wall(p.camera.position.x,p.camera.position.z,p.feetY,d.x,d.z,1);
       if(side){
         this.wallSide=side.side<0?'LEFT':'RIGHT';this.wallNormalX=side.normalX;this.wallNormalZ=side.normalZ;
-        this.machine.enter(STATES.WALL_RUN,'side-wall');this.timer=0;p.velocity.y=Math.max(p.velocity.y,-.7);return;
+        this.machine.enter(STATES.WALL_RUN,'side-wall');this.timer=0;p.velocity.y=Math.max(p.velocity.y,-.7);
+        if(this.wallKickBuffer>0)this.jump();
+        return;
       }
     }
     if(p.velocity.y>0.25||speed<1.2)return;
@@ -78,7 +104,13 @@ export class ParkourController {
   update(dt,input){
     const p=this.player,s=this.sensor,d=this.direction();
     this.cooldown=Math.max(0,this.cooldown-dt);
+    this.wallKickBuffer=Math.max(0,this.wallKickBuffer-dt);
+    if(p.onGround)this.wallKickBuffer=0;
     this.timer+=dt;
+    const slideTap=this.slideIntent.update(dt,{
+      ctrl:input.crouch,sprint:input.sprint,forward:input.forward,grounded:p.onGround,
+      speed:Math.hypot(p.horizontalVelocity.x,p.horizontalVelocity.z),eligible:!this.state
+    });
     const state=this.state;
     if(state===STATES.VAULT||state===STATES.MANTLE){
       this.lastResult=this.motion.step(dt,p);
@@ -113,17 +145,23 @@ export class ParkourController {
     if(state===STATES.SLIDE){
       if(!p.onGround){this.cancel('slide-airborne');return false;}
       advanceSlide(this,d.x,d.z,dt,input.forward);
+      const feel=slideCameraFeel({speed:this.slideSpeed,elapsed:this.timer,slideX:this.slideX,slideZ:this.slideZ,
+        yaw:p.controls.yaw,reducedMotion:p.controls.reducedMotion});
+      // Bank follows real slide steering; never mutate look yaw.
+      p.controls.setTraversalRoll(p.controls.traversalRoll+(feel.roll-p.controls.traversalRoll)*
+        (1-Math.exp(-13*dt)));
       p.horizontalVelocity.set(this.slideX*this.slideSpeed,0,this.slideZ*this.slideSpeed);
       const ox=p.camera.position.x,oz=p.camera.position.z;
       p.moveAxis('x',p.horizontalVelocity.x*dt);p.moveAxis('z',p.horizontalVelocity.z*dt);
       if((Math.abs(p.camera.position.x-ox)+Math.abs(p.camera.position.z-oz))<.0001||this.slideSpeed<2.8||
-        this.timer>1.15||(!input.crouch&&this.timer>.23))this.cancel('slide-exit');
+        this.timer>1.15)this.cancel('slide-exit');
       return true;
     }
-    if(input.crouch&&input.sprint&&p.onGround&&!this.cooldown){
+    if(slideTap&&p.onGround&&!this.cooldown){
       const speed=Math.hypot(p.horizontalVelocity.x,p.horizontalVelocity.z);
-      if(speed>3.7&&input.forward){
-        this.machine.enter(STATES.SLIDE,'sprint-crouch');this.timer=0;
+      if(speed>3.7){
+        this.slideIntent.consume();
+        this.machine.enter(STATES.SLIDE,'sprint-ctrl-tap');this.timer=0;
         this.slideX=p.horizontalVelocity.x/speed;this.slideZ=p.horizontalVelocity.z/speed;
         this.slideSpeed=Math.min(10.1,speed+1.15);
         return true; // Start the physical slide on the next positive-time update.
@@ -138,6 +176,8 @@ export class ParkourController {
       ...this.sensor.snapshot(p.camera.position.x,p.camera.position.z,p.feetY,d.x,d.z),
       traversalProgress:this.motion.active?this.motion.progress:0,slideSpeed:this.slideSpeed,
       slideDirection:[this.slideX,this.slideZ],
-      wallSide:this.wallSide,cooldown:this.cooldown,feetY:p.feetY,lastResult:this.lastResult};
+      wallSide:this.wallSide,cooldown:this.cooldown,wallKick:this.wallKickCarry.snapshot(),
+      wallKickBuffer:this.wallKickBuffer,slideIntent:this.slideIntent.snapshot(),
+      feetY:p.feetY,lastResult:this.lastResult};
   }
 }

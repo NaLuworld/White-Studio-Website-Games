@@ -32,13 +32,28 @@ export class GadgetResolver{
     this.emitNoise(point);this.onImpact?.(point,material);
     return {ok:true,kind:'distraction',surface:material,point:point.toArray()};
   }
-  findAnchor(camera,{range=18}={}){
+  findAnchor(camera,{range=18,assist=false}={}){
     camera.updateMatrixWorld(true);camera.getWorldPosition(this.origin);camera.getWorldDirection(this.dir).normalize();
     this.ray.set(this.origin,this.dir);this.ray.near=0;this.ray.far=range;
     const hits=this.ray.intersectObjects(this.world.shootables,false),first=hits[0];
-    if(!first?.object?.userData?.grappleAnchor)return {ok:false,reason:first?'blocked':'no-anchor'};
-    const p=first.object.position;
-    return {ok:true,kind:'grapple',point:p.toArray(),target:{
+    let anchor=first?.object?.userData?.grappleAnchor?first.object:null;
+    if(!anchor&&assist){
+      // Distant reticle assist. A candidate must be the first actual ray hit.
+      let best=Infinity;
+      for(const candidate of this.world.shootables){
+        if(!candidate.userData.grappleAnchor)continue;
+        const delta=this.delta.copy(candidate.position).sub(this.origin),dist=delta.length();
+        if(dist<=1||dist>range||!Number.isFinite(dist))continue;
+        const angle=delta.normalize().dot(this.dir),offset=dist*(1-angle);
+        if(angle<Math.cos(.047)||offset>best)continue;
+        this.ray.set(this.origin,delta);this.ray.near=0;this.ray.far=dist+.1;
+        if(this.ray.intersectObjects(this.world.shootables,false)[0]?.object!==candidate)continue;
+        best=offset;anchor=candidate;
+      }
+    }
+    if(!anchor)return {ok:false,reason:first?'blocked':'no-anchor'};
+    const p=anchor.position,landing=anchor.userData.grappleLanding;
+    return {ok:true,kind:'grapple',point:p.toArray(),target:landing?{...landing}:{
       x:p.x,z:p.z,feetY:Math.max(.4,p.y-1.45)}};
   }
 }

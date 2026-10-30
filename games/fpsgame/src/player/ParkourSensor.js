@@ -16,11 +16,38 @@ export class ParkourSensor {
     }
     return true;
   }
+  // Recovery for a *shallow* existing overlap from a completed traversal or
+  // floating-point contact. Never permits entering a solid from free space.
+  // Each substep must reduce penetration of EVERY colliding box; no wall
+  // teleport, through-wall traversal, or unbounded position correction.
+  canExitShallowOverlap(fromX,fromZ,toX,toZ,feet,height=this.config.standing+.10){
+    const c=this.config,r=c.radius,limit=r;
+    if(![fromX,fromZ,toX,toZ,feet,height].every(Number.isFinite)||
+       Math.hypot(toX-fromX,toZ-fromZ)>.075001||
+       toX-r<c.worldXMin||toX+r>c.worldXMax||
+       toZ-r<c.worldZMin||toZ+r>c.worldZMax)return false;
+    let existed=false;
+    for(const b of this.boxes){
+      if(feet+.025>=b.max.y-.008||feet+height<=b.min.y+.008)continue;
+      const left=b.min.x+.008-r,right=b.max.x-.008+r;
+      const top=b.min.z+.008-r,bottom=b.max.z-.008+r;
+      const depth=(x,z)=>x>left&&x<right&&z>top&&z<bottom?
+        Math.min(x-left,right-x,z-top,bottom-z):0;
+      const before=depth(fromX,fromZ),after=depth(toX,toZ);
+      if(!before){if(after>0)return false;continue;}
+      existed=true;
+      if(before>limit||after>0&&after>=before-1e-7)return false;
+    }
+    return existed;
+  }
   groundAt(x,z,fromFeet,toFeet=fromFeet-.12){
     this.probes++;
     let y=(fromFeet>=-.04&&toFeet<=.04)?0:null,ground=null;
     for(const b of this.boxes){
-      if(!this.insideXZ(b,x,z,-.03))continue;
+      // Stair tread support extends under the player's physical radius. It
+      // prevents a one-frame unsupported gap when stepping onto a riser.
+      const supportMargin=b.userData?.traversal?.stair?this.config.radius+.02:-.03;
+      if(!this.insideXZ(b,x,z,supportMargin))continue;
       const top=b.max.y;
       if(top>fromFeet+.045||top<toFeet-.045)continue;
       if(y===null||top>y){y=top;ground=b;}

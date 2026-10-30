@@ -26,6 +26,21 @@ export class WorldInteractionRegistry {
     return mesh;
   }
 
+  // Dynamic chunk eviction must mutate these arrays IN PLACE. Weapons,
+  // player physics, grapple and perception all hold their original references.
+  unregisterMeshes(meshes){
+    const targets=new Set(meshes),before=this.entries.length;
+    const removed=this.entries.filter(e=>targets.has(e.mesh));
+    if(!removed.length)return 0;
+    const colliders=new Set(removed.filter(e=>e.collider).map(e=>e.collider));
+    const survivors=this.entries.filter(e=>!targets.has(e.mesh));
+    this.entries.splice(0,this.entries.length,...survivors);
+    const bullets=this.shootables.filter(mesh=>!targets.has(mesh));
+    this.shootables.splice(0,this.shootables.length,...bullets);
+    const physics=this.collisionBoxes.filter(box=>!colliders.has(box));
+    this.collisionBoxes.splice(0,this.collisionBoxes.length,...physics);
+    return before-this.entries.length;
+  }
   colliderActive(entry){return !!entry?.colliderEnabled;}
   setColliderEnabled(entry,enabled){
     if(!entry?.collider||!entry.savedCollider)return false;

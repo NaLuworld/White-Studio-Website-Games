@@ -1,7 +1,7 @@
 // Deterministic, frame-rate independent view feedback.
 // Camera yaw and actual player collision height remain owned by other systems.
 const LOOK_PITCH=Object.freeze({
-  SLIDE:-.05, VAULT:.035, MANTLE:.065, LEDGE_HANG:-.026, WALL_RUN:-.008
+  VAULT:.035, MANTLE:.065, LEDGE_HANG:-.026, WALL_RUN:-.008
 });
 const IMPULSE=Object.freeze({
   LANDING:-.033, WALL_KICK:.034, VAULT:.014, MANTLE:.021,
@@ -12,9 +12,9 @@ export class TraversalPresentation {
   onEvent(kind){
     if(kind in IMPULSE){this.impulse=Math.max(-.075,Math.min(.075,this.impulse+IMPULSE[kind]));this.lastEvent=kind;}
   }
-  update(dt,state,progress=0){
+  update(dt,state,progress=0,slideFeel=null){
     const bounded=Math.max(0,Math.min(.033,dt));
-    const target=(LOOK_PITCH[state]||0)+(state==='VAULT'||state==='MANTLE'?
+    const target=(state==='SLIDE'?(slideFeel?.pitch??0):(LOOK_PITCH[state]||0))+(state==='VAULT'||state==='MANTLE'?
       Math.sin(Math.PI*Math.max(0,Math.min(1,progress)))*.016:0);
     this.pitch+=(target+this.impulse-this.pitch)*(1-Math.exp(-15*bounded));
     this.impulse*=Math.exp(-9*bounded);

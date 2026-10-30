@@ -1,0 +1,33 @@
+{
+  "schema": "white-studio-building-kit-v1",
+  "generated_by": "Blender 4.5 LTS (bpy)",
+  "units": "meters",
+  "up": "Y",
+  "coordinate_system": "right-handed",
+  "kit_id": "industrial_tower_a",
+  "pivot": "ground-center",
+  "footprint": {
+    "x": 14,
+    "z": 14
+  },
+  "height": 25.17,
+  "walkable_roof_y": 21.58,
+  "collision": "external_authoritative",
+  "lods": {
+    "0": {
+      "path": "assets/models/skyline/industrial_tower_a_lod0.glb",
+      "bytes": 104352,
+      "sha256": "d1b835d3d6ff3d7b9645e9f4c891be5ccc409aa2712874d08c9aeef11ee533a2",
+      "mesh_count": 6,
+      "triangles": 1424
+    },
+    "1": {
+      "path": "assets/models/skyline/industrial_tower_a_lod1.glb",
+      "bytes": 34216,
+      "sha256": "67b13ae5c61ca140f7602a94d03ab6113b6a4f10a7ac7884885a05d64ced384b",
+      "mesh_count": 5,
+      "triangles": 424
+    }
+  },
+  "editable_source": "tools/asset_pipeline/sources/industrial_tower_a.blend"
+}

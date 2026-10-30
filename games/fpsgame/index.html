@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="robots" content="noindex, nofollow" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
   <title>Japanese Station — Tactical FPS</title>
   <link rel="icon" href="data:," />
@@ -12,12 +11,26 @@
     html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #05070a; }
     canvas { display: block; width: 100%; height: 100%; }
     .overlay { position: fixed; inset: 0; pointer-events: none; color: #f3f5f7; text-shadow: 0 1px 8px #000; }
-    #loading, #menu, #victory {
+    #loading, #menu, #victory, #playtest {
       pointer-events: auto; display: grid; place-items: center; background:
         radial-gradient(circle at 50% 42%, rgba(22,28,36,.56), rgba(3,5,8,.94) 65%);
       backdrop-filter: blur(8px);
     }
-    #menu, #victory { display: none; }
+    #menu, #victory, #playtest { display: none; }
+    #playtest .panel { width:min(760px,94vw); max-height:calc(100dvh - 24px); overflow-y:auto; }
+    #playtest .score-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px; }
+    #playtest label { display:flex;flex-direction:column;gap:5px;font:650 12px/1.4 ui-monospace,Consolas,monospace;color:#c9dce4; }
+    #playtest input,#playtest select,#playtest textarea { min-width:0;width:100%;padding:8px;border:1px solid #596778;
+      background:#101820;color:#fff;border-radius:2px;font:12px ui-monospace,Consolas,monospace; }
+    #playtest textarea {resize:vertical;min-height:70px; }
+    #playtest .agreement { flex-direction:row; align-items:flex-start; margin-top:13px; }
+    #playtest .agreement input {width:16px;height:16px;flex:none; }
+    #playtest .playtest-actions {display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
+    #playtest .playtest-actions button {cursor:pointer;border:1px solid #74818c;background:#1b2833;color:#fff;padding:10px 12px;font-weight:750;}
+    #playtest .playtest-actions button:disabled {opacity:.35;cursor:default;}
+    #playtest #playtestStatus {font:600 12px/1.5 ui-monospace,monospace;min-height:18px;color:#ffc6a6;}
+    @media (max-width:560px) {#playtest .score-grid {grid-template-columns:1fr;}}
+
     .panel { width: min(760px, 88vw); padding: 30px 34px; border: 1px solid rgba(255,255,255,.12); background: rgba(6,9,13,.76); }
     .eyebrow { color: #ff4655; font-size: 12px; letter-spacing: .28em; font-weight: 800; }
     h1 { margin: 8px 0 2px; font-size: clamp(34px, 6vw, 76px); line-height: .95; letter-spacing: -.04em; }
@@ -28,6 +41,18 @@
     #difficultyRow { display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px;font-size:12px;color:#d7e6f0;letter-spacing:.12em;font-weight:750; }
     #difficulty { background:#090c10;border:1px solid #5a6674;color:#fff;padding:8px;min-width:142px; }
     #difficultyHelp { margin:7px 0 0;min-height:1.2em;color:#aeb8c4;font-size:12px;letter-spacing:normal; }
+    #modeRow { display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px;font-size:12px;color:#d7e6f0;letter-spacing:.12em;font-weight:750; }
+    #mode { background:#090c10;border:1px solid #5a6674;color:#fff;padding:8px;min-width:142px; }
+    #modeHelp { margin:7px 0 0;min-height:1.2em;color:#aeb8c4;font-size:12px;letter-spacing:normal; }
+    .route-picker {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:14px;}
+    .route-picker a {padding:11px 12px;color:#c4e4ee;background:rgba(45,73,92,.18);border:1px solid #426071;
+      text-decoration:none;font:700 11px/1.45 ui-monospace,Consolas,monospace;letter-spacing:.05em;}
+    .route-picker a:hover,.route-picker a:focus-visible {border-color:#7de5ee;background:rgba(63,121,144,.29);}
+    .route-picker a[aria-current="page"] {border-color:#88edce;color:#a9ffde;}
+    .route-picker a span {display:block;color:#a3b8c6;font-weight:500;letter-spacing:0;font-size:10px;margin-top:5px;}
+    .route-picker .route-skyline {grid-column:1/-1;border-color:#7cd7e2;color:#adf6fb;
+      background:linear-gradient(95deg,rgba(21,95,120,.32),rgba(12,32,46,.16));}
+    @media(max-width:600px){.route-picker{grid-template-columns:1fr}.route-picker .route-skyline{grid-column:auto}}
     #motionRow { display:flex;align-items:center;gap:10px;margin-top:12px;font-size:12px;color:#c8d7e2; }
     #reducedMotion { width:17px;height:17px;accent-color:#ff4655; }
     body.reduced-motion .scanlines { display:none; }
@@ -53,13 +78,21 @@
     #ammo { right:28px; bottom:26px; text-align:right; font-size:24px; }
     #slotHud {right:28px;bottom:63px;font:700 11px/1.4 ui-monospace,Consolas,monospace;
       text-align:right;color:#a9c6d4;max-width:calc(100vw - 56px);white-space:normal;}
+    #grappleHint {position:absolute;left:50%;top:57%;transform:translateX(-50%);text-align:center;
+      color:#83eddb;font:700 11px/1.5 ui-monospace,Consolas,monospace;letter-spacing:.08em;
+      text-shadow:0 1px 7px #041019;pointer-events:none;white-space:nowrap;max-width:95vw;}
     #gadgetHud {display:none;right:28px;bottom:86px;max-width:calc(100vw - 56px);text-align:right;
       font:700 10px/1.5 ui-monospace,Consolas,monospace;color:#7ff1df;white-space:normal;}
     #adsReadout {position:absolute;left:50%;top:67%;transform:translateX(-50%);
       text-align:center;white-space:nowrap;opacity:0;pointer-events:none;color:#bbd5db;
       font:700 10px ui-monospace,Consolas,monospace;letter-spacing:.16em;}
-    #targets { right:28px; top:22px; font-size:13px; }
+    #sprintFireStatus {position:absolute;left:50%;top:57%;transform:translateX(-50%);max-width:calc(100vw - 28px);
+      text-align:center;color:#b8d2d8;text-shadow:0 1px 8px #020810;opacity:0;pointer-events:none;
+      font:800 11px/1.5 ui-monospace,Consolas,monospace;letter-spacing:.12em;white-space:normal;}
+    #sprintFireStatus[data-blocked="true"] {color:#ffc477;text-shadow:0 0 12px rgba(255,153,67,.32);}
+    #targets { right:28px; top:22px; max-width:min(360px,calc(100vw - 56px));text-align:right;white-space:normal;line-height:1.35;font-size:13px; }
     #mission { left:28px; top:22px; font-size:12px; color:#d2d8df; }
+    @media (max-width:900px) {#targets {top:166px;font-size:11px;max-width:calc(100vw - 56px);} }
     #encounterHud { left:28px; top:45px; max-width:min(420px, calc(100vw - 56px)); white-space:pre-line; font:700 10px/1.55 ui-monospace,Consolas,monospace; color:#b9d3d7; opacity:.83; pointer-events:none; }
     #notice { left:50%; top:18%; transform:translateX(-50%); font-size:13px; letter-spacing:.18em; opacity:0; transition:opacity .15s; }
     #traversalHint { position:absolute;left:50%;bottom:12%;transform:translateX(-50%);max-width:calc(100vw - 24px);text-align:center;white-space:normal;line-height:1.5;color:#a9eced;font-size:11px;letter-spacing:.15em;font-weight:750;text-shadow:0 1px 7px #020810;opacity:0;transition:opacity .18s; }
@@ -99,6 +132,14 @@
       <div class="eyebrow">MISSION 01</div>
       <h1>SECURE THE STATION</h1>
       <h2>Clear three combat sectors. Use cover and parkour routes.</h2>
+      <label id="modeRow" for="mode">GAME MODE
+        <select id="mode" aria-describedby="modeHelp">
+          <option value="classic" selected>CLASSIC</option>
+          <option value="infiltration">INFILTRATION</option>
+          <option value="sandbox">SANDBOX</option>
+        </select>
+      </label>
+      <p id="modeHelp">Changing mode reloads the station. Classic keeps the original five-target mission.</p>
       <label id="difficultyRow" for="difficulty">THREAT LEVEL
         <select id="difficulty" aria-describedby="difficultyHelp">
           <option value="RECRUIT">RECRUIT</option>
@@ -108,14 +149,23 @@
       </label>
       <p id="difficultyHelp">Original encounter timing and incoming damage.</p>
       <label id="motionRow" for="reducedMotion"><input type="checkbox" id="reducedMotion" />REDUCE VISUAL MOTION (SHAKE / WEAPON BOB)</label>
+      <nav class="route-picker" aria-label="Playable game worlds">
+        <a href="./" id="routeStation">STATION / ORIGINAL LEVEL<span>Authored FPS missions and mode selector</span></a>
+        <a href="?city=1" id="routeCity">VERTICAL CITY / AUTHORED<span>Fixed 33-tower tactical arena with vertical defenders</span></a>
+        <a class="route-skyline" href="?skyline=1" id="routeSkyline">SKYLINE FREEFLIGHT / SPECIAL MODE<span>Endlessly streamed seeded city · faster G grapples · rooftop enemies · midair gunplay</span></a>
+      </nav>
       <button id="startBtn" class="start">CLICK TO START</button>
+      <button id="retryBtn" class="start" type="button" hidden>RESTART MISSION</button>
+      <button id="playtestOpenMenu" type="button" class="start" disabled title="Play a run before reviewing">RATE THIS RUN / PLAYTEST</button>
       <div class="controls" aria-label="Keyboard and mouse controls">
         <div><span class="key">WASD</span>MOVE</div><div><span class="key">SHIFT</span>SPRINT</div>
-        <div><span class="key">SPACE</span>JUMP / VAULT / CLIMB / WALL KICK</div><div><span class="key">SHIFT+CTRL</span>SPRINT SLIDE</div>
+        <div><span class="key">SPACE</span>JUMP / VAULT / CLIMB / WALL KICK</div><div><span class="key">CTRL</span>CROUCH / TAP SLIDE AFTER SPRINT (KEEP W; 1s)</div>
         <div><span class="key">LMB</span>FIRE</div><div><span class="key">R</span>RELOAD</div>
         <div><span class="key">1 / 2 / 3</span>RIFLE / PISTOL / KNIFE</div>
+        <div><span class="key">WHEEL</span>SWITCH RIFLE / PISTOL</div>
         <div><span class="key">RMB / Q</span>AIM / FALLBACK USE Q</div>
-        <div><span class="key">G / TAB</span>GADGET USE / SWITCH (WITH ?gadgets=1)</div>
+        <div><span class="key">V</span>RIFLE IRON / RED DOT SIGHT</div>
+        <div><span class="key">G</span>CITY GRAPPLE · <span class="key">F</span>CITY EVASIVE DASH · <span class="key">TAB</span>GADGET</div>
         <div><span class="key">E</span>OPEN DOORS / TOGGLE ALARM (WITH ?sandbox=1)</div>
         <div><span class="key">W / CTRL</span>LEDGE CLIMB / DROP</div><div><span class="key">ESC</span>UNLOCK</div>
       </div>
@@ -128,6 +178,57 @@
       <h1>STATION SECURED</h1>
       <h2 id="results">KILLS 0 · ACCURACY 0% · TIME 0:00</h2>
       <button id="restartBtn" class="start">RESTART MISSION</button>
+      <button id="playtestOpenVictory" type="button" class="start">RATE THIS RUN / PLAYTEST</button>
+    </div>
+  </div>
+
+  <div id="playtest" class="overlay">
+    <div class="panel">
+      <div class="eyebrow">PHASE 34 / HUMAN PLAYTEST</div>
+      <h1 style="font-size:clamp(27px,4vw,42px)">RATE YOUR RUN</h1>
+      <p style="font-size:12px;color:#b6cbd5">Optional, player-authored review. Scores are NOT generated by AI.
+      No server upload or automatic pass. Export JSON and share it yourself.</p>
+      <form id="playtestForm" autocomplete="off">
+        <div class="score-grid">
+          <label>ANONYMOUS TESTER CODE (NO REAL NAME)
+            <input name="testerAlias" type="text" required pattern="[A-Za-z0-9_]{2,24}"
+                   minlength="2" maxlength="24" placeholder="P01, P02, P03" /></label>
+          <label>ROUTE PLAYED <select name="route" required>
+            <option value="">Select actual route</option><option value="stealth">STEALTH / WEST</option>
+            <option value="loud">LOUD / COMBAT</option><option value="parkour-gadget">PARKOUR / GADGET</option>
+          </select></label>
+          <label>MOTION COMFORT (1–5) <select name="comfort" required>
+            <option value="">Rate comfort</option><option value="1">1 Poor</option><option value="2">2</option>
+            <option value="3">3</option><option value="4">4</option><option value="5">5 Excellent</option>
+          </select></label>
+          <label>RESPONSE / CONTROL (1–5) <select name="responsiveness" required><option value="">Rate</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></label>
+          <label>COMBAT IMPACT (1–5) <select name="combatImpact" required><option value="">Rate</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></label>
+          <label>ENEMY LEGIBILITY (1–5) <select name="enemyLegibility" required><option value="">Rate</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></label>
+          <label>TRAVERSAL (1–5) <select name="traversal" required><option value="">Rate</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></label>
+          <label>ROUTE CHOICE (1–5) <select name="routeChoice" required><option value="">Rate</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></label>
+          <label>REPLAY DESIRE (1–5) <select name="replayDesire" required><option value="">Rate</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></label>
+          <label>LOST CONTROL MOMENTS <input name="lostControls" type="number" min="0" max="999" step="1" placeholder="0 if none" required /></label>
+          <label>CONFUSING MOMENTS <input name="confusingMoments" type="number" min="0" max="999" step="1" placeholder="0 if none" required /></label>
+          <label>UNFAIR DETECTIONS <input name="unfairDetections" type="number" min="0" max="999" step="1" placeholder="0 if none" required /></label>
+          <label>FAKE / UNFAIR HITS <input name="fakeHits" type="number" min="0" max="999" step="1" placeholder="0 if none" required /></label>
+        </div>
+        <label style="margin-top:12px">WHAT WORKED / WHAT NEEDS FIXING
+          <textarea name="notes" maxlength="1200" rows="3" placeholder="Optional: describe a specific moment or blocker"></textarea>
+        </label>
+        <label class="agreement"><input name="consent" type="checkbox" required />
+          <span>I personally played this run. These scores reflect my own experience.</span>
+        </label>
+        <p id="playtestStatus" role="status" aria-live="polite"></p>
+        <label>REPORT PREVIEW (read-only, nothing is uploaded)
+          <textarea id="playtestOutput" rows="4" readonly placeholder="Fill all ratings, then Generate JSON"></textarea>
+        </label>
+        <div class="playtest-actions">
+          <button id="playtestGenerate" type="submit">GENERATE JSON</button>
+          <button id="playtestDownload" type="button" disabled>DOWNLOAD JSON</button>
+          <button id="playtestCopy" type="button" disabled>COPY JSON</button>
+          <button id="playtestClose" type="button">BACK</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -141,8 +242,10 @@
     <div id="health" class="hudbox">HP 100</div>
     <div id="ammo" class="hudbox">30 / 120</div>
     <div id="slotHud" class="hudbox">1 RIFLE / 2 PISTOL / 3 KNIFE</div>
+    <div id="grappleHint" aria-live="off"></div>
     <div id="gadgetHud" class="hudbox" aria-live="off"></div>
     <div id="adsReadout" aria-live="off"></div>
+    <div id="sprintFireStatus" aria-live="off"></div>
     <div id="notice" class="hudbox"></div>
     <div id="traversalHint" aria-live="off"></div>
     <div id="interactionHint" aria-live="off"></div>
@@ -153,7 +256,8 @@
 
 <div id="autotestPanel"><button id="testLookLeft">LOOK LEFT</button><button id="testLookRight">LOOK RIGHT</button><button id="testLookUp">LOOK UP</button><button id="testLookDown">LOOK DOWN</button><button id="testFire">FIRE</button><button id="testReload">RELOAD</button><button id="testDamage">DAMAGE</button><button id="testComplete">COMPLETE</button></div>
 
-<script type="module" src="./src/main.js"></script>
+<!-- Version the safe Helium-compatible module graph whenever gameplay entry imports change. -->
+<script type="module" src="./src/main.js?v=skyline-registry-api-v1"></script>
 
 </body>
 </html>

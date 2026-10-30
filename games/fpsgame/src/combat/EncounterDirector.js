@@ -116,8 +116,10 @@ export class EncounterDirector {
       if(!this.activeIds.has(e.id))continue;
       if(e.perception?.visible){
         observed++;
-        const d=distance2(e.group.position,player);
-        if(d>=4.2*4.2&&d<=15*15)
+        const d=distance2(e.group.position,player)+
+          (e.sentry?(e.group.position.y-player.y)**2:0);
+        const range=e.fireRange??this.fireRange??15;
+        if(d>=4.2*4.2&&d<=range*range)
           this.candidates.push(e);
       }
     }

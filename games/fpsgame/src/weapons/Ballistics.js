@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {sightSpread} from './RifleSightProfile.js';
 
 const hash01 = seed => {
   const x = Math.sin(seed * 12.9898 + 78.233) * 43758.5453123;
@@ -23,10 +24,12 @@ export class Ballistics {
     return this.config.spreadStanding;
   }
 
-  sample(camera, shotIndex, state, spreadScale=1) {
+  sample(camera, shotIndex, state, spreadScale=1, stationaryPrecision=false) {
     // Gameplay flow improves handling, never cancels airborne/moving penalties.
     const scale=Number.isFinite(spreadScale)?Math.max(.7,Math.min(1,spreadScale)):1;
-    const spread = this.spreadForState(state)*scale;
+    // Settled rifle ADS uses the camera-forward sightline. Recoil moves the
+    // camera on follow-up shots; hipfire and moving shots retain spread.
+    const spread = sightSpread(state,this.spreadForState(state)*scale,stationaryPrecision);
     const angle = hash01(shotIndex * 2 + 1) * Math.PI * 2;
     const radius = Math.sqrt(hash01(shotIndex * 2 + 2)) * spread;
     const x = Math.cos(angle) * radius;

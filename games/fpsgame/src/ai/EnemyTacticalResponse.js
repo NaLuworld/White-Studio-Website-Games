@@ -29,12 +29,13 @@ export class EnemyTacticalResponse {
     const side=lowerCost===upperCost?(this.id%2?low:high):lowerCost<upperCost?low:high;
     return [[side,entry],[side,exit]];
   }
-  steer(position,target,blocker,out){
+  steer(position,target,blocker,out,{city=false}={}){
     this.active=false;this.lastWaypoint=null;
-    if(!blocker?.userData?.traversal||!target){this.reset();return false;}
+    if((!city&&!blocker?.userData?.traversal)||!blocker||!target){this.reset();return false;}
     const dx=blocker.max.x-blocker.min.x,dz=blocker.max.z-blocker.min.z;
-    if(dx<=0||dz<=0||dx>4||dz>4||
-       (position.x-target.x)**2+(position.z-target.z)**2>18*18){
+    const maxBlock=city?30:4,range=city?48:18;
+    if(dx<=0||dz<=0||dx>maxBlock||dz>maxBlock||
+       (position.x-target.x)**2+(position.z-target.z)**2>range*range){
       this.reset();return false;
     }
     if(this.blocker!==blocker){

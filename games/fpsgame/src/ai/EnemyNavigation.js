@@ -51,8 +51,21 @@ export class EnemyNavigation {
     self.group.position[axis]+=delta;
     self.group.position.x=THREE.MathUtils.clamp(self.group.position.x,bounds.xMin,bounds.xMax);
     self.group.position.z=THREE.MathUtils.clamp(self.group.position.z,bounds.zMin,bounds.zMax);
+    // V4: an elevated guard can only walk on its verified grapple-supported
+    // terrace. Ground navigation keeps its existing authority unchanged.
+    const elevated=self.sentry?.zone;
+    if(elevated){
+      const p=self.group.position;
+      if(p.x<elevated.xMin||p.x>elevated.xMax||
+         p.z<elevated.zMin||p.z>elevated.zMax){
+        p[axis]=before;self.vel[axis]=0;return;
+      }
+    }
     const p=self.group.position,r=this.radius;
-    tmpMin.set(p.x-r,0,p.z-r);tmpMax.set(p.x+r,2.35,p.z+r);tmpBox.set(tmpMin,tmpMax);
+    const feet=elevated?p.y+.07:0;
+    tmpMin.set(p.x-r,feet,p.z-r);
+    tmpMax.set(p.x+r,(elevated?p.y:0)+2.35,p.z+r);
+    tmpBox.set(tmpMin,tmpMax);
     if(collisionBoxes.some(box=>box.intersectsBox(tmpBox))){
       self.group.position[axis]=before;
       self.vel[axis]=0;

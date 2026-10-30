@@ -1,7 +1,7 @@
 // Phase 15: traversal risk/reward and audible awareness, never damage or vision authority.
 // All timing uses simulated dt. AI still needs visible line of sight to fire.
 export const NOISE_RADIUS=Object.freeze({
-  STEP:2.8, SLIDE:8, VAULT:9, MANTLE:10,
+  STEP:2.8, RUN_STEP:6.5, SLIDE:8, VAULT:9, MANTLE:10,
   LEDGE_HANG:5, WALL_RUN:9, WALL_KICK:11,
   LANDING:7.5, DROP:6, SHOT:21, DISTRACTION:10.5, ALARM:18
 });

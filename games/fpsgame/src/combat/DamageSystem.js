@@ -18,7 +18,7 @@ export class DamageSystem {
     return BODY_MULTIPLIERS[bodyPart] ?? 1;
   }
 
-  apply({source=null,target,amount=0,hitPoint=null,hitNormal=null,bodyPart='torso',direction=null,weaponId=null,timestamp=performance.now(),applyBodyMultiplier=true}={}) {
+  apply({source=null,target,amount=0,hitPoint=null,hitNormal=null,bodyPart='torso',direction=null,weaponId=null,timestamp=performance.now(),applyBodyMultiplier=true,silentTakedown=false}={}) {
     if(!target) return null;
     const baseAmount=Math.max(0,Number(amount)||0);
     const finalAmount=baseAmount*(applyBodyMultiplier?this.multiplier(bodyPart):1);
@@ -33,6 +33,7 @@ export class DamageSystem {
       bodyPart,
       direction:direction?.clone?.() ?? new THREE.Vector3(),
       weaponId,
+      silentTakedown:!!silentTakedown,
       timestamp
     };
     this.recent.push({
@@ -43,6 +44,7 @@ export class DamageSystem {
       baseAmount:event.baseAmount,
       bodyPart:event.bodyPart,
       weaponId:event.weaponId,
+      silentTakedown:event.silentTakedown,
       hitPoint:event.hitPoint?.toArray?.() ?? null,
       hitNormal:event.hitNormal?.toArray?.() ?? null,
       direction:event.direction?.toArray?.() ?? null,

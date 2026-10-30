@@ -10,7 +10,12 @@ export class TraversalMotion {
     if(!this.active)return 'inactive';
     const next=Math.min(1,this.progress+dt/this.duration);
     const travel=smooth(Math.max(0,(next-.29)/.71)),rise=smooth(Math.min(1,next/.29));
-    const descend=smooth(Math.max(0,(next-.81)/.19));
+    // Vault: clear the obstacle's rear face with the full capsule before
+    // lowering the feet. The earlier .81 descent clipped valid east vaults
+    // near progress .855 despite a physically supported landing target.
+    // Keep mantle descent unchanged to preserve upper-ledge behavior.
+    const descentStart=this.kind==='VAULT'?.86:.81;
+    const descend=smooth(Math.max(0,(next-descentStart)/(1-descentStart)));
     const x=this.start.x+(this.target.x-this.start.x)*travel;
     const z=this.start.z+(this.target.z-this.start.z)*travel;
     const y=next<.29?this.start.y+(this.peak-this.start.y)*rise:
